@@ -1,0 +1,128 @@
+/**
+ * @file 播放器状态
+ * @author yuhui<yuhui06@baidu.com>
+ * @date 2017/11/10
+ */
+
+@import './mixins/mixins.less';
+
+.lark-playing {
+    .lark-play-button__play {
+        display: none;
+    }
+    .lark-play-button__pause {
+        display: block;
+    }
+
+    .lark-error-area {
+        display: none;
+    }
+
+    .lark-loading-area {
+        display: none;
+    }
+}
+
+// fullscreen
+.lark-fullscreen {
+    width: 100% !important;
+    height: 100% !important;
+    padding-top: 0 !important;
+}
+.lark-fullscreen,
+.lark-full-window {
+    
+    .lark-exit-fullscreen {
+        display: block;
+    }
+    .lark-request-fullscreen {
+        display: none;
+    }
+}
+
+// 显示／隐藏 控制条
+// @todo 这种默认不显示，在 active 的时候显示是不是不太好
+.lark-user-active {
+    .lark-play-button {
+        display: block;
+    }
+
+    .lark-control-bar {
+        .mixins-flex();
+    }
+
+    .lark-progress-bar--simple {
+        display: none;
+    }
+}
+
+.lark-play-button {
+    display: none;
+}
+
+.lark-control-bar {
+    display: none;
+}
+
+// 播放器处于加载中状态时，显示 loading
+// loading 时不显示 播放／暂停按钮
+.lark-seeking,
+.lark-waiting,
+.lark-loadstart {
+    .lark-loading-area {
+        display: block;
+    }
+
+    .lark-play-button {
+        display: none;
+    }
+}
+
+// 除了通过用户交互控制 控制条 显隐外，一些特定状态下（暂停、播放完成）我们强制显示进度条
+.lark-paused,
+.lark-ended {
+    // 显示状态按钮
+    .lark-play-button {
+        display: block;
+    }
+    .lark-play-button__play {
+        display: block;
+    }
+    .lark-play-button__pause {
+        display: none;
+    }
+
+    // 显示进度条等
+    .lark-control-bar {
+        .mixins-flex();
+    }
+
+    .lark-progress-bar--simple {
+        display: none;
+    }
+
+    .lark-error-area {
+        display: none;
+    }
+
+    // 暂停状态不显示 loading
+    .lark-loading-area {
+        display: none;
+    }
+}
+
+.lark-error {
+    .lark-error-area {
+        display: block;
+    }
+    .lark-play-button {
+        display: none;
+    }
+    .lark-loading-area {
+        display: none;
+    }
+}
+
+.lark-hidden {
+    display: none;
+}

@@ -1,0 +1,45 @@
+@import (reference) './mixins/mixins.less';
+@import './variables.less';
+
+@container-height: 28px;
+
+.lark-error-area {
+    position: absolute;
+    display: none;
+    text-align: center;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: @primary-font-size;
+    color: @primary-color;
+    box-sizing: border-box;
+    width: 100%;
+    height: @container-height;
+    line-height: @container-height;
+}
+
+.lark-error-cnt {
+    display: inline-block;
+    background: rgba(0, 0, 0, 0.5);
+    padding: 0 15px;
+    border-radius: 15px;
+}
+
+.lark-error-area__spinner {
+    display: inline-block;
+    // 居中
+    vertical-align: sub;
+}
+
+.lark-error-area__text {
+    display: inline-block;
+    margin-left: 4px;
+}
+
+.mixins-keyframes(spin; {
+    from {
+        .mixins-transform(rotate(0));
+    }
+    to {
+        .mixins-transform(rotate(360deg));
+    }
+});
