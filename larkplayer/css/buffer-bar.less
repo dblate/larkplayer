@@ -1,0 +1,23 @@
+@import './variables.less';
+
+.lark-buffer-bar {
+    position: absolute;
+    height: @line-height;
+    width: 100%;
+    // 层级顺序：progress_line(2) > buffer(1) > progress_background
+    z-index: 1;
+}
+
+.lark-progress-bar--simple {
+    .lark-buffer-bar {
+        height: @line-height-thick;
+    }
+}
+
+.lark-buffer-bar__line {
+    position: absolute;
+    height: 100%;
+    width: 0;
+    left: 0;
+    background: @buffered-color;
+}

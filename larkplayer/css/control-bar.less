@@ -1,0 +1,28 @@
+@import './mixins/mixins.less';
+@import './variables.less';
+
+@control-bar-height: 38px;
+
+.lark-control-bar {
+    position: absolute;
+    width: 100%;
+    bottom: 0;
+    left: 0;
+}
+
+.lark-control-bar {
+    display: none;
+    color: @primary-color;
+
+    // 注意！这里不使用 align-items: center
+    // 使用 默认的 aligin-items: stretch 使得子元素的高度 100% 是我们想要的
+    // .mixins-flex-center-v();
+    align-items: stretch;
+    -webkit-align-items: stretch;
+
+    .mixins-linear-gradient(top, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.5););
+
+    height: @control-bar-height;
+    // 字体大小会影响在安卓上的垂直居中
+    font-size: @primary-font-size;
+}
