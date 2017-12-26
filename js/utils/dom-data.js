@@ -14,10 +14,6 @@ import {newGUID} from './guid';
 // eg. Event listeners 是通过这种方式绑定的
 let elData = {};
 
-// TEST
-// 调试用
-window.elData = elData;
-
 // 每次当然要存在不一样的地方
 const elIdAttr = 'larkplayer_data_' + Date.now();
 

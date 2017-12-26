@@ -17,7 +17,8 @@ import log from './utils/log';
 // @see https://www.zhihu.com/question/49382420/answer/115692473
 import './shim/third_party/shim.min.js';
 
-scriptLoader.loadCss(__uri('../css/larkplayer.less'));
+// __uri 只在 fis 环境中支持
+// scriptLoader.loadCss(__uri('../css/larkplayer.less'));
 
 const document = window.document;
 
@@ -75,4 +76,7 @@ larkplayer.log = log;
 larkplayer.registerPlugin = Plugin.registerPlugin;
 larkplayer.deregisterPlugin = Plugin.deregisterPlugin;
 
-export default larkplayer;
+// export default larkplayer;
+// for babel es6
+// @see https://github.com/babel/babel/issues/2724
+module.exports = larkplayer;
