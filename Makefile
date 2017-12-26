@@ -11,7 +11,6 @@ src/%.txt:
 doc:
 	rm -rf ./docs
 	mkdir ./docs
-	./node_modules/.bin/jsdoc2md -f ./js/utils/computed-style.js > ./docs/computed-style.md
 	./node_modules/.bin/jsdoc2md -f ./js/utils/dom-data.js > ./docs/dom-data.md
 	./node_modules/.bin/jsdoc2md -f ./js/utils/dom.js > ./docs/dom.md
 	./node_modules/.bin/jsdoc2md -f ./js/utils/events.js > ./docs/events.md
@@ -20,6 +19,7 @@ doc:
 	./node_modules/.bin/jsdoc2md -f ./js/utils/obj.js > ./docs/obj.md
 	./node_modules/.bin/jsdoc2md -f ./js/utils/plugin.js > ./docs/plugin.md
 	./node_modules/.bin/jsdoc2md -f ./js/utils/to-title-case.js > ./docs/to-title-case.md
+	./node_modules/.bin/jsdoc2md -f ./js/player.js > ./docs/player.md
 
 tutorial:
 	# todo: have this actually run some kind of tutorial wizard?

@@ -1,6 +1,20 @@
 module.exports = function (grunt) {
     grunt.initConfig({
         pkg: grunt.file.readJSON('package.json'),
+        babel: {
+            options: {
+                    sourceMap: true,
+                    presets: ['env']
+                },
+                dist: {
+                    files: [{
+                        expand: true,
+                        cwd: './js',
+                        src: ['**/*.js'],
+                        dest: './lib'
+                    }]
+                }
+        },
         uglify: {
             options: {
                 banner: '/*! <%= pkg.name %> <%= grunt.template.today("dd-mm-yyyy") %> */\n'
@@ -44,7 +58,7 @@ module.exports = function (grunt) {
             }
         }
     });
-    // grunt.loadNpmTasks('grunt-babel');
+    grunt.loadNpmTasks('grunt-babel');
     // grunt.loadNpmTasks('grunt-contrib-jshint');
     // grunt.loadNpmTasks('grunt-contrib-watch');
     // grunt.loadNpmTasks('grunt-contrib-concat');
@@ -52,4 +66,6 @@ module.exports = function (grunt) {
     grunt.loadNpmTasks('grunt-contrib-less');
     grunt.loadNpmTasks('grunt-browserify');
     grunt.registerTask('default', ['less', 'browserify', 'uglify']);
+
+    grunt.registerTask('generate-lib', ['babel'])
 };

@@ -121,6 +121,10 @@ class Player extends Component {
         this.triggerReady();
     }
 
+    /**
+     * 销毁播放器
+     *
+     */
     dispose() {
         this.trigger('dispose');
         // 避免 dispose 被调用两次
@@ -765,6 +769,10 @@ class Player extends Component {
 
     // reset video and ui
     // @todo 感觉这个 reset 有点费事而且费性能
+    /**
+     * 重置播放器
+     * 会移除播放器的 src source 属性，并重置各 UI 样式
+     */
     reset() {
         this.pause();
 
@@ -779,10 +787,20 @@ class Player extends Component {
 
     // = = = get attr = = =
 
+    /**
+     * 判断当前是否是暂停状态
+     *
+     * @return {boolean} 当前是否是暂停状态
+     */
     paused() {
         return this.techGet('paused');
     }
 
+    /**
+     * 获取已播放时长
+     *
+     * @return {number} 当前已经播放的时长，以秒为单位
+     */
     played() {
         return this.techGet('played');
     }
@@ -791,6 +809,14 @@ class Player extends Component {
 
     }
 
+    /**
+     * 获取／设置 当前时间
+     *
+     * @param {number=} seconds 秒数，可选。
+     *                  传参则设置视频当前时刻
+     *                  不传参，则获取视频当前时刻
+     * @return {number|undefined} 不传参时返回视频当前时刻；传参数时设置视频当前时刻，返回 undefined
+     */
     currentTime(seconds) {
         if (seconds !== undefined) {
             this.techCall('setCurrentTime', seconds);
@@ -877,6 +903,12 @@ class Player extends Component {
         }
     }
 
+    /**
+     * 获取播放器 source 数据或者设置 source 标签
+     *
+     * @param {Array=} source 视频源，可选
+     * @return {Array|undefined} 若不传参则获取 source 数据；传参则设置 source 标签，返回 undefined
+     */
     source(source) {
         if (source !== undefined) {
             this.techCall('source', source);
@@ -907,7 +939,6 @@ class Player extends Component {
 
 }
 
-// 这些可以统一处理
 [
     /**
      * 设置或获取 muted 属性的值
