@@ -1,5 +1,6 @@
 <h3>简介</h3>
 larkplayer 是一款移动端的播放器，基于 html5 video 标签构建。保留 vieo 标签 所有原生的属性、方法和事件，同时也增加了一些自定义方法和事件
+
 larkplayer 有如下特性
 
 * 事件机制，可通过 on off one trigger 处理事件
