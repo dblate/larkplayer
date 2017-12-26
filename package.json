@@ -1,7 +1,6 @@
 {
   "name": "larkplayer",
   "version": "1.0.0",
-  "targetFile": "time-format",
   "scripts": {
     "doc": "make doc"
   },
