@@ -58,6 +58,7 @@ larkplayer.on('firstplay', event => {
     * npm install
 3. 执行构建
     * grunt
+
 构建完成后，应当在 dist 目录下能得到相关的 js css 及 min.js min.css 文件。
 
 grunt 编译后的文件以 umd 的形式包装，所以可以直接通过 script 的方式引入， larkplayer 会被挂载在 window 上
@@ -78,3 +79,8 @@ grunt 编译后的文件以 umd 的形式包装，所以可以直接通过 scrip
     </body>
 <html>
 ```
+
+<h3>文档</h3>
+专门的文档页正在开发中...
+
+可以先查看 [/docs/player.md](http://gitlab.baidu.com/yuhui06/larkplayer/tree/master)
