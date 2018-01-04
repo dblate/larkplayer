@@ -888,7 +888,7 @@ class Player extends Component {
         /**
          * 在全屏时出错时触发
          *
-         * @event fullscreenerror
+         * @event Player#fullscreenerror
          */
         this.trigger('fullscreenerror');
     }
@@ -1237,7 +1237,7 @@ class Player extends Component {
     /**
      * 获取或设置当前视频的 src 属性的值
      *
-     * @param {string=} 要设置的 src 属性的值，可选
+     * @param {string=} src 要设置的 src 属性的值，可选
      * @return {string} 不传参数则返回当前视频的 src 或 currentSrc
      */
     src(src) {
