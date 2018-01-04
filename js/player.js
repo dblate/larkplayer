@@ -446,7 +446,7 @@ class Player extends Component {
      *
      * @todo 未完成
      * @param {string} dimension 属性名：width/height
-     * @param {number} 要设置的值
+     * @param {number} value 要设置的值
      * @return {number} 对应属性的值
      */
     dimension(dimension, value) {
