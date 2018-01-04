@@ -83,4 +83,4 @@ grunt 编译后的文件以 umd 的形式包装，所以可以直接通过 scrip
 <h3>文档</h3>
 专门的文档页正在开发中...
 
-可以先查看 [/docs/player.md](http://gitlab.baidu.com/yuhui06/larkplayer/tree/master)
+可以先查看 [/docs/player.md](http://gitlab.baidu.com/yuhui06/larkplayer/blob/master/docs/player.md)
