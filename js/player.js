@@ -232,6 +232,12 @@ class Player extends Component {
         return el;
     }
 
+    /**
+     * 当 video 标签已经初始化完成后再调用 larkplayer，可能错过一些事件，这里手动触发下
+     *
+     * @private
+     * @param {Element} el video DOM 标签
+     */
     handleLateInit(el) {
         // readyState
         // 0 - HAVE_NOTHING
@@ -313,7 +319,11 @@ class Player extends Component {
         });
     }
 
-    // 创建一个 Html5 实例
+    /**
+     * 创建一个 Html5 实例
+     *
+     * @private
+     */
     loadTech() {
         this.options.el = this.tag;
         let tech = new Html5(this.player, this.options);
@@ -383,10 +393,24 @@ class Player extends Component {
         return tech;
     }
 
+    /**
+     * 从 Html5 实例上执行对应的 get 函数
+     *
+     * @private
+     * @param {string} method 要执行的函数名
+     * @return {Mixed} 对应函数的返回值
+     */
     techGet(method) {
         return this.tech[method]();
     }
 
+    /**
+     * 从 Html5 实例上执行对应的 set 函数
+     *
+     * @private
+     * @param {string} method 要执行的函数名
+     * @param {Mixed} val 对应函数需要的参数
+     */
     techCall(method, val) {
         try {
             this.tech[method](val);
@@ -395,14 +419,36 @@ class Player extends Component {
         }
     }
 
+    /**
+     * 获取或设置播放器的宽度
+     *
+     * @todo 未完成
+     * @param {number=} value 要设置的播放器宽度值，可选
+     * @return {number} 不传参数则返回播放器当前宽度
+     */
     width(value) {
         return this.dimension('width', value);
     }
 
+    /**
+     * 获取或设置播放器的高度
+     *
+     * @todo 未完成
+     * @param {number=} value 要设置的播放器高度值，可选
+     * @return {number} 不传参数则返回播放器当前高度
+     */
     height(value) {
         return this.dimension('height', value);
     }
 
+    /**
+     * 获取或设置播放器的高宽
+     *
+     * @todo 未完成
+     * @param {string} dimension 属性名：width/height
+     * @param {number} 要设置的值
+     * @return {number} 对应属性的值
+     */
     dimension(dimension, value) {
         const privateDimension = dimension + '_';
 
@@ -446,12 +492,33 @@ class Player extends Component {
 
     // = = = = = = = = = = = = = 事件处理 = = = = = = = = = = = = = =
 
+    /**
+     * 处理 loadstart 事件
+     *
+     * @private
+     * @fires Player#loadstart
+     * @listens Html5#loadstart
+     * @see https://html.spec.whatwg.org/#mediaevents
+     */
     handleLoadstart() {
         this.addClass('lark-loadstart');
 
+        /**
+         * loadstart 时触发
+         *
+         * @event Player#loadstart
+         * @param {Object} event 事件触发时浏览器自带的 event 对象
+         */ 
         this.trigger('loadstart');
     }
 
+    /**
+     * 处理 play 事件
+     *
+     * @private
+     * @fires Player#play
+     * @see https://html.spec.whatwg.org/#mediaevents
+     */
     handlePlay() {
         // @todo removeClass 支持一次 remove 多个 class
         this.removeClass('lark-loadstart');
@@ -463,48 +530,136 @@ class Player extends Component {
         this.addClass('lark-playing');
 
 
+        /**
+         * 视频播放时触发，无论是第一次播放还是暂停、卡顿后恢复播放
+         *
+         * @event Player#play
+         * @param {Object} event 事件触发时浏览器自带的 event 对象
+         */
         this.trigger('play');
     }
 
+    /**
+     * 处理 waiting 事件
+     *
+     * @private
+     * @fires Player#waiting
+     * @see https://html.spec.whatwg.org/#mediaevents
+     */
     handleWaiting() {
         this.addClass('lark-waiting');
 
+        /**
+         * 视频播放因为下一帧没准备好而暂时停止，但是客户端正在努力缓冲中时触发
+         * 简单来讲，在视频卡顿或视频跳转到指定位置时触发，在暂停、视频播放完成、视频播放出错时不会触发
+         *
+         * @event Player#event
+         * @param {Object} event 事件触发时浏览器自带的 event 对象
+         */
         this.trigger('waiting');
         // 处于 waiting 状态后一般都会伴随一次 timeupdate，即使那之后视频还是处于卡顿状态
         // this.one('timeupdate', () => this.removeClass('lark-waiting'));
     }
 
+    /**
+     * 处理 canplay 事件
+     *
+     * @private
+     * @fires Player#canplay
+     */
     handleCanplay() {
         this.removeClass('lark-waiting');
 
+        /**
+         * 视频能开始播发时触发，并不保证能流畅的播完
+         *
+         * @event Player#canplay
+         * @param {Object} event 事件触发时浏览器自带的 event 对象
+         */
         this.trigger('canplay');
     }
 
+    /**
+     * 处理 canplaythrough 事件
+     *
+     * @private
+     * @fires Player#canplaythrough
+     */
     handleCanplaythrough() {
         this.removeClass('lark-waiting');
 
+        /**
+         * 如果从当前开始播放，视频估计能流畅的播完时触发此事件
+         *
+         * @event Player#canplaythrough
+         * @param {Object} event 事件触发时浏览器自带的 event 对象
+         */
         this.trigger('canplaythrough');
     }
 
+    /**
+     * 处理 playing 事件
+     *
+     * @private
+     * @fires Player#playing
+     */
     handlePlaying() {
         this.removeClass('lark-waiting');
         this.removeClass('lark-loadstart');
 
+        /**
+         * Playback is ready to start after having been paused or delayed due to lack of media data.
+         *
+         * @event Player#playing
+         * @param {Object} event 事件触发时浏览器自带的 event 对象
+         * @see https://html.spec.whatwg.org/#mediaevents
+         */
         this.trigger('playing');
     }
 
+    /**
+     * 处理 seeking 事件
+     *
+     * @private
+     * @fires Player#seeking
+     */
     handleSeeking() {
         this.addClass('lark-seeking');
 
+        /**
+         * 视频跳转到指定时刻时触发
+         *
+         * @event Player#seeking
+         * @param {Object} event 事件触发时浏览器自带的 event 对象
+         */
         this.trigger('seeking');
     }
 
+    /**
+     * 处理 seeked 事件
+     *
+     * @private
+     * @fires Player#seeked
+     */
     handleSeeked() {
         this.removeClass('lark-seeking');
 
+        /**
+         * 视频跳转到某一时刻完成后触发
+         *
+         * @event Player#seeked
+         * @param {Object} event 事件触发时浏览器自带的 event 对象
+         */
         this.trigger('seeked');
     }
 
+    /**
+     * 处理自定义的 firstplay 事件
+     * 该事件与 play 事件的不同之处在于 firstplay 只会在第一次播放时触发一次
+     *
+     * @private
+     * @fires Player#firstplay
+     */
     handleFirstplay() {
         // @todo 不清楚有什么用
         this.addClass('lark-has-started');
@@ -515,16 +670,39 @@ class Player extends Component {
             this.removeClass('lark-user-active');
         }, this.activeTimeout);
 
+        /**
+         * 在视频第一次播放时触发，只会触发一次
+         *
+         * @event Player#firstplay
+         */
         this.trigger('firstplay');
     }
 
+    /**
+     * 处理 pause 事件
+     *
+     * @private
+     * @fires Player#pause
+     */
     handlePause() {
         this.removeClass('lark-playing');
         this.addClass('lark-paused');
 
+        /**
+         * 视频暂停时触发
+         *
+         * @event Player#pause
+         * @param {Object} event 事件触发时浏览器自带的 event 对象
+         */
         this.trigger('pause');
     }
 
+    /**
+     * 处理 ended 事件
+     *
+     * @private
+     * @fires Player#ended
+     */
     handleEnded() {
         this.addClass('lark-ended');
 
@@ -537,23 +715,53 @@ class Player extends Component {
             this.pause();
         }
 
+        /**
+         * 视频播放完成时触发，如果设置了 loop 属性为 true，播放完成后可能不触发此事件
+         *
+         * @event Player#ended
+         * @param {Object} event 事件触发时浏览器自带的 event 对象
+         */
         this.trigger('ended');
     }
 
+    /**
+     * 处理 durationchange 事件
+     *
+     * @private
+     * @fires Player#durationchange
+     */
     handleDurationchange() {
         let data = {
             duration: this.techGet('duration')
         };
 
+        /**
+         * 视频时长发生改变时触发
+         *
+         * @event Player#durationchange
+         * @param {Object} event 事件触发时浏览器自带的 event 对象
+         */
         this.trigger('durationchange', data);
     }
 
+    /**
+     * 处理 timeupdate 事件
+     *
+     * @private
+     * @fires Player#timeupdate
+     */
     handleTimeupdate() {
         let data = {
             currentTime: this.techGet('currentTime')
         };
         // data.currentTime = this.techGet('currentTime');
 
+        /**
+         * 视频当前时刻更新时触发，一般 1s 内会触发好几次
+         *
+         * @event Player#timeupdate
+         * @param {Object} event 事件触发时浏览器自带的 event 对象
+         */
         this.trigger('timeupdate', data);
     }
 
@@ -561,6 +769,11 @@ class Player extends Component {
 
     }
 
+    /**
+     * 处理 touchstart 事件，主要用于控制控制条的显隐
+     *
+     * @private
+     */
     handleTouchStart(event) {
         const activeClass = 'lark-user-active';
         // 当控制条显示并且手指放在控制条上时
@@ -576,10 +789,20 @@ class Player extends Component {
         }
     }
 
+    /**
+     * 处理 touchmove 事件
+     *
+     * @private
+     */
     handleTouchMove(event) {
 
     }
 
+    /**
+     * 处理 touchend 事件，主要用于控制控制条的显隐
+     *
+     * @private
+     */
     handleTouchEnd(event) {
         // const activeClass = 'lark-user-active';
         // clearTimeout(this.activeTimeoutHandler);
@@ -621,6 +844,12 @@ class Player extends Component {
         }
     }
 
+    /**
+     * 处理 fullscreenchange 事件
+     *
+     * @private
+     * @fires Player#fullscreenchange
+     */
     // Html5 中会处理一次这个事件，会传入 extData
     handleFullscreenChange(event, extData = {}) {
         let data = {};
@@ -639,13 +868,37 @@ class Player extends Component {
             this.removeClass('lark-fullscreen-adjust');
         }
 
+        /**
+         * 在进入／退出全屏时触发
+         *
+         * @event Player#fullscreenchange
+         * @param {Object} data 全屏相关的数据
+         * @param {boolean} data.isFullscreen 当前是否是全屏状态
+         */
         this.trigger('fullscreenchange', data);
     }
 
+    /**
+     * 处理 fullscreenerror 事件
+     *
+     * @fires Player#fullscreenerror
+     * @private
+     */
     handleFullscreenError() {
+        /**
+         * 在全屏时出错时触发
+         *
+         * @event fullscreenerror
+         */
         this.trigger('fullscreenerror');
     }
 
+    /**
+     * 处理 error 事件
+     *
+     * @fires Player#error
+     * @private
+     */
     handleError(event) {
         this.removeClass('lark-playing');
         // this.removeClass('lark-seeking');
@@ -654,6 +907,13 @@ class Player extends Component {
         this.trigger('error', this.techGet('error'));
     }
 
+    /**
+     * 处理播放器 click 事件，主要用于控制控制条显隐
+     *
+     * @deprecate 由于 ios11 video 标签对 click 的支持有问题，目前已弃用，将对应逻辑转移到了 touchend 中
+     * @todo 开发 tap 事件来代替 click
+     * @private
+     */
     handleClick(event) {
         // 处于暂停状态时，点击播放器任何位置都均继续播放
         if (this.paused()) {
@@ -689,6 +949,12 @@ class Player extends Component {
 
     // = = = func = = =
 
+    /**
+     * 获取／设置当前全屏状态标志
+     *
+     * @param {boolean=} isFs 全屏状态标志
+     * @return {boolean} 不传参则返回当前全屏状态
+     */
     isFullscreen(isFs) {
         if (isFs !== undefined) {
             this.fullscreenStatus = isFs;
@@ -697,6 +963,10 @@ class Player extends Component {
         }
     }
 
+    /**
+     * 进入全屏
+     * 会先尝试浏览器提供的全屏方法，如果没有对应方法，则进入由 css 控制的全屏样式
+     */
     requestFullscreen() {
         this.isFullscreen(true);
 
@@ -714,6 +984,9 @@ class Player extends Component {
         }
     }
 
+    /**
+     * 退出全屏
+     */
     exitFullscreen() {
         this.isFullscreen(false);
 
@@ -728,6 +1001,11 @@ class Player extends Component {
         }
     }
 
+    /**
+     * 通过 css 控制，使得视频像是进入了全屏一样
+     *
+     * @private
+     */
     enterFullWindow() {
         this.addClass('lark-full-window');
     }
@@ -736,10 +1014,18 @@ class Player extends Component {
 
     }
 
+    /**
+     * 去除由 css 控制展现的全屏样式
+     *
+     * @private
+     */
     exitFullWindow() {
         this.removeClass('lark-full-window');
     }
 
+    /**
+     * 播放视频
+     */
     play() {
         if (!this.src()) {
             log.warn('No video src applied');
@@ -759,10 +1045,16 @@ class Player extends Component {
         }
     }
 
+    /**
+     * 暂停播放
+     */
     pause() {
         this.techCall('pause');
     }
 
+    /**
+     * 加载当前视频的资源
+     */
     load() {
         this.techCall('load');
     }
@@ -825,15 +1117,29 @@ class Player extends Component {
         }
     }
 
-    // @todo duration 可以设置？
+    /**
+     * 获取当前视频总时长，如果视频没初始化完成，返回值可能是 NaN
+     *
+     * @return {number|NaN} 视频总时长，视频没初始化完成时，可能返回 NaN
+     */
     duration() {
         return this.techGet('duration');
     }
 
+    /**
+     * 获取视频剩下的时长
+     *
+     * @return {number} 总时长 - 已播放时长 = 剩下的时长
+     */
     remainingTime() {
         return this.duration() - this.currentTime();
     }
 
+    /**
+     * 获取当前已缓冲的范围
+     *
+     * @return {TimeRanges} 当前已缓冲的范围（buffer 有自己的 TimeRanges 对象）
+     */
     buffered() {
         return this.techGet('buffered');
     }
@@ -842,6 +1148,11 @@ class Player extends Component {
 
     }
 
+    /**
+     * 判断当前视频是否已缓冲到最后
+     *
+     * @return {boolean} 当前视频是否已缓冲到最后
+     */
     bufferedEnd() {
         const buffered = this.buffered();
         const duration = this.duration();
@@ -852,32 +1163,69 @@ class Player extends Component {
         }
     }
 
+    /**
+     * 判断当前视频是否处于 seeking（跳转中） 状态
+     *
+     * @return {boolean} 是否处于跳转中状态
+     */
     seeking() {
         return this.techGet('seeking');
     }
 
+    /**
+     * 判断当前视频是否可跳转到指定时刻
+     *
+     * @return {boolean} 前视频是否可跳转到指定时刻
+     */
     seekable() {
         return this.techGet('seekable');
     }
 
+    /**
+     * 判断当前视频是否已播放完成
+     *
+     * @return {boolean} 当前视频是否已播放完成
+     */
     ended() {
         return this.techGet('ended');
     }
 
+    /**
+     * 获取当前视频的 networkState 状态
+     *
+     * @return {number} 当前视频的 networkState 状态
+     * @todo 补充 networkState 各状态说明
+     */
     networkState() {
         return this.techGet('networkState');
     }
 
+    /**
+     * 获取当前播放的视频的原始宽度
+     *
+     * @return {number} 当前播放的视频的原始宽度
+     */
     videoWidth() {
         return this.techGet('videoWidth');
     }
 
+    /**
+     * 获取当前播放的视频的原始高度
+     *
+     * @return {number} 当前播放的视频的原始高度
+     */
     videoHeight() {
         return this.techGet('videoHeight');
     }
 
     // = = = set && get attr= = =
 
+    /**
+     * 获取或设置播放器声音大小
+     *
+     * @param {number=} decimal 声音大小的值（0~1），可选
+     * @return {number} 不传参数则返回当前视频声音大小
+     */
     volume(decimal) {
         if (decimal !== undefined) {
             this.techCall('setVolume', Math.min(1, Math.max(decimal, 0)));
@@ -886,6 +1234,12 @@ class Player extends Component {
         }
     }
 
+    /**
+     * 获取或设置当前视频的 src 属性的值
+     *
+     * @param {string=} 要设置的 src 属性的值，可选
+     * @return {string} 不传参数则返回当前视频的 src 或 currentSrc
+     */
     src(src) {
         if (src !== undefined) {
             if (src !== this.techGet('src')) {
@@ -917,6 +1271,12 @@ class Player extends Component {
         }
     }
 
+    /**
+     * 获取或设置当前视频的播放速率
+     *
+     * @param {number=} playbackRate 要设置的播放速率的值，可选
+     * @return {number} 不传参数则返回当前视频的播放速率
+     */
     playbackRate(playbackRate) {
         if (playbackRate !== undefined) {
             this.techCall('setPlaybackRate', playbackRate);
@@ -927,6 +1287,12 @@ class Player extends Component {
         }
     }
 
+    /**
+     * 获取或设置当前视频的默认播放速率
+     *
+     * @param {number=} playbackRate 要设置的默认播放速率的值，可选
+     * @return {number} 不传参数则返回当前视频的默认播放速率
+     */
     defaultPlaybackRate(defaultPlaybackRate) {
         if (defaultPlaybackRate !== undefined) {
             this.techCall('setDefaultPlaybackRate', defaultPlaybackRate);
