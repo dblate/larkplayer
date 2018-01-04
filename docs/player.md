@@ -1,18 +1,3 @@
-## Classes
-
-<dl>
-<dt><a href="#Player">Player</a></dt>
-<dd></dd>
-</dl>
-
-## Events
-
-<dl>
-<dt><a href="#event_fullscreenerror">"fullscreenerror"</a></dt>
-<dd><p>在全屏时出错时触发</p>
-</dd>
-</dl>
-
 <a name="Player"></a>
 
 ## Player
@@ -46,7 +31,7 @@
     * [.videoWidth()](#Player+videoWidth) ⇒ <code>number</code>
     * [.videoHeight()](#Player+videoHeight) ⇒ <code>number</code>
     * [.volume([decimal])](#Player+volume) ⇒ <code>number</code>
-    * [.src([要设置的])](#Player+src) ⇒ <code>string</code>
+    * [.src([src])](#Player+src) ⇒ <code>string</code>
     * [.source([source])](#Player+source) ⇒ <code>Array</code> \| <code>undefined</code>
     * [.playbackRate([playbackRate])](#Player+playbackRate) ⇒ <code>number</code>
     * [.defaultPlaybackRate([playbackRate])](#Player+defaultPlaybackRate) ⇒ <code>number</code>
@@ -64,6 +49,7 @@
     * ["durationchange" (event)](#Player+event_durationchange)
     * ["timeupdate" (event)](#Player+event_timeupdate)
     * ["fullscreenchange" (data)](#Player+event_fullscreenchange)
+    * ["fullscreenerror"](#Player+event_fullscreenerror)
 
 <a name="new_Player_new"></a>
 
@@ -303,7 +289,7 @@
 
 <a name="Player+src"></a>
 
-### player.src([要设置的]) ⇒ <code>string</code>
+### player.src([src]) ⇒ <code>string</code>
 获取或设置当前视频的 src 属性的值
 
 **Kind**: instance method of [<code>Player</code>](#Player)  
@@ -311,7 +297,7 @@
 
 | Param | Type | Description |
 | --- | --- | --- |
-| [要设置的] | <code>string</code> | src 属性的值，可选 |
+| [src] | <code>string</code> | 要设置的 src 属性的值，可选 |
 
 <a name="Player+source"></a>
 
@@ -501,9 +487,9 @@ Playback is ready to start after having been paused or delayed due to lack of me
 | data | <code>Object</code> | 全屏相关的数据 |
 | data.isFullscreen | <code>boolean</code> | 当前是否是全屏状态 |
 
-<a name="event_fullscreenerror"></a>
+<a name="Player+event_fullscreenerror"></a>
 
-## "fullscreenerror"
+### "fullscreenerror"
 在全屏时出错时触发
 
-**Kind**: event emitted  
+**Kind**: event emitted by [<code>Player</code>](#Player)  
