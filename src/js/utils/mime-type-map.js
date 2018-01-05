@@ -7,6 +7,8 @@
 export default {
     flv: 'video/x-flv',
     mp4: 'video/mp4',
+    webm: 'video/webm',
+    ogg: 'video/ogg',
     m3u8: 'application/x-mpegURL',
     ts: 'video/MP2T',
     '3gp': 'video/3gpp',
