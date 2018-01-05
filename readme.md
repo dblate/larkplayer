@@ -12,7 +12,7 @@ larkplayer 有如下特性
 <h3>快速上手</h3>
 
 <h4>下载</h4>
-```bash
+```
 npm install larkplayer
 ```
 <h4>使用</h4>
