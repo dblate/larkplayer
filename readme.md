@@ -65,7 +65,7 @@ dist 目录下有对应的打包好的 js 和 css 文件， 要以 script 标签
     <video id="my-video" src="https://baikebcs.bdimg.com/baike-other/cool.mp4" width="400" height="300" controls></video>
     <script type="text/javascript" src="./node_modules/larkplayer/dist/larkplayer.min.js"></script>
     <script type="text/javascript">
-        // js 文件以 umd 的形式包装，以 <script> 的形式引用时，larkplayer 会直接挂载在 window 上
+        // js 文件以 umd 的形式包装，以 script 的形式引用时，larkplayer 会直接挂载在 window 上
         var player = larkplayer('my-video');
         player.on('play', function () {
             console.log('play');
