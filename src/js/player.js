@@ -33,7 +33,18 @@ class Player extends Component {
      *
      * @constructor
      * @param {Element} tag HTML5 video tag
-     * @param {Object=} options 配置项。可选
+     * @param {Object=} options 配置项，可选
+     * @param {number=} options.height 播放器高度
+     * @param {number=} options.width 播放器宽度
+     * @param {boolean=} options.loop 是否循环播放
+     * @param {boolean=} options.muted 是否静音
+     * @param {boolean=} options.playsinline 是否使用内联的形式播放（即非全屏的形式）。仅 ios10 以上有效，在 ios10 以下，视频播放时会自动进入全屏
+     * @param {string=} options.poster 视频封面
+     * @param {string=} options.preload 视频预先下载资源的设置，可选值有以下 3 种（当然就算你设置了以下 3 种，最终结果也不一定符合预期，毕竟浏览器嘛，你懂的）
+     *                                  - auto 浏览器自己决定
+     *                                  - metadata 仅下载 metadata（视频总时长、高宽等信息）
+     *                                  - none 不要预下载
+     * @param {string=} options.src 视频链接
      * @param {Function=} ready 播放器初始化完成后执行的函数
      */
     constructor(tag, options, ready) {
