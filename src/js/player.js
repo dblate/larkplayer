@@ -32,7 +32,7 @@ class Player extends Component {
      * 初始化一个播放器实例
      *
      * @constructor
-     * @param {Element} tag HTML5 video tag
+     * @param {Element|string} tag video 标签的 DOM 元素或者 id
      * @param {Object=} options 配置项，可选
      * @param {number=} options.height 播放器高度
      * @param {number=} options.width 播放器宽度
@@ -45,7 +45,7 @@ class Player extends Component {
      *                                  - metadata 仅下载 metadata（视频总时长、高宽等信息）
      *                                  - none 不要预下载
      * @param {string=} options.src 视频链接
-     * @param {Function=} ready 播放器初始化完成后执行的函数
+     * @param {Function=} ready 播放器初始化完成后执行的函数，可选
      */
     constructor(tag, options, ready) {
         tag.id = tag.id || `larkplayer-${newGUID()}`;

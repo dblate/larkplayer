@@ -58,7 +58,7 @@
 
 | Param | Type | Description |
 | --- | --- | --- |
-| tag | <code>Element</code> | HTML5 video tag |
+| tag | <code>Element</code> \| <code>string</code> | video 标签的 DOM 元素或者 id |
 | [options] | <code>Object</code> | 配置项，可选 |
 | [options.height] | <code>number</code> | 播放器高度 |
 | [options.width] | <code>number</code> | 播放器宽度 |
@@ -68,7 +68,7 @@
 | [options.poster] | <code>string</code> | 视频封面 |
 | [options.preload] | <code>string</code> | 视频预先下载资源的设置，可选值有以下 3 种（当然就算你设置了以下 3 种，最终结果也不一定符合预期，毕竟浏览器嘛，你懂的）                                  - auto 浏览器自己决定                                  - metadata 仅下载 metadata（视频总时长、高宽等信息）                                  - none 不要预下载 |
 | [options.src] | <code>string</code> | 视频链接 |
-| [ready] | <code>function</code> | 播放器初始化完成后执行的函数 |
+| [ready] | <code>function</code> | 播放器初始化完成后执行的函数，可选 |
 
 <a name="Player+dispose"></a>
 
