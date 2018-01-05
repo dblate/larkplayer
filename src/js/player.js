@@ -1261,10 +1261,7 @@ class Player extends Component {
      * 获取或设置播放器的 source
      *
      * @param {Array=} source 视频源，可选
-     * @param {Object} source[0] source 数组中的对象
-     * @param {string} source[0].src src 属性
-     * @param {string} source[0].type type 属性，用于标识视频类型，如 'video/mp4'，可选，如果不填播放器会根据文件后缀尝试自动补充
-     * @return {Array|undefined} 若不传参则获取 source 数据；传参则设置 source 标签，返回 undefined
+     * @return {Array} 若不传参则获取 source 数据
      */
     source(source) {
         if (source !== undefined) {

@@ -31,7 +31,7 @@
     * [.videoHeight()](#Player+videoHeight) ⇒ <code>number</code>
     * [.volume([decimal])](#Player+volume) ⇒ <code>number</code>
     * [.src([src])](#Player+src) ⇒ <code>string</code>
-    * [.source([source], source[0)](#Player+source) ⇒ <code>Array</code> \| <code>undefined</code>
+    * [.source([source])](#Player+source) ⇒ <code>Array</code>
     * [.playbackRate([playbackRate])](#Player+playbackRate) ⇒ <code>number</code>
     * [.defaultPlaybackRate([playbackRate])](#Player+defaultPlaybackRate) ⇒ <code>number</code>
     * ["loadstart" (event)](#Player+event_loadstart)
@@ -293,18 +293,15 @@
 
 <a name="Player+source"></a>
 
-### player.source([source], source[0) ⇒ <code>Array</code> \| <code>undefined</code>
+### player.source([source]) ⇒ <code>Array</code>
 获取或设置播放器的 source
 
 **Kind**: instance method of [<code>Player</code>](#Player)  
-**Returns**: <code>Array</code> \| <code>undefined</code> - 若不传参则获取 source 数据；传参则设置 source 标签，返回 undefined  
+**Returns**: <code>Array</code> - 若不传参则获取 source 数据  
 
 | Param | Type | Description |
 | --- | --- | --- |
 | [source] | <code>Array</code> | 视频源，可选 |
-| source[0 | <code>Object</code> | source 数组中的对象 |
-| source[0].src | <code>string</code> | src 属性 |
-| source[0].type | <code>string</code> | type 属性，用于标识视频类型，如 'video/mp4'，可选，如果不填播放器会根据文件后缀尝试自动补充 |
 
 <a name="Player+playbackRate"></a>
 
