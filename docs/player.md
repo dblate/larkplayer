@@ -34,9 +34,19 @@
     * [.source([source])](#Player+source) ⇒ <code>Array</code>
     * [.playbackRate([playbackRate])](#Player+playbackRate) ⇒ <code>number</code>
     * [.defaultPlaybackRate([playbackRate])](#Player+defaultPlaybackRate) ⇒ <code>number</code>
+    * ["suspend" (event)](#Player+event_suspend)
+    * ["abort" (event)](#Player+event_abort)
+    * ["emptied" (event)](#Player+event_emptied)
+    * ["stalled" (event)](#Player+event_stalled)
+    * ["loadedmetadata" (event)](#Player+event_loadedmetadata)
+    * ["loadeddata" (event)](#Player+event_loadeddata)
+    * ["progress" (event)](#Player+event_progress)
+    * ["ratechange" (event)](#Player+event_ratechange)
+    * ["resize" (event)](#Player+event_resize)
+    * ["volumechange" (event)](#Player+event_volumechange)
     * ["loadstart" (event)](#Player+event_loadstart)
     * ["play" (event)](#Player+event_play)
-    * ["event" (event)](#Player+event_event)
+    * ["waiting" (event)](#Player+event_waiting)
     * ["canplay" (event)](#Player+event_canplay)
     * ["canplaythrough" (event)](#Player+event_canplaythrough)
     * ["playing" (event)](#Player+event_playing)
@@ -335,6 +345,120 @@
 | --- | --- | --- |
 | [playbackRate] | <code>number</code> | 要设置的默认播放速率的值，可选 |
 
+<a name="Player+event_suspend"></a>
+
+### "suspend" (event)
+浏览器停止获取数据时触发
+
+**Kind**: event emitted by [<code>Player</code>](#Player)  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| event | <code>Object</code> | 事件触发时浏览器自带的 event 对象 |
+
+<a name="Player+event_abort"></a>
+
+### "abort" (event)
+浏览器在视频下载完成前停止下载时触发。但并不是因为出错，出错时触发 error 事件而不是 abort。
+往往是人为的停止下载，比如删除 src
+
+**Kind**: event emitted by [<code>Player</code>](#Player)  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| event | <code>Object</code> | 事件触发时浏览器自带的 event 对象 |
+
+<a name="Player+event_emptied"></a>
+
+### "emptied" (event)
+视频被清空时触发
+
+**Kind**: event emitted by [<code>Player</code>](#Player)  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| event | <code>Object</code> | 事件触发时浏览器自带的 event 对象 |
+
+<a name="Player+event_stalled"></a>
+
+### "stalled" (event)
+浏览器获取数据时，数据并没有正常返回时触发
+
+**Kind**: event emitted by [<code>Player</code>](#Player)  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| event | <code>Object</code> | 事件触发时浏览器自带的 event 对象 |
+
+<a name="Player+event_loadedmetadata"></a>
+
+### "loadedmetadata" (event)
+播放器成功获取到视频总时长、高宽、字幕等信息时触发
+
+**Kind**: event emitted by [<code>Player</code>](#Player)  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| event | <code>Object</code> | 事件触发时浏览器自带的 event 对象 |
+
+<a name="Player+event_loadeddata"></a>
+
+### "loadeddata" (event)
+播放器第一次能够渲染当前帧时触发
+
+**Kind**: event emitted by [<code>Player</code>](#Player)  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| event | <code>Object</code> | 事件触发时浏览器自带的 event 对象 |
+
+<a name="Player+event_progress"></a>
+
+### "progress" (event)
+浏览器获取数据的过程中触发
+
+**Kind**: event emitted by [<code>Player</code>](#Player)  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| event | <code>Object</code> | 事件触发时浏览器自带的 event 对象 |
+
+<a name="Player+event_ratechange"></a>
+
+### "ratechange" (event)
+视频播放速率改变时触发
+
+**Kind**: event emitted by [<code>Player</code>](#Player)  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| event | <code>Object</code> | 事件触发时浏览器自带的 event 对象 |
+
+<a name="Player+event_resize"></a>
+
+### "resize" (event)
+视频本身的高宽发生改变时触发，注意不是播放器的高度（比如调整播放器的高宽和全屏不会触发 resize 事件）
+
+这里还不是太清楚，有需要的话看看 w3c 文档吧
+
+**Kind**: event emitted by [<code>Player</code>](#Player)  
+**See**: https://html.spec.whatwg.org/#dom-video-videowidth  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| event | <code>Object</code> | 事件触发时浏览器自带的 event 对象 |
+
+<a name="Player+event_volumechange"></a>
+
+### "volumechange" (event)
+视频声音大小改变时触发
+
+**Kind**: event emitted by [<code>Player</code>](#Player)  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| event | <code>Object</code> | 事件触发时浏览器自带的 event 对象 |
+
 <a name="Player+event_loadstart"></a>
 
 ### "loadstart" (event)
@@ -357,9 +481,9 @@ loadstart 时触发
 | --- | --- | --- |
 | event | <code>Object</code> | 事件触发时浏览器自带的 event 对象 |
 
-<a name="Player+event_event"></a>
+<a name="Player+event_waiting"></a>
 
-### "event" (event)
+### "waiting" (event)
 视频播放因为下一帧没准备好而暂时停止，但是客户端正在努力缓冲中时触发
 简单来讲，在视频卡顿或视频跳转到指定位置时触发，在暂停、视频播放完成、视频播放出错时不会触发
 
