@@ -3,17 +3,27 @@ module.exports = function (grunt) {
         pkg: grunt.file.readJSON('package.json'),
         babel: {
             options: {
-                    sourceMap: true,
+                    sourceMap: false,
                     presets: ['env']
                 },
                 dist: {
                     files: [{
                         expand: true,
-                        cwd: './js',
+                        cwd: './src/js',
                         src: ['**/*.js'],
                         dest: './lib'
                     }]
                 }
+        },
+        copy: {
+            dist: {
+                files: [{
+                    expand: true,
+                    cwd: './src/css/resource',
+                    src: ['*/*'],
+                    dest: './dist'
+                }]
+            }
         },
         uglify: {
             options: {
@@ -28,7 +38,7 @@ module.exports = function (grunt) {
         less: {
             compile: {
                 files: {
-                    './dist/<%= pkg.name %>.css': './css/<%= pkg.name %>.less'
+                    './dist/<%= pkg.name %>.css': './src/css/<%= pkg.name %>.less'
                 }
             },
             compress: {
@@ -53,7 +63,7 @@ module.exports = function (grunt) {
                     }
                 },
                 files: {
-                    './dist/<%= pkg.name %>.js': ['./js/<%= pkg.name %>.js']
+                    './dist/<%= pkg.name %>.js': ['./src/js/<%= pkg.name %>.js']
                 }
             }
         }
@@ -62,10 +72,11 @@ module.exports = function (grunt) {
     // grunt.loadNpmTasks('grunt-contrib-jshint');
     // grunt.loadNpmTasks('grunt-contrib-watch');
     // grunt.loadNpmTasks('grunt-contrib-concat');
+    grunt.loadNpmTasks('grunt-contrib-copy');
     grunt.loadNpmTasks('grunt-contrib-uglify');
     grunt.loadNpmTasks('grunt-contrib-less');
     grunt.loadNpmTasks('grunt-browserify');
-    grunt.registerTask('default', ['less', 'browserify', 'uglify']);
+    grunt.registerTask('default', ['less', 'browserify', 'uglify', 'copy']);
 
     grunt.registerTask('generate-lib', ['babel'])
 };
