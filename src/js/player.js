@@ -31,6 +31,7 @@ class Player extends Component {
     /**
      * 初始化一个播放器实例
      *
+     * @constructor
      * @param {Element} tag HTML5 video tag
      * @param {Object=} options 配置项。可选
      * @param {Function=} ready 播放器初始化完成后执行的函数
@@ -152,6 +153,7 @@ class Player extends Component {
     /**
      * 创建播放器 DOM （将 video 标签包裹在一层 div 中，全屏及添加其他子元素时需要）
      *
+     * @private
      * @return {Element} el 播放器 DOM
      */
     createEl() {
@@ -1102,12 +1104,10 @@ class Player extends Component {
     }
 
     /**
-     * 获取／设置 当前时间
+     * 获取／设置当前时间
      *
-     * @param {number=} seconds 秒数，可选。
-     *                  传参则设置视频当前时刻
-     *                  不传参，则获取视频当前时刻
-     * @return {number|undefined} 不传参时返回视频当前时刻；传参数时设置视频当前时刻，返回 undefined
+     * @param {number=} seconds 以秒为单位，要设置的当前时间的值。可选
+     * @return {number} 不传参数则返回视频当前时刻
      */
     currentTime(seconds) {
         if (seconds !== undefined) {
@@ -1118,9 +1118,9 @@ class Player extends Component {
     }
 
     /**
-     * 获取当前视频总时长，如果视频没初始化完成，返回值可能是 NaN
+     * 获取当前视频总时长
      *
-     * @return {number|NaN} 视频总时长，视频没初始化完成时，可能返回 NaN
+     * @return {number} 视频总时长，如果视频未初始化完成，可能返回 NaN
      */
     duration() {
         return this.techGet('duration');
@@ -1203,7 +1203,7 @@ class Player extends Component {
     /**
      * 获取当前播放的视频的原始宽度
      *
-     * @return {number} 当前播放的视频的原始宽度
+     * @return {number} 当前视频的原始宽度
      */
     videoWidth() {
         return this.techGet('videoWidth');
@@ -1212,7 +1212,7 @@ class Player extends Component {
     /**
      * 获取当前播放的视频的原始高度
      *
-     * @return {number} 当前播放的视频的原始高度
+     * @return {number} 当前视频的原始高度
      */
     videoHeight() {
         return this.techGet('videoHeight');
@@ -1223,7 +1223,7 @@ class Player extends Component {
     /**
      * 获取或设置播放器声音大小
      *
-     * @param {number=} decimal 声音大小的值（0~1），可选
+     * @param {number=} decimal 要设置的声音大小的值（0~1），可选
      * @return {number} 不传参数则返回当前视频声音大小
      */
     volume(decimal) {
@@ -1258,9 +1258,12 @@ class Player extends Component {
     }
 
     /**
-     * 获取播放器 source 数据或者设置 source 标签
+     * 获取或设置播放器的 source
      *
      * @param {Array=} source 视频源，可选
+     * @param {Object} source[0] source 数组中的对象
+     * @param {string} source[0].src src 属性
+     * @param {string} source[0].type type 属性，用于标识视频类型，如 'video/mp4'，可选，如果不填播放器会根据文件后缀尝试自动补充
      * @return {Array|undefined} 若不传参则获取 source 数据；传参则设置 source 标签，返回 undefined
      */
     source(source) {
