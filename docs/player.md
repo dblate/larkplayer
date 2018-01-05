@@ -6,10 +6,9 @@
 * [Player](#Player)
     * [new Player(tag, [options], [ready])](#new_Player_new)
     * [.dispose()](#Player+dispose)
-    * [.createEl()](#Player+createEl) ⇒ <code>Element</code>
     * [.width([value])](#Player+width) ⇒ <code>number</code>
     * [.height([value])](#Player+height) ⇒ <code>number</code>
-    * [.dimension(dimension, 要设置的值)](#Player+dimension) ⇒ <code>number</code>
+    * [.dimension(dimension, value)](#Player+dimension) ⇒ <code>number</code>
     * [.isFullscreen([isFs])](#Player+isFullscreen) ⇒ <code>boolean</code>
     * [.requestFullscreen()](#Player+requestFullscreen)
     * [.exitFullscreen()](#Player+exitFullscreen)
@@ -19,8 +18,8 @@
     * [.reset()](#Player+reset)
     * [.paused()](#Player+paused) ⇒ <code>boolean</code>
     * [.played()](#Player+played) ⇒ <code>number</code>
-    * [.currentTime([seconds])](#Player+currentTime) ⇒ <code>number</code> \| <code>undefined</code>
-    * [.duration()](#Player+duration) ⇒ <code>number</code> \| <code>NaN</code>
+    * [.currentTime([seconds])](#Player+currentTime) ⇒ <code>number</code>
+    * [.duration()](#Player+duration) ⇒ <code>number</code>
     * [.remainingTime()](#Player+remainingTime) ⇒ <code>number</code>
     * [.buffered()](#Player+buffered) ⇒ <code>TimeRanges</code>
     * [.bufferedEnd()](#Player+bufferedEnd) ⇒ <code>boolean</code>
@@ -32,7 +31,7 @@
     * [.videoHeight()](#Player+videoHeight) ⇒ <code>number</code>
     * [.volume([decimal])](#Player+volume) ⇒ <code>number</code>
     * [.src([src])](#Player+src) ⇒ <code>string</code>
-    * [.source([source])](#Player+source) ⇒ <code>Array</code> \| <code>undefined</code>
+    * [.source([source], source[0)](#Player+source) ⇒ <code>Array</code> \| <code>undefined</code>
     * [.playbackRate([playbackRate])](#Player+playbackRate) ⇒ <code>number</code>
     * [.defaultPlaybackRate([playbackRate])](#Player+defaultPlaybackRate) ⇒ <code>number</code>
     * ["loadstart" (event)](#Player+event_loadstart)
@@ -69,13 +68,6 @@
 销毁播放器
 
 **Kind**: instance method of [<code>Player</code>](#Player)  
-<a name="Player+createEl"></a>
-
-### player.createEl() ⇒ <code>Element</code>
-创建播放器 DOM （将 video 标签包裹在一层 div 中，全屏及添加其他子元素时需要）
-
-**Kind**: instance method of [<code>Player</code>](#Player)  
-**Returns**: <code>Element</code> - el 播放器 DOM  
 <a name="Player+width"></a>
 
 ### player.width([value]) ⇒ <code>number</code>
@@ -110,7 +102,7 @@
 
 <a name="Player+dimension"></a>
 
-### player.dimension(dimension, 要设置的值) ⇒ <code>number</code>
+### player.dimension(dimension, value) ⇒ <code>number</code>
 获取或设置播放器的高宽
 
 **Kind**: instance method of [<code>Player</code>](#Player)  
@@ -123,7 +115,7 @@
 | Param | Type | Description |
 | --- | --- | --- |
 | dimension | <code>string</code> | 属性名：width/height |
-| 要设置的值 | <code>number</code> |  |
+| value | <code>number</code> | 要设置的值 |
 
 <a name="Player+isFullscreen"></a>
 
@@ -191,23 +183,23 @@
 **Returns**: <code>number</code> - 当前已经播放的时长，以秒为单位  
 <a name="Player+currentTime"></a>
 
-### player.currentTime([seconds]) ⇒ <code>number</code> \| <code>undefined</code>
-获取／设置 当前时间
+### player.currentTime([seconds]) ⇒ <code>number</code>
+获取／设置当前时间
 
 **Kind**: instance method of [<code>Player</code>](#Player)  
-**Returns**: <code>number</code> \| <code>undefined</code> - 不传参时返回视频当前时刻；传参数时设置视频当前时刻，返回 undefined  
+**Returns**: <code>number</code> - 不传参数则返回视频当前时刻  
 
 | Param | Type | Description |
 | --- | --- | --- |
-| [seconds] | <code>number</code> | 秒数，可选。                  传参则设置视频当前时刻                  不传参，则获取视频当前时刻 |
+| [seconds] | <code>number</code> | 以秒为单位，要设置的当前时间的值。可选 |
 
 <a name="Player+duration"></a>
 
-### player.duration() ⇒ <code>number</code> \| <code>NaN</code>
-获取当前视频总时长，如果视频没初始化完成，返回值可能是 NaN
+### player.duration() ⇒ <code>number</code>
+获取当前视频总时长
 
 **Kind**: instance method of [<code>Player</code>](#Player)  
-**Returns**: <code>number</code> \| <code>NaN</code> - 视频总时长，视频没初始化完成时，可能返回 NaN  
+**Returns**: <code>number</code> - 视频总时长，如果视频未初始化完成，可能返回 NaN  
 <a name="Player+remainingTime"></a>
 
 ### player.remainingTime() ⇒ <code>number</code>
@@ -267,14 +259,14 @@
 获取当前播放的视频的原始宽度
 
 **Kind**: instance method of [<code>Player</code>](#Player)  
-**Returns**: <code>number</code> - 当前播放的视频的原始宽度  
+**Returns**: <code>number</code> - 当前视频的原始宽度  
 <a name="Player+videoHeight"></a>
 
 ### player.videoHeight() ⇒ <code>number</code>
 获取当前播放的视频的原始高度
 
 **Kind**: instance method of [<code>Player</code>](#Player)  
-**Returns**: <code>number</code> - 当前播放的视频的原始高度  
+**Returns**: <code>number</code> - 当前视频的原始高度  
 <a name="Player+volume"></a>
 
 ### player.volume([decimal]) ⇒ <code>number</code>
@@ -285,7 +277,7 @@
 
 | Param | Type | Description |
 | --- | --- | --- |
-| [decimal] | <code>number</code> | 声音大小的值（0~1），可选 |
+| [decimal] | <code>number</code> | 要设置的声音大小的值（0~1），可选 |
 
 <a name="Player+src"></a>
 
@@ -301,8 +293,8 @@
 
 <a name="Player+source"></a>
 
-### player.source([source]) ⇒ <code>Array</code> \| <code>undefined</code>
-获取播放器 source 数据或者设置 source 标签
+### player.source([source], source[0) ⇒ <code>Array</code> \| <code>undefined</code>
+获取或设置播放器的 source
 
 **Kind**: instance method of [<code>Player</code>](#Player)  
 **Returns**: <code>Array</code> \| <code>undefined</code> - 若不传参则获取 source 数据；传参则设置 source 标签，返回 undefined  
@@ -310,6 +302,9 @@
 | Param | Type | Description |
 | --- | --- | --- |
 | [source] | <code>Array</code> | 视频源，可选 |
+| source[0 | <code>Object</code> | source 数组中的对象 |
+| source[0].src | <code>string</code> | src 属性 |
+| source[0].type | <code>string</code> | type 属性，用于标识视频类型，如 'video/mp4'，可选，如果不填播放器会根据文件后缀尝试自动补充 |
 
 <a name="Player+playbackRate"></a>
 
