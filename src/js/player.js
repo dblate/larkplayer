@@ -991,6 +991,19 @@ class Player extends Component {
         // this.removeClass('lark-seeking');
         this.addClass('lark-error');
 
+        /**
+         * 视频播放出错时触发
+         *
+         * @event Player#error
+         * @param {Object} event 事件触发时浏览器自带的 event 对象
+         * @param {MediaError} error MediaError 对象
+         * @param {number} error.code 错误编号
+         *                         - 1 MEDIA_ERR_ABORTED 视频加载被浏览器（用户）中断
+         *                         - 2 MEDIA_ERR_NETWORK 浏览器与视频资源已经建立连接，但是由于网络问题停止下载
+         *                         - 3 MEDIA_ERR_DECODE 视频解码失败
+         *                         - 4 MEDIA_ERR_SRC_NOT_SUPPORTED 视频资源问题，比如视频不存在
+         * @param {string} error.message 错误信息
+         */
         this.trigger('error', this.techGet('error'));
     }
 

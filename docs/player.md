@@ -59,6 +59,7 @@
     * ["timeupdate" (event)](#Player+event_timeupdate)
     * ["fullscreenchange" (data)](#Player+event_fullscreenchange)
     * ["fullscreenerror"](#Player+event_fullscreenerror)
+    * ["error" (event, error)](#Player+event_error)
 
 <a name="new_Player_new"></a>
 
@@ -617,3 +618,17 @@ Playback is ready to start after having been paused or delayed due to lack of me
 在全屏时出错时触发
 
 **Kind**: event emitted by [<code>Player</code>](#Player)  
+<a name="Player+event_error"></a>
+
+### "error" (event, error)
+视频播放出错时触发
+
+**Kind**: event emitted by [<code>Player</code>](#Player)  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| event | <code>Object</code> | 事件触发时浏览器自带的 event 对象 |
+| error | <code>MediaError</code> | MediaError 对象 |
+| error.code | <code>number</code> | 错误编号                         - 1 MEDIA_ERR_ABORTED 视频加载被浏览器（用户）中断                         - 2 MEDIA_ERR_NETWORK 浏览器与视频资源已经建立连接，但是由于网络问题停止下载                         - 3 MEDIA_ERR_DECODE 视频解码失败                         - 4 MEDIA_ERR_SRC_NOT_SUPPORTED 视频资源问题，比如视频不存在 |
+| error.message | <code>string</code> | 错误信息 |
+
