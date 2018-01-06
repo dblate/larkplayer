@@ -38,6 +38,10 @@ var _evented = require('./mixins/evented');
 
 var _evented2 = _interopRequireDefault(_evented);
 
+var _fastClick = require('./mixins/fast-click');
+
+var _fastClick2 = _interopRequireDefault(_fastClick);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
@@ -76,7 +80,8 @@ var Component = function () {
             this.el = this.createEl();
         }
 
-        (0, _evented2.default)(this, { eventBusKey: this.el ? 'el' : null });
+        (0, _evented2.default)(this, { eventBusKey: this.el });
+        (0, _fastClick2.default)(this.el);
 
         // 子元素相关信息
         this.children = [];
@@ -305,7 +310,7 @@ var Component = function () {
 
 exports.default = Component;
 
-},{"./mixins/evented":4,"./utils/dom":20,"./utils/dom-data":19,"./utils/fn":22,"./utils/guid":24,"./utils/merge-options":26,"./utils/to-title-case":33}],2:[function(require,module,exports){
+},{"./mixins/evented":4,"./mixins/fast-click":5,"./utils/dom":21,"./utils/dom-data":20,"./utils/fn":23,"./utils/guid":25,"./utils/merge-options":27,"./utils/to-title-case":34}],2:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -721,7 +726,7 @@ Html5.resetMediaElement = function (el) {
 
 exports.default = Html5;
 
-},{"./component":1,"./utils/dom":20,"./utils/normalize-source":28,"./utils/to-title-case":33}],3:[function(require,module,exports){
+},{"./component":1,"./utils/dom":21,"./utils/normalize-source":29,"./utils/to-title-case":34}],3:[function(require,module,exports){
 'use strict';
 
 var _dom = require('./utils/dom');
@@ -837,7 +842,7 @@ larkplayer.deregisterPlugin = Plugin.deregisterPlugin;
 // @see https://github.com/babel/babel/issues/2724
 module.exports = larkplayer;
 
-},{"./component":1,"./player":5,"./shim/third_party/shim.min.js":6,"./utils/dom":20,"./utils/events":21,"./utils/log":25,"./utils/plugin":30,"./utils/script-loader":31}],4:[function(require,module,exports){
+},{"./component":1,"./player":6,"./shim/third_party/shim.min.js":7,"./utils/dom":21,"./utils/events":22,"./utils/log":26,"./utils/plugin":31,"./utils/script-loader":32}],4:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -860,7 +865,7 @@ function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj;
  *
  * @param {Object} target 要具有事件能力的对象
  * @param {Object} options 配置项
- * @param {string=} options.eventBusKey 很重要，整个事件流程所需的载体。target[eventBusKey] 应该是一个 DOM 元素
+ * @param {string=} options.eventBusKey 一个 DOM 元素，事件绑定在该元素上
  */
 /**
  * @file 给一个对象添加事件方面的 api
@@ -871,13 +876,26 @@ function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj;
 function evented(target) {
     var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
 
+    if (target.isEvented && target.eventBusEl === options.eventBusKey) {
+        console.log(options.eventBusKey, ' returned');
+        return;
+    } else {
+        target.isEvented = true;
+    }
+
     // @todo normalize args
     var eventBusKey = options.eventBusKey;
-    if (target[eventBusKey] && target[eventBusKey]['nodeType'] === 1) {
-        target.eventBusEl = target[eventBusKey];
+    if (eventBusKey && eventBusKey.nodeType === 1) {
+        target.eventBusEl = eventBusKey;
     } else {
         target.eventBusEl = Dom.createEl('div');
     }
+
+    // if (target[eventBusKey] && target[eventBusKey]['nodeType'] === 1) {
+    //     target.eventBusEl = target[eventBusKey];
+    // } else {
+    //     target.eventBusEl = Dom.createEl('div');
+    // }
 
     target.on = function (type, fn) {
         Events.on(target.eventBusEl, type, fn);
@@ -896,7 +914,86 @@ function evented(target) {
     };
 }
 
-},{"../utils/dom":20,"../utils/events":21}],5:[function(require,module,exports){
+},{"../utils/dom":21,"../utils/events":22}],5:[function(require,module,exports){
+'use strict';
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+exports.default = fastClick;
+
+var _events = require('../utils/events');
+
+var Events = _interopRequireWildcard(_events);
+
+var _dom = require('../utils/dom');
+
+var Dom = _interopRequireWildcard(_dom);
+
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+
+/**
+ * @file fast-click.js  使一个 DOM 元素具有 fastclick 功能。
+ *                      fastclick: 在移动端中，利用 touch 事件手动触发 click，避免移动端 click 的 300ms 延时
+ * @author yuhui06
+ * @date 2017/1/6
+ */
+
+function fastClick(el) {
+    if (!Dom.isEl(el)) {
+        return;
+    }
+
+    // 手指移动的距离超过 10px，则不构造 fastclick 事件
+    var distanceLimit = 10;
+    // 手指按压的时间超过 200ms 则不构造 fastclick 事件
+    var timeLimit = 200;
+    var couldBeFastClick = false;
+    var eventData = {};
+    Events.on(el, 'touchstart', function (event) {
+        if (event.touches.length === 1) {
+            couldBeFastClick = true;
+
+            var touches = event.changedTouches || event.touches;
+            eventData.startTime = Date.now();
+            eventData.startX = touches[0]['pageX'];
+            eventData.startY = touches[0]['pageY'];
+        } else {
+            couldBeFastClick = false;
+        }
+    });
+
+    Events.on(el, 'touchmove', function (event) {
+        if (event.touches.length === 1) {
+            var touches = event.changedTouches || event.touches;
+            var currentX = touches[0]['pageX'];
+            var currentY = touches[0]['pageY'];
+            // 两点之间的距离计算
+            var distance = Math.pow(currentX, 2) + Math.pow(currentY, 2) - (Math.pow(eventData.startX, 2) + Math.pow(eventData.startY, 2));
+            if (distance < distanceLimit) {
+                couldBeFastClick = true;
+            } else {
+                couldBeFastClick = false;
+            }
+        } else {
+            couldBeFastClick = false;
+        }
+    });
+
+    Events.on(el, 'touchend', function (event) {
+        if (couldBeFastClick) {
+            var currentTime = Date.now();
+            if (currentTime - eventData.startTime < timeLimit) {
+                // 使用我们手动触发的 click 时，禁止后续浏览器自己触发的 click 事件
+                event.preventDefault();
+
+                target.trigger('click', event);
+            }
+        }
+    });
+}
+
+},{"../utils/dom":21,"../utils/events":22}],6:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -941,6 +1038,10 @@ var _evented = require('./mixins/evented');
 
 var _evented2 = _interopRequireDefault(_evented);
 
+var _fastClick = require('./mixins/fast-click');
+
+var _fastClick2 = _interopRequireDefault(_fastClick);
+
 var _obj = require('./utils/obj');
 
 var _plugin = require('./utils/plugin');
@@ -973,12 +1074,14 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 * @file Player.js. player initial && api
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 * @author yuhui06(yuhui06@baidu.com)
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 * @date 2017/11/6
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                * @todo 对于 Player 构造函数的特殊照顾需要理一下，可能没必要
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 */
 
 // 确保以下代码都执行一次
 
 
 var document = window.document;
+var activeClass = 'lark-user-active';
 
 var Player = function (_Component) {
     _inherits(Player, _Component);
@@ -987,9 +1090,20 @@ var Player = function (_Component) {
      * 初始化一个播放器实例
      *
      * @constructor
-     * @param {Element} tag HTML5 video tag
-     * @param {Object=} options 配置项。可选
-     * @param {Function=} ready 播放器初始化完成后执行的函数
+     * @param {Element|string} tag video 标签的 DOM 元素或者 id
+     * @param {Object=} options 配置项，可选
+     * @param {number=} options.height 播放器高度
+     * @param {number=} options.width 播放器宽度
+     * @param {boolean=} options.loop 是否循环播放
+     * @param {boolean=} options.muted 是否静音
+     * @param {boolean=} options.playsinline 是否使用内联的形式播放（即非全屏的形式）。仅 ios10 以上有效，在 ios10 以下，视频播放时会自动进入全屏
+     * @param {string=} options.poster 视频封面
+     * @param {string=} options.preload 视频预先下载资源的设置，可选值有以下 3 种（当然就算你设置了以下 3 种，最终结果也不一定符合预期，毕竟浏览器嘛，你懂的）
+     *                                  - auto 浏览器自己决定
+     *                                  - metadata 仅下载 metadata（视频总时长、高宽等信息）
+     *                                  - none 不要预下载
+     * @param {string=} options.src 视频链接
+     * @param {Function=} ready 播放器初始化完成后执行的函数，可选
      */
     function Player(tag, options, ready) {
         _classCallCheck(this, Player);
@@ -1012,7 +1126,8 @@ var Player = function (_Component) {
         _this.el = _this.createEl();
 
         // 使得 this 具有事件能力(on off one trigger)
-        (0, _evented2.default)(_this, { eventBusKey: 'el' });
+        (0, _evented2.default)(_this, { eventBusKey: _this.el });
+        (0, _fastClick2.default)(_this.el);
 
         // 需放在 this.loadTech 方法前面
         _this.handleLoadstart = _this.handleLoadstart.bind(_this);
@@ -1040,11 +1155,10 @@ var Player = function (_Component) {
         // 3000ms 后自动隐藏播放器控制条
         _this.activeTimeout = 3000;
 
-        // @todo ios11 在 click 上出了点问题，先注释掉，用 touchend 代替 click 方法
-        // this.on('click', this.handleClick);
-        // this.on('touchstart', this.handleTouchStart);
+        _this.on('click', _this.handleClick);
+        _this.on('touchstart', _this.handleTouchStart);
 
-        _this.on('touchend', _this.handleTouchEnd);
+        // this.on('touchend', this.handleTouchEnd);
 
         if (!_this.tech) {
             _this.tech = _this.loadTech();
@@ -1297,9 +1411,56 @@ var Player = function (_Component) {
             // 注册 video 的各个事件
             [
             // 'loadstart',
-            'suspend', 'abort',
+
+            /**
+             * 浏览器停止获取数据时触发
+             *
+             * @event Player#suspend
+             * @param {Object} event 事件触发时浏览器自带的 event 对象
+             */
+            'suspend',
+
+            /**
+             * 浏览器在视频下载完成前停止下载时触发。但并不是因为出错，出错时触发 error 事件而不是 abort。
+             * 往往是人为的停止下载，比如删除 src
+             *
+             * @event Player#abort
+             * @param {Object} event 事件触发时浏览器自带的 event 对象
+             */
+            'abort',
             // 'error',
-            'emptied', 'stalled', 'loadedmetadata', 'loadeddata',
+
+            /**
+             * 视频被清空时触发
+             *
+             * @event Player#emptied
+             * @param {Object} event 事件触发时浏览器自带的 event 对象
+             */
+            'emptied',
+
+            /**
+             * 浏览器获取数据时，数据并没有正常返回时触发
+             *
+             * @event Player#stalled
+             * @param {Object} event 事件触发时浏览器自带的 event 对象
+             */
+            'stalled',
+
+            /**
+             * 播放器成功获取到视频总时长、高宽、字幕等信息时触发
+             *
+             * @event Player#loadedmetadata
+             * @param {Object} event 事件触发时浏览器自带的 event 对象
+             */
+            'loadedmetadata',
+
+            /**
+             * 播放器第一次能够渲染当前帧时触发
+             *
+             * @event Player#loadeddata
+             * @param {Object} event 事件触发时浏览器自带的 event 对象
+             */
+            'loadeddata',
             // 'canplay',
             // 'canplaythrough',
             // 'playing',
@@ -1309,10 +1470,43 @@ var Player = function (_Component) {
             // 'ended',
             // 'durationchange',
             // 'timeupdate',
+
+            /**
+             * 浏览器获取数据的过程中触发
+             *
+             * @event Player#progress
+             * @param {Object} event 事件触发时浏览器自带的 event 对象
+             */
             'progress',
             // 'play',
             // 'pause',
-            'ratechange', 'resize', 'volumechange'].forEach(function (event) {
+
+            /**
+             * 视频播放速率改变时触发
+             *
+             * @event Player#ratechange
+             * @param {Object} event 事件触发时浏览器自带的 event 对象
+             */
+            'ratechange',
+
+            /**
+             * 视频本身的高宽发生改变时触发，注意不是播放器的高度（比如调整播放器的高宽和全屏不会触发 resize 事件）
+             * 
+             * 这里还不是太清楚，有需要的话看看 w3c 文档吧
+             *
+             * @see https://html.spec.whatwg.org/#dom-video-videowidth
+             * @event Player#resize
+             * @param {Object} event 事件触发时浏览器自带的 event 对象
+             */
+            'resize',
+
+            /**
+             * 视频声音大小改变时触发
+             *
+             * @event Player#volumechange
+             * @param {Object} event 事件触发时浏览器自带的 event 对象
+             */
+            'volumechange'].forEach(function (event) {
                 // 对于我们不做任何处理的事件，直接 trigger 出去，提供给用户就行了
                 Events.on(tech.el, event, function () {
                     _this4.trigger(event);
@@ -1523,7 +1717,7 @@ var Player = function (_Component) {
              * 视频播放因为下一帧没准备好而暂时停止，但是客户端正在努力缓冲中时触发
              * 简单来讲，在视频卡顿或视频跳转到指定位置时触发，在暂停、视频播放完成、视频播放出错时不会触发
              *
-             * @event Player#event
+             * @event Player#waiting
              * @param {Object} event 事件触发时浏览器自带的 event 对象
              */
             this.trigger('waiting');
@@ -1655,9 +1849,9 @@ var Player = function (_Component) {
             this.addClass('lark-has-started');
 
             //
-            this.addClass('lark-user-active');
+            this.addClass(activeClass);
             this.activeTimeoutHandler = setTimeout(function () {
-                _this5.removeClass('lark-user-active');
+                _this5.removeClass(activeClass);
             }, this.activeTimeout);
 
             /**
@@ -1763,6 +1957,8 @@ var Player = function (_Component) {
              *
              * @event Player#timeupdate
              * @param {Object} event 事件触发时浏览器自带的 event 对象
+             * @param {Object} data 友情附带的数据
+             * @param {number} data.currentTime 当前时刻
              */
             this.trigger('timeupdate', data);
         }
@@ -1779,7 +1975,6 @@ var Player = function (_Component) {
     }, {
         key: 'handleTouchStart',
         value: function handleTouchStart(event) {
-            var activeClass = 'lark-user-active';
             // 当控制条显示并且手指放在控制条上时
             if (this.hasClass(activeClass)) {
                 if (Dom.parent(event.target, 'lark-play-button') || Dom.parent(event.target, 'lark-control-bar')) {
@@ -1813,43 +2008,14 @@ var Player = function (_Component) {
         value: function handleTouchEnd(event) {
             var _this6 = this;
 
-            // const activeClass = 'lark-user-active';
-            // clearTimeout(this.activeTimeoutHandler);
-
-            // this.activeTimeoutHandler = setTimeout(() => {
-            //     this.removeClass(activeClass);
-            // }, this.activeTimeout);
-
-            // Events.off(document, 'touchmove', this.handleTouchMove);
-            // Events.off(document, 'touchend', this.handleTouchEnd);
-
-            // @todo 临时将 click 事件转移到 touchend，ios 11 下 click 事件目前有问题
-            // 处于暂停状态时，点击播放器任何位置都均继续播放
-            if (this.paused()) {
-                this.play();
-            }
-
             clearTimeout(this.activeTimeoutHandler);
 
-            var activeClass = 'lark-user-active';
+            this.activeTimeoutHandler = setTimeout(function () {
+                _this6.removeClass(activeClass);
+            }, this.activeTimeout);
 
-            // 点在播放按钮或者控制条上，（继续）展现控制条
-            var clickOnControls = false;
-            // @todo 处理得不够优雅
-            if (Dom.parent(event.target, 'lark-play-button') || Dom.parent(event.target, 'lark-control-bar')) {
-
-                clickOnControls = true;
-            }
-
-            if (!clickOnControls) {
-                this.toggleClass(activeClass);
-            }
-
-            if (this.hasClass(activeClass)) {
-                this.activeTimeoutHandler = setTimeout(function () {
-                    _this6.removeClass(activeClass);
-                }, this.activeTimeout);
-            }
+            Events.off(document, 'touchmove', this.handleTouchMove);
+            Events.off(document, 'touchend', this.handleTouchEnd);
         }
 
         /**
@@ -1923,6 +2089,19 @@ var Player = function (_Component) {
             // this.removeClass('lark-seeking');
             this.addClass('lark-error');
 
+            /**
+             * 视频播放出错时触发
+             *
+             * @event Player#error
+             * @param {Object} event 事件触发时浏览器自带的 event 对象
+             * @param {MediaError} error MediaError 对象
+             * @param {number} error.code 错误编号
+             *                         - 1 MEDIA_ERR_ABORTED 视频加载被浏览器（用户）中断
+             *                         - 2 MEDIA_ERR_NETWORK 浏览器与视频资源已经建立连接，但是由于网络问题停止下载
+             *                         - 3 MEDIA_ERR_DECODE 视频解码失败
+             *                         - 4 MEDIA_ERR_SRC_NOT_SUPPORTED 视频资源问题，比如视频不存在
+             * @param {string} error.message 错误信息
+             */
             this.trigger('error', this.techGet('error'));
         }
 
@@ -1939,10 +2118,7 @@ var Player = function (_Component) {
         value: function handleClick(event) {
             var _this7 = this;
 
-            // 处于暂停状态时，点击播放器任何位置都均继续播放
-            if (this.paused()) {
-                this.play();
-            }
+            console.log('player clicked');
 
             clearTimeout(this.activeTimeoutHandler);
 
@@ -1958,6 +2134,11 @@ var Player = function (_Component) {
 
             if (!clickOnControls) {
                 this.toggleClass(activeClass);
+
+                // 处于暂停状态时，点击非控制条的位置继续播放
+                if (this.paused()) {
+                    this.play();
+                }
             }
 
             if (this.hasClass(activeClass)) {
@@ -2350,10 +2531,7 @@ var Player = function (_Component) {
          * 获取或设置播放器的 source
          *
          * @param {Array=} source 视频源，可选
-         * @param {Object} source[0] source 数组中的对象
-         * @param {string} source[0].src src 属性
-         * @param {string} source[0].type type 属性，用于标识视频类型，如 'video/mp4'，可选，如果不填播放器会根据文件后缀尝试自动补充
-         * @return {Array|undefined} 若不传参则获取 source 数据；传参则设置 source 标签，返回 undefined
+         * @return {Array} 若不传参则获取 source 数据
          */
 
     }, {
@@ -2480,7 +2658,7 @@ Player.prototype.options = {
 
 exports.default = Player;
 
-},{"./component":1,"./html5":2,"./mixins/evented":4,"./ui/control-bar":8,"./ui/error":11,"./ui/loading":13,"./ui/play-button":14,"./ui/progress-bar-simple":16,"./utils/dom":20,"./utils/events":21,"./utils/fn":22,"./utils/fullscreen":23,"./utils/guid":24,"./utils/log":25,"./utils/obj":29,"./utils/plugin":30,"./utils/to-title-case":33}],6:[function(require,module,exports){
+},{"./component":1,"./html5":2,"./mixins/evented":4,"./mixins/fast-click":5,"./ui/control-bar":9,"./ui/error":12,"./ui/loading":14,"./ui/play-button":15,"./ui/progress-bar-simple":17,"./utils/dom":21,"./utils/events":22,"./utils/fn":23,"./utils/fullscreen":24,"./utils/guid":25,"./utils/log":26,"./utils/obj":30,"./utils/plugin":31,"./utils/to-title-case":34}],7:[function(require,module,exports){
 "use strict";
 
 var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
@@ -5918,7 +6096,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 }(1, 1);
 
 
-},{}],7:[function(require,module,exports){
+},{}],8:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -5985,7 +6163,7 @@ var BufferBar = function (_Component) {
             if (duration > 0) {
                 for (var i = 0; i < buffered.length; i++) {
                     if (buffered.start(i) <= currentTime && buffered.end(i) >= currentTime) {
-                        var width = buffered.end(i) / duration * 100 + '%';
+                        var width = Math.round(buffered.end(i) / duration) * 100 + '%';
                         this.render(width);
                         break;
                     }
@@ -6023,7 +6201,7 @@ exports.default = BufferBar;
 
 _component2.default.registerComponent('BufferBar', BufferBar);
 
-},{"../component":1,"../utils/dom":20}],8:[function(require,module,exports){
+},{"../component":1,"../utils/dom":21}],9:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -6098,7 +6276,7 @@ _component2.default.registerComponent('ControlBar', ControlBar);
 
 exports.default = ControlBar;
 
-},{"../component":1,"../utils/dom":20,"./current-time":9,"./duration":10,"./fullscreen-button":12,"./progress-bar":17}],9:[function(require,module,exports){
+},{"../component":1,"../utils/dom":21,"./current-time":10,"./duration":11,"./fullscreen-button":13,"./progress-bar":18}],10:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -6148,17 +6326,17 @@ var CurrentTime = function (_Component) {
     _createClass(CurrentTime, [{
         key: 'handleTimeupdate',
         value: function handleTimeupdate(event, data) {
-            this.render(data);
+            this.render(data.currentTime);
         }
     }, {
         key: 'render',
-        value: function render(data) {
-            Dom.textContent(this.el, (0, _timeFormat.timeFormat)(Math.floor(data.currentTime)));
+        value: function render(time) {
+            Dom.textContent(this.el, (0, _timeFormat.timeFormat)(Math.floor(time)));
         }
     }, {
         key: 'reset',
         value: function reset() {
-            this.render({ currentTime: 0 });
+            this.render(0);
         }
     }, {
         key: 'createEl',
@@ -6179,7 +6357,7 @@ exports.default = CurrentTime;
 
 _component2.default.registerComponent('CurrentTime', CurrentTime);
 
-},{"../component":1,"../utils/dom":20,"../utils/time-format":32}],10:[function(require,module,exports){
+},{"../component":1,"../utils/dom":21,"../utils/time-format":33}],11:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -6257,7 +6435,7 @@ exports.default = Duration;
 
 _component2.default.registerComponent('Duration', Duration);
 
-},{"../component":1,"../utils/dom":20,"../utils/time-format":32}],11:[function(require,module,exports){
+},{"../component":1,"../utils/dom":21,"../utils/time-format":33}],12:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -6347,7 +6525,7 @@ exports.default = Error;
 
 _component2.default.registerComponent('Error', Error);
 
-},{"../component":1,"../utils/dom":20}],12:[function(require,module,exports){
+},{"../component":1,"../utils/dom":21}],13:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -6424,7 +6602,7 @@ exports.default = FullscreenButton;
 
 _component2.default.registerComponent('FullscreenButton', FullscreenButton);
 
-},{"../component":1,"../utils/dom":20}],13:[function(require,module,exports){
+},{"../component":1,"../utils/dom":21}],14:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -6493,7 +6671,7 @@ exports.default = Loading;
 
 _component2.default.registerComponent('Loading', Loading);
 
-},{"../component":1,"../utils/dom":20}],14:[function(require,module,exports){
+},{"../component":1,"../utils/dom":21}],15:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -6543,10 +6721,12 @@ var PlayButton = function (_Component) {
         _this.pauseBtn = Dom.$('.lark-play-button__pause', _this.el);
 
         // @todo 临时处理 ios11 click 事件问题
-        Events.on(_this.playBtn, 'touchend', function (event) {
+        // Events.on(this.playBtn, 'touchend', event => this.togglePlay(event, true));
+        // Events.on(this.pauseBtn, 'touchend', event => this.togglePlay(event, false));
+        Events.on(_this.playBtn, 'click', function (event) {
             return _this.togglePlay(event, true);
         });
-        Events.on(_this.pauseBtn, 'touchend', function (event) {
+        Events.on(_this.pauseBtn, 'click', function (event) {
             return _this.togglePlay(event, false);
         });
 
@@ -6556,10 +6736,6 @@ var PlayButton = function (_Component) {
     _createClass(PlayButton, [{
         key: 'togglePlay',
         value: function togglePlay(event, isPlay) {
-            // 这里阻止事件冒泡，因为跟播放器顶部 暂停状态时点击播放器任意区域播放视频冲突了
-            // 这里暂停视频后，事件传到顶部后又播放视频
-            // @todo 看有没有更好的解决方法
-            event.stopPropagation();
             if (isPlay) {
                 if (this.player.paused()) {
                     this.player.play();
@@ -6597,7 +6773,7 @@ exports.default = PlayButton;
 
 _component2.default.registerComponent('PlayButton', PlayButton);
 
-},{"../component":1,"../utils/dom":20,"../utils/events":21}],15:[function(require,module,exports){
+},{"../component":1,"../utils/dom":21,"../utils/events":22}],16:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -6689,7 +6865,7 @@ ProgressBarExceptFill.prototype.options = {
 
 _component2.default.registerComponent('ProgressBarExceptFill', ProgressBarExceptFill);
 
-},{"../component":1,"../utils/computed-style":18,"../utils/dom":20,"../utils/events":21,"./buffer-bar":7}],16:[function(require,module,exports){
+},{"../component":1,"../utils/computed-style":19,"../utils/dom":21,"../utils/events":22,"./buffer-bar":8}],17:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -6788,7 +6964,7 @@ ProgressBarSimple.prototype.options = {
 
 exports.default = ProgressBarSimple;
 
-},{"../component":1,"../utils/dom":20,"./buffer-bar":7}],17:[function(require,module,exports){
+},{"../component":1,"../utils/dom":21,"./buffer-bar":8}],18:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -6884,11 +7060,9 @@ var ProgressBar = function (_Component) {
             var currentTime = this.player.duration() * xPos;
 
             // 跳到指定位置播放
-            // @todo 这里好像就直接开始播了，如果一开始视频不是播放状态，那这里是不是也不播好点
             this.player.currentTime(currentTime);
             // 更新 ui
             this.line.style.width = xPercent;
-            // console.log('ProgressBar click', pos, xPos);
         }
     }, {
         key: 'handleTouchStart',
@@ -6897,9 +7071,7 @@ var ProgressBar = function (_Component) {
             var xPos = Math.round(pos.x * 10000) / 10000;
             var xPercent = xPos * 100 + '%';
 
-            console.log('touchstart', xPercent, event);
             var touches = event.changedTouches || event.touches;
-            // this.isHandleTouched = true;
             this.startX = touches[0]['pageX'];
             this.originalLineWidth = parseInt((0, _computedStyle2.default)(this.line, 'width'), 10);
             this.originalBarWidth = parseInt((0, _computedStyle2.default)(this.el, 'width'), 10);
@@ -6932,7 +7104,7 @@ var ProgressBar = function (_Component) {
     }, {
         key: 'handleTouchEnd',
         value: function handleTouchEnd(event) {
-            // 如果播放器在拖动进度条的时候不是出于暂停状态，那么拖动完了之后继续播放
+            // 如果播放器在拖动进度条的时候不是处于暂停状态，那么拖动完了之后继续播放
             if (this.player.paused && !this.originalPaused && this.originalPaused !== undefined) {
                 this.player.play();
             }
@@ -6967,7 +7139,7 @@ _component2.default.registerComponent('ProgressBar', ProgressBar);
 
 exports.default = ProgressBar;
 
-},{"../component":1,"../utils/computed-style":18,"../utils/dom":20,"../utils/events":21,"./progress-bar-except-fill":15}],18:[function(require,module,exports){
+},{"../component":1,"../utils/computed-style":19,"../utils/dom":21,"../utils/events":22,"./progress-bar-except-fill":16}],19:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -7003,7 +7175,7 @@ function computedStyle(el, prop) {
     return el.currentStyle && el.currentStyle[prop] || '';
 }
 
-},{}],19:[function(require,module,exports){
+},{}],20:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -7020,7 +7192,7 @@ var _guid = require('./guid');
 // eg. Event listeners 是通过这种方式绑定的
 var elData = {};
 
-// 每次当然要存在不一样的地方
+// @test
 /**
  * @file dom-data.js
  * @author yuhui06@baidu.com
@@ -7030,6 +7202,9 @@ var elData = {};
  *      2) 这里没有 setData 方法，只负责取数据就行了。我们往取回来的数据里塞东西，自然就存起来了
  */
 
+window.elData = elData;
+
+// 每次当然要存在不一样的地方
 var elIdAttr = 'larkplayer_data_' + Date.now();
 
 /**
@@ -7096,7 +7271,7 @@ function removeData(el) {
     }
 }
 
-},{"./guid":24}],20:[function(require,module,exports){
+},{"./guid":25}],21:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -7799,7 +7974,7 @@ var $ = exports.$ = createQuerier('querySelector');
  */
 var $$ = exports.$$ = createQuerier('querySelectorAll');
 
-},{"./computed-style":18,"./obj":29}],21:[function(require,module,exports){
+},{"./computed-style":19,"./obj":30}],22:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -8277,7 +8452,7 @@ function one(elem, type, fn) {
     on(elem, type, executeOnlyOnce);
 }
 
-},{"./dom-data":19,"./guid":24,"./to-title-case":33}],22:[function(require,module,exports){
+},{"./dom-data":20,"./guid":25,"./to-title-case":34}],23:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -8335,7 +8510,7 @@ function throttle(fn, wait) {
     };
 }
 
-},{"./guid":24}],23:[function(require,module,exports){
+},{"./guid":25}],24:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -8418,7 +8593,7 @@ exports.default = {
     }
 };
 
-},{"./events":21}],24:[function(require,module,exports){
+},{"./events":22}],25:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -8443,7 +8618,7 @@ function newGUID() {
   return guid++;
 }
 
-},{}],25:[function(require,module,exports){
+},{}],26:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -8488,7 +8663,7 @@ log.error = console.error;
 
 log.clear = console.clear;
 
-},{}],26:[function(require,module,exports){
+},{}],27:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -8543,7 +8718,7 @@ function mergeOptions() {
    * @date 2017/11/3
    */
 
-},{"./obj.js":29}],27:[function(require,module,exports){
+},{"./obj.js":30}],28:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -8558,6 +8733,8 @@ Object.defineProperty(exports, "__esModule", {
 exports.default = {
     flv: 'video/x-flv',
     mp4: 'video/mp4',
+    webm: 'video/webm',
+    ogg: 'video/ogg',
     m3u8: 'application/x-mpegURL',
     ts: 'video/MP2T',
     '3gp': 'video/3gpp',
@@ -8566,7 +8743,7 @@ exports.default = {
     wmv: 'video/x-ms-wmv'
 };
 
-},{}],28:[function(require,module,exports){
+},{}],29:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -8661,7 +8838,7 @@ function nomalizeSource(source) {
     }
 }
 
-},{"./mime-type-map":27,"./obj":29}],29:[function(require,module,exports){
+},{"./mime-type-map":28,"./obj":30}],30:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -8721,7 +8898,7 @@ function each(obj, fn) {
   });
 }
 
-},{}],30:[function(require,module,exports){
+},{}],31:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -8795,7 +8972,7 @@ function deregisterPlugin(name) {
   delete pluginStore[name];
 }
 
-},{}],31:[function(require,module,exports){
+},{}],32:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -8825,7 +9002,7 @@ function loadCss(src) {
     head.appendChild(link);
 }
 
-},{"./dom":20}],32:[function(require,module,exports){
+},{"./dom":21}],33:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -8884,7 +9061,7 @@ function timeFormat(seconds) {
     }
 }
 
-},{}],33:[function(require,module,exports){
+},{}],34:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
