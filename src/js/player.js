@@ -915,8 +915,12 @@ class Player extends Component {
     handleFullscreenChange(event, extData = {}) {
         let data = {};
 
+        // 移动端的全屏事件会传 extData
         if (extData.isFullscreen !== undefined) {
             this.isFullscreen(extData.isFullscreen);
+        } else if (fullscreen.fullscreenEnabled()) {
+            // pc 端 fullscreen 事件
+            this.isFullscreen(fullscreen.isFullscreen())
         }
 
         if (this.isFullscreen()) {

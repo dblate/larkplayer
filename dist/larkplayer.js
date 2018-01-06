@@ -2033,8 +2033,15 @@ var Player = function (_Component) {
 
             var data = {};
 
+            // @test
+            console.log('fullscreen change');
+
+            // 移动端的全屏事件会传 extData
             if (extData.isFullscreen !== undefined) {
                 this.isFullscreen(extData.isFullscreen);
+            } else if (_fullscreen2.default.fullscreenEnabled()) {
+                // pc 端 fullscreen 事件
+                this.isFullscreen(_fullscreen2.default.isFullscreen());
             }
 
             if (this.isFullscreen()) {
