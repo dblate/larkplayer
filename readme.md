@@ -83,7 +83,7 @@ dist 目录下有对应的打包好的 js 和 css 文件， 要以 script 标签
 ```
 <h3>文档</h3>
 
-[GitBook](https://dblate.gitbooks.io/larkplayer/content/kuai-su-shang-shou.html)上的文档正在建设中 ;)
+[GitBook](https://dblate.gitbooks.io/larkplayer/content/gai-lan.html)上的文档正在建设中 ;)
 
 [docs](https://github.com/dblate/larkplayer/tree/master/docs)目录下有各个模块的 api 文档
 * [player](https://github.com/dblate/larkplayer/blob/master/docs/player.md)
