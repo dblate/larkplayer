@@ -1,6 +1,18 @@
+<h1 align="left">larkplayer</h1>
+
+<p align="left">
+轻量级 html5 播放器
+</p>
+
+<p align="left">
+  <a href="https://www.npmjs.com/package/larkplayer"><img src="https://img.shields.io/npm/v/larkplayer.svg" alt="NPM version"></a>
+  <a href="https://www.npmjs.com/package/larkplayer"><img src="https://img.shields.io/npm/dm/larkplayer.svg?style=flat-square" alt="Downloads"></a>
+  <a href="https://www.npmjs.com/package/larkplayer"><img src="https://img.shields.io/github/license/dblate/larkplayer.svg?style=flat-square" alt="License"></a>
+</p>
+
 <h3>简介</h3>
 
-larkplayer 是一款轻量级的 html5 播放器，无任何其他库的依赖，拥有所有原生以及部分自定义的事件和方法
+larkplayer 是一款轻量级的 html5 播放器，无任何其他库的依赖，拥有原生及自定义的事件和方法
 
 larkplayer 有如下特性
 
