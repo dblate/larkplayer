@@ -58,11 +58,9 @@ class ProgressBar extends Component {
         const currentTime = this.player.duration() * xPos;
 
         // 跳到指定位置播放
-        // @todo 这里好像就直接开始播了，如果一开始视频不是播放状态，那这里是不是也不播好点
         this.player.currentTime(currentTime);
         // 更新 ui
         this.line.style.width = xPercent;
-        // console.log('ProgressBar click', pos, xPos);
     }
 
     handleTouchStart(event) {
@@ -71,9 +69,7 @@ class ProgressBar extends Component {
         const xPercent = xPos * 100 + '%';
 
 
-        console.log('touchstart', xPercent, event);
         const touches = event.changedTouches || event.touches;
-        // this.isHandleTouched = true;
         this.startX = touches[0]['pageX'];
         this.originalLineWidth = parseInt(computedStyle(this.line, 'width'), 10);
         this.originalBarWidth = parseInt(computedStyle(this.el, 'width'), 10);
@@ -102,7 +98,7 @@ class ProgressBar extends Component {
     }
 
     handleTouchEnd(event) {
-        // 如果播放器在拖动进度条的时候不是出于暂停状态，那么拖动完了之后继续播放
+        // 如果播放器在拖动进度条的时候不是处于暂停状态，那么拖动完了之后继续播放
         if (this.player.paused && !this.originalPaused && this.originalPaused !== undefined) {
             this.player.play();
         }

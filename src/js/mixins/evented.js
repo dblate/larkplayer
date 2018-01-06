@@ -12,16 +12,29 @@ import * as Dom from '../utils/dom';
  *
  * @param {Object} target 要具有事件能力的对象
  * @param {Object} options 配置项
- * @param {string=} options.eventBusKey 很重要，整个事件流程所需的载体。target[eventBusKey] 应该是一个 DOM 元素
+ * @param {string=} options.eventBusKey 一个 DOM 元素，事件绑定在该元素上
  */
 export default function evented(target, options = {}) {
+    if (target.isEvented && target.eventBusEl === options.eventBusKey) {
+        console.log(options.eventBusKey, ' returned');
+        return
+    } else {
+        target.isEvented = true;
+    }
+
     // @todo normalize args
     const eventBusKey = options.eventBusKey;
-    if (target[eventBusKey] && target[eventBusKey]['nodeType'] === 1) {
-        target.eventBusEl = target[eventBusKey];
+    if (eventBusKey && eventBusKey.nodeType === 1) {
+        target.eventBusEl = eventBusKey;
     } else {
         target.eventBusEl = Dom.createEl('div');
     }
+
+    // if (target[eventBusKey] && target[eventBusKey]['nodeType'] === 1) {
+    //     target.eventBusEl = target[eventBusKey];
+    // } else {
+    //     target.eventBusEl = Dom.createEl('div');
+    // }
 
     target.on = function (type, fn) {
         Events.on(target.eventBusEl, type, fn);

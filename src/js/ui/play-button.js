@@ -19,16 +19,14 @@ export default class PlayButton extends Component {
         this.pauseBtn = Dom.$('.lark-play-button__pause', this.el);
 
         // @todo 临时处理 ios11 click 事件问题
-        Events.on(this.playBtn, 'touchend', event => this.togglePlay(event, true));
-        Events.on(this.pauseBtn, 'touchend', event => this.togglePlay(event, false));
+        // Events.on(this.playBtn, 'touchend', event => this.togglePlay(event, true));
+        // Events.on(this.pauseBtn, 'touchend', event => this.togglePlay(event, false));
+        Events.on(this.playBtn, 'click', event => this.togglePlay(event, true));
+        Events.on(this.pauseBtn, 'click', event => this.togglePlay(event, false));
 
     }
 
     togglePlay(event, isPlay) {
-        // 这里阻止事件冒泡，因为跟播放器顶部 暂停状态时点击播放器任意区域播放视频冲突了
-        // 这里暂停视频后，事件传到顶部后又播放视频
-        // @todo 看有没有更好的解决方法
-        event.stopPropagation();
         if (isPlay) {
             if (this.player.paused()) {
                 this.player.play();

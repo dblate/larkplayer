@@ -2,6 +2,7 @@
  * @file Player.js. player initial && api
  * @author yuhui06(yuhui06@baidu.com)
  * @date 2017/11/6
+ * @todo 对于 Player 构造函数的特殊照顾需要理一下，可能没必要
  */
 
 import Html5 from './html5';
@@ -13,6 +14,7 @@ import * as Fn from './utils/fn';
 import toTitleCase from './utils/to-title-case';
 import fullscreen from './utils/fullscreen';
 import evented from './mixins/evented';
+import fastClick from './mixins/fast-click';
 import {each} from './utils/obj';
 import * as Plugin from './utils/plugin';
 import log from './utils/log';
@@ -25,6 +27,7 @@ import './ui/progress-bar-simple';
 import './ui/error';
 
 const document = window.document;
+const activeClass = 'lark-user-active';
 
 class Player extends Component {
 
@@ -66,7 +69,8 @@ class Player extends Component {
         this.el = this.createEl();
 
         // 使得 this 具有事件能力(on off one trigger)
-        evented(this, {eventBusKey: 'el'});
+        evented(this, {eventBusKey: this.el});
+        fastClick(this.el);
 
         // 需放在 this.loadTech 方法前面
         this.handleLoadstart = this.handleLoadstart.bind(this);
@@ -94,11 +98,10 @@ class Player extends Component {
         // 3000ms 后自动隐藏播放器控制条
         this.activeTimeout = 3000;
 
-        // @todo ios11 在 click 上出了点问题，先注释掉，用 touchend 代替 click 方法
-        // this.on('click', this.handleClick);
-        // this.on('touchstart', this.handleTouchStart);
+        this.on('click', this.handleClick);
+        this.on('touchstart', this.handleTouchStart);
 
-        this.on('touchend', this.handleTouchEnd);
+        // this.on('touchend', this.handleTouchEnd);
 
         if (!this.tech) {
             this.tech = this.loadTech();
@@ -752,9 +755,9 @@ class Player extends Component {
         this.addClass('lark-has-started');
 
         //
-        this.addClass('lark-user-active');
+        this.addClass(activeClass);
         this.activeTimeoutHandler = setTimeout(() => {
-            this.removeClass('lark-user-active');
+            this.removeClass(activeClass);
         }, this.activeTimeout);
 
         /**
@@ -848,6 +851,8 @@ class Player extends Component {
          *
          * @event Player#timeupdate
          * @param {Object} event 事件触发时浏览器自带的 event 对象
+         * @param {Object} data 友情附带的数据
+         * @param {number} data.currentTime 当前时刻
          */
         this.trigger('timeupdate', data);
     }
@@ -862,7 +867,6 @@ class Player extends Component {
      * @private
      */
     handleTouchStart(event) {
-        const activeClass = 'lark-user-active';
         // 当控制条显示并且手指放在控制条上时
         if (this.hasClass(activeClass)) {
             if (Dom.parent(event.target, 'lark-play-button')
@@ -891,44 +895,14 @@ class Player extends Component {
      * @private
      */
     handleTouchEnd(event) {
-        // const activeClass = 'lark-user-active';
-        // clearTimeout(this.activeTimeoutHandler);
-
-        // this.activeTimeoutHandler = setTimeout(() => {
-        //     this.removeClass(activeClass);
-        // }, this.activeTimeout);
-
-        // Events.off(document, 'touchmove', this.handleTouchMove);
-        // Events.off(document, 'touchend', this.handleTouchEnd);
-
-        // @todo 临时将 click 事件转移到 touchend，ios 11 下 click 事件目前有问题
-        // 处于暂停状态时，点击播放器任何位置都均继续播放
-        if (this.paused()) {
-            this.play();
-        }
-
         clearTimeout(this.activeTimeoutHandler);
 
-        const activeClass = 'lark-user-active';
+        this.activeTimeoutHandler = setTimeout(() => {
+            this.removeClass(activeClass);
+        }, this.activeTimeout);
 
-        // 点在播放按钮或者控制条上，（继续）展现控制条
-        let clickOnControls = false;
-        // @todo 处理得不够优雅
-        if (Dom.parent(event.target, 'lark-play-button')
-            || Dom.parent(event.target, 'lark-control-bar')) {
-
-            clickOnControls = true;
-        }
-
-        if (!clickOnControls) {
-            this.toggleClass(activeClass);
-        }
-
-        if (this.hasClass(activeClass)) {
-            this.activeTimeoutHandler = setTimeout(() => {
-                this.removeClass(activeClass);
-            }, this.activeTimeout);
-        }
+        Events.off(document, 'touchmove', this.handleTouchMove);
+        Events.off(document, 'touchend', this.handleTouchEnd);
     }
 
     /**
@@ -1015,10 +989,7 @@ class Player extends Component {
      * @private
      */
     handleClick(event) {
-        // 处于暂停状态时，点击播放器任何位置都均继续播放
-        if (this.paused()) {
-            this.play();
-        }
+        console.log('player clicked');
 
         clearTimeout(this.activeTimeoutHandler);
 
@@ -1035,6 +1006,11 @@ class Player extends Component {
 
         if (!clickOnControls) {
             this.toggleClass(activeClass);
+
+            // 处于暂停状态时，点击非控制条的位置继续播放
+            if (this.paused()) {
+                this.play();
+            }
         }
 
         if (this.hasClass(activeClass)) {
