@@ -2,7 +2,7 @@
   "name": "larkplayer",
   "title": "larkplayer",
   "description": "Html5 video player",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "main": "./dist/larkplayer.js",
   "homepage": "https://dblate.gitbooks.io/larkplayer/content/gai-lan.html",
   "author": {
