@@ -44,7 +44,7 @@ larkplayer.on('player', event => {
 larkplayer.on('pause', event => {
     console.log('pause');
 });
-// 支持自定义 firstplay 事件，每个视频时播放只触发一次
+// 支持自定义 firstplay 事件，每个视频播放时只触发一次
 larkplayer.on('firstplay', event => {
     console.log('Firstplay triggered only once when video played');
 });
@@ -52,7 +52,7 @@ larkplayer.on('firstplay', event => {
 
 <h5>以 script 的方式使用</h5>
 
-dist 目录下有对应的打包好的 js 和 css 文件， 要以 script 标签的形式插入到 html 中，直接引用即可。
+dist 目录下有打包好的 js 和 css 文件， 要以 script 标签的形式插入到 html 中，直接引用即可
 
 ```html
 <!DOCTYPE html>
