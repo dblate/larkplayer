@@ -1,7 +1,27 @@
 {
   "name": "larkplayer",
-  "version": "1.0.8",
-  "main": "./lib/larkplayer.js",
+  "title": "larkplayer",
+  "description": "Html5 video player",
+  "version": "1.0.9",
+  "main": "./dist/larkplayer.js",
+  "homepage": "https://dblate.gitbooks.io/larkplayer/content/gai-lan.html",
+  "author": {
+    "name": "2222bnting"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/dblate/larkplayer.git"
+  },
+  "keywords": [
+    "larkplayer",
+    "javascript",
+    "player",
+    "html5"
+  ],
+  "bugs": {
+    "url": "https://github.com/dblate/larkplayer/issues"
+  },
+  "license": "MIT",
   "scripts": {
     "doc": "make doc"
   },

@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>larkplayer test</title>
+    <link rel="stylesheet" type="text/css" href="../dist/larkplayer.min.css">
+</head>
+<body>
+    <video id="my-video" src="https://baikebcs.bdimg.com/baike-other/cool.mp4" width="400" height="300" controls></video>
+    <script type="text/javascript" src="../dist/larkplayer.js"></script>
+    <script type="text/javascript">
+        var player = larkplayer('my-video');
+        player.on('play', function () {
+            console.log('play');
+        });
+        player.on('firstplay', function () {
+            console.log('firstplay');
+        });
+        player.on('ended', function () {
+            console.log('ended');
+            player.src('http://www.w3school.com.cn/i/movie.ogg');
+        });
+        player.on('resize', function () {
+            console.log('resize');
+        });
+        player.on('error', function (event, error) {
+            console.log('error occured', event, error);
+        });
+    </script>
+</body>
+</html>
