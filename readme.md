@@ -17,7 +17,7 @@ npm install larkplayer
 ```
 <h4>使用</h4>
 
-<h5>通过模块化引用</h5>
+<h5>以模块化的方式使用</h5>
 
 ```javascript
 const larkplayer = require('larkplayer');
