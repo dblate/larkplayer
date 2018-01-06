@@ -56,7 +56,7 @@
     * ["pause" (event)](#Player+event_pause)
     * ["ended" (event)](#Player+event_ended)
     * ["durationchange" (event)](#Player+event_durationchange)
-    * ["timeupdate" (event)](#Player+event_timeupdate)
+    * ["timeupdate" (event, data)](#Player+event_timeupdate)
     * ["fullscreenchange" (data)](#Player+event_fullscreenchange)
     * ["fullscreenerror"](#Player+event_fullscreenerror)
     * ["error" (event, error)](#Player+event_error)
@@ -591,7 +591,7 @@ Playback is ready to start after having been paused or delayed due to lack of me
 
 <a name="Player+event_timeupdate"></a>
 
-### "timeupdate" (event)
+### "timeupdate" (event, data)
 视频当前时刻更新时触发，一般 1s 内会触发好几次
 
 **Kind**: event emitted by [<code>Player</code>](#Player)  
@@ -599,6 +599,8 @@ Playback is ready to start after having been paused or delayed due to lack of me
 | Param | Type | Description |
 | --- | --- | --- |
 | event | <code>Object</code> | 事件触发时浏览器自带的 event 对象 |
+| data | <code>Object</code> | 友情附带的数据 |
+| data.currentTime | <code>number</code> | 当前时刻 |
 
 <a name="Player+event_fullscreenchange"></a>
 
