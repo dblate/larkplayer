@@ -18,15 +18,15 @@ export default class CurrentTime extends Component {
     }
 
     handleTimeupdate(event, data) {
-        this.render(data);
+        this.render(data.currentTime);
     }
 
-    render(data) {
-        Dom.textContent(this.el, timeFormat(Math.floor(data.currentTime)));
+    render(time) {
+        Dom.textContent(this.el, timeFormat(Math.floor(time)));
     }
 
     reset() {
-        this.render({currentTime: 0});
+        this.render(0);
     }
 
     createEl() {
