@@ -1,6 +1,6 @@
 {
   "name": "larkplayer",
-  "version": "1.0.7",
+  "version": "1.0.8",
   "main": "./lib/larkplayer.js",
   "scripts": {
     "doc": "make doc"
