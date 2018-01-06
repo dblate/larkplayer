@@ -87,7 +87,14 @@ dist 目录下有对应的打包好的 js 和 css 文件， 要以 script 标签
 
 [docs](https://github.com/dblate/larkplayer/tree/master/docs)目录下有各个模块的 api 文档
 * [player](https://github.com/dblate/larkplayer/blob/master/docs/player.md)
-* [dom-data](https://github.com/dblate/larkplayer/blob/master/docs/dom-data.md)
 * [dom](https://github.com/dblate/larkplayer/blob/master/docs/dom.md)
 * [events](https://github.com/dblate/larkplayer/blob/master/docs/events.md)
 * [plugin](https://github.com/dblate/larkplayer/blob/master/docs/plugin.md)
+
+<h3>后续规划</h3>
+
+2018/3/7 前增加以下功能
+* 支持 vr 视频
+* 支持 hls(m3u8) 格式
+* 支持 flv 格式
+* 同步支持 pc 与移动端的使用
