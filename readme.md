@@ -20,74 +20,57 @@ larkplayer 有如下特性
 * 插件机制，支持自定义插件开发
 * 自定义样式
 
-<h3>快速上手</h3>
+<h3>下载</h3>
 
-<h4>下载</h4>
-
+npm
 ```
 npm install larkplayer
 ```
-<h4>使用</h4>
 
-<h5>以模块化的方式使用</h5>
-
-```javascript
-const larkplayer = require('larkplayer');
-// 传入的 my-html5-video 应当是已存在的 video 标签的 id
-larkplayer('my-html5-video', {
-    // 支持所有的 html5 标准属性
-    width: 100,
-    height: 100,
-    src: 'https://xxx/xxx.mp4',
-    // 支持自定义的 source 方法，用于处理 video 中的 source 标签
-    source: [{
-        src: 'https://xxx/a.m3u8',
-        // type 属性可选
-        type: 'application/x-mpegURL'
-    }, {
-        src: 'https://xxx/b.mp4',
-        type: 'video/mp4'
-    }]
-});
-// 支持所有的 html5 标准事件
-larkplayer.on('player', event => {
-    console.log('play')
-});
-larkplayer.on('pause', event => {
-    console.log('pause');
-});
-// 支持自定义 firstplay 事件，每个视频播放时只触发一次
-larkplayer.on('firstplay', event => {
-    console.log('Firstplay triggered only once when video played');
-});
+cdn
+```
+<link rel="stylesheet" href="https://unpkg.com/larkplayer@latest/dist/larkplayer.min.css" />
+<script src="https://unpkg.com/larkplayer@latest/dist/larkplayer.min.js"></script>
 ```
 
-<h5>以 script 的方式使用</h5>
-
-dist 目录下有打包好的 js 和 css 文件， 要以 script 标签的形式插入到 html 中，直接引用即可
+<h3>快速上手</h3>
 
 ```html
 <!DOCTYPE html>
 <html>
 <head>
-    <title>test larkplayer</title>
-    <link rel="stylesheet" type="text/css" href="./node_modules/larkplayer/dist/larkplayer.min.css">
+    <title>larkplayer quick start</title>
+    <link rel="stylesheet" type="text/css" href="https://unpkg.com/larkplayer@latest/dist/larkplayer.min.css" ／>
 </head>
 <body>
-    <video id="my-video" src="https://baikebcs.bdimg.com/baike-other/cool.mp4" width="400" height="300" controls></video>
-    <script type="text/javascript" src="./node_modules/larkplayer/dist/larkplayer.min.js"></script>
+    <video id="my-video" src="https://baikebcs.bdimg.com/baike-other/cool.mp4" width="400" height="300" controls>
+        请升级浏览器以支持 html5 video
+    </video>
+ 
+    <script type="text/javascript" src="https://unpkg.com/larkplayer@latest/dist/larkplayer.min.js"></script>
     <script type="text/javascript">
         // js 文件以 umd 的形式包装，以 script 的形式引用时，larkplayer 会直接挂载在 window 上
         var player = larkplayer('my-video');
+        // 支持所有的 html5 标准事件
         player.on('play', function () {
             console.log('play');
         });
+        // 支持自定义 firstplay 事件，每个视频播放时只触发一次
         player.on('firstplay', function () {
             console.log('firstplay');
         });
         player.on('ended', function () {
             console.log('ended');
             player.src('http://www.w3school.com.cn/i/movie.ogg');
+            
+            // larkplayer 同时也提供对 source 标签的处理方法
+            // player.source([{
+            //     src: 'http://www.w3school.com.cn/i/movie.ogg',
+            //     // type 参数可选
+            //     type: 'video/ogg'
+            // }, {
+            //     src: 'http://www.w3school.com.cn/i/movie.mp4'
+            // }]);
         });
     </script>
 </body>
