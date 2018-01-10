@@ -8,7 +8,29 @@
 import * as Events from '../utils/events';
 import * as Dom from '../utils/dom';
 
+function createClick(event) {
+    let clickEvent = {};
+    for (let attr in event) {
+        clickEvent[attr] = event[attr];
+    }
+    clickEvent.type = 'click';
+}
+
 export default function fastClick(el) {
+    if (el.childNodes.length) {
+        for (let i = 0; i < el.childNodes.length; i++) {
+            const curEl = el.childNodes[i];
+            if (Dom.isEl(curEl)) {
+                _fastClick(curEl);
+            }
+
+            fastClick(curEl);
+        }
+    }
+}
+
+// @todo 命名规范有问题，但是暂时想不出更好的命名
+function _fastClick(el) {
     if (!Dom.isEl(el)) {
         return;
     }
@@ -57,7 +79,7 @@ export default function fastClick(el) {
                 // 使用我们手动触发的 click 时，禁止后续浏览器自己触发的 click 事件
                 event.preventDefault();
 
-                target.trigger('click', event);
+                Events.trigger(el, createClick(event), event);
             }
         }
     });

@@ -14,7 +14,6 @@ import * as Fn from './utils/fn';
 import toTitleCase from './utils/to-title-case';
 import fullscreen from './utils/fullscreen';
 import evented from './mixins/evented';
-import fastClick from './mixins/fast-click';
 import {each} from './utils/obj';
 import * as Plugin from './utils/plugin';
 import log from './utils/log';
@@ -70,7 +69,6 @@ class Player extends Component {
 
         // 使得 this 具有事件能力(on off one trigger)
         evented(this, {eventBusKey: this.el});
-        fastClick(this.el);
 
         // 需放在 this.loadTech 方法前面
         this.handleLoadstart = this.handleLoadstart.bind(this);
@@ -993,8 +991,6 @@ class Player extends Component {
      * @private
      */
     handleClick(event) {
-        console.log('player clicked');
-
         clearTimeout(this.activeTimeoutHandler);
 
         const activeClass = 'lark-user-active';

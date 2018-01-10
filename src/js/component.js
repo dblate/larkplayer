@@ -12,7 +12,6 @@ import {newGUID} from './utils/guid';
 import toTitleCase from './utils/to-title-case';
 import mergeOptions from './utils/merge-options';
 import evented from './mixins/evented';
-import fastClick from './mixins/fast-click';
 
 const document = window.document;
 
@@ -45,7 +44,6 @@ export default class Component {
         }
 
         evented(this, {eventBusKey: this.el});
-        fastClick(this.el);
 
         // 子元素相关信息
         this.children = [];
