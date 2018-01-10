@@ -38,10 +38,6 @@ var _evented = require('./mixins/evented');
 
 var _evented2 = _interopRequireDefault(_evented);
 
-var _fastClick = require('./mixins/fast-click');
-
-var _fastClick2 = _interopRequireDefault(_fastClick);
-
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
@@ -81,7 +77,6 @@ var Component = function () {
         }
 
         (0, _evented2.default)(this, { eventBusKey: this.el });
-        (0, _fastClick2.default)(this.el);
 
         // 子元素相关信息
         this.children = [];
@@ -310,7 +305,7 @@ var Component = function () {
 
 exports.default = Component;
 
-},{"./mixins/evented":4,"./mixins/fast-click":5,"./utils/dom":21,"./utils/dom-data":20,"./utils/fn":23,"./utils/guid":25,"./utils/merge-options":27,"./utils/to-title-case":34}],2:[function(require,module,exports){
+},{"./mixins/evented":4,"./utils/dom":21,"./utils/dom-data":20,"./utils/fn":23,"./utils/guid":25,"./utils/merge-options":27,"./utils/to-title-case":34}],2:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -757,6 +752,10 @@ var _log = require('./utils/log');
 
 var _log2 = _interopRequireDefault(_log);
 
+var _fastClick = require('./mixins/fast-click');
+
+var _fastClick2 = _interopRequireDefault(_fastClick);
+
 require('./shim/third_party/shim.min.js');
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
@@ -766,18 +765,16 @@ function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj;
 // __uri 只在 fis 环境中支持
 // scriptLoader.loadCss(__uri('../css/larkplayer.less'));
 
-/**
- * @file larkplayer.js larkplayer 入口函数
- * @author yuhui<yuhui06@baidu.com>
- * @date 2017/11/7
- */
-
 var document = window.document;
 
 // 包含所有兼容 es6 的代码
 // @todo 有没有更好的解决方案，目前看 babel-plugin-transform-runtime 不会解决在原型上的方法
 // @see https://www.zhihu.com/question/49382420/answer/115692473
-
+/**
+ * @file larkplayer.js larkplayer 入口函数
+ * @author yuhui<yuhui06@baidu.com>
+ * @date 2017/11/7
+ */
 
 function normalize(el, options, readyFn) {
     if (typeof el === 'string') {
@@ -812,6 +809,8 @@ function larkplayer(el, options, readyFn) {
 
     var player = new _player2.default(el, options, readyFn);
 
+    (0, _fastClick2.default)(player.el);
+
     return player;
 }
 
@@ -842,7 +841,7 @@ larkplayer.deregisterPlugin = Plugin.deregisterPlugin;
 // @see https://github.com/babel/babel/issues/2724
 module.exports = larkplayer;
 
-},{"./component":1,"./player":6,"./shim/third_party/shim.min.js":7,"./utils/dom":21,"./utils/events":22,"./utils/log":26,"./utils/plugin":31,"./utils/script-loader":32}],4:[function(require,module,exports){
+},{"./component":1,"./mixins/fast-click":5,"./player":6,"./shim/third_party/shim.min.js":7,"./utils/dom":21,"./utils/events":22,"./utils/log":26,"./utils/plugin":31,"./utils/script-loader":32}],4:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -939,7 +938,29 @@ function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj;
  * @date 2017/1/6
  */
 
+function createClick(event) {
+    var clickEvent = {};
+    for (var attr in event) {
+        clickEvent[attr] = event[attr];
+    }
+    clickEvent.type = 'click';
+}
+
 function fastClick(el) {
+    if (el.childNodes.length) {
+        for (var i = 0; i < el.childNodes.length; i++) {
+            var curEl = el.childNodes[i];
+            if (Dom.isEl(curEl)) {
+                _fastClick(curEl);
+            }
+
+            fastClick(curEl);
+        }
+    }
+}
+
+// @todo 命名规范有问题，但是暂时想不出更好的命名
+function _fastClick(el) {
     if (!Dom.isEl(el)) {
         return;
     }
@@ -987,7 +1008,7 @@ function fastClick(el) {
                 // 使用我们手动触发的 click 时，禁止后续浏览器自己触发的 click 事件
                 event.preventDefault();
 
-                target.trigger('click', event);
+                Events.trigger(el, createClick(event), event);
             }
         }
     });
@@ -1037,10 +1058,6 @@ var _fullscreen2 = _interopRequireDefault(_fullscreen);
 var _evented = require('./mixins/evented');
 
 var _evented2 = _interopRequireDefault(_evented);
-
-var _fastClick = require('./mixins/fast-click');
-
-var _fastClick2 = _interopRequireDefault(_fastClick);
 
 var _obj = require('./utils/obj');
 
@@ -1127,7 +1144,6 @@ var Player = function (_Component) {
 
         // 使得 this 具有事件能力(on off one trigger)
         (0, _evented2.default)(_this, { eventBusKey: _this.el });
-        (0, _fastClick2.default)(_this.el);
 
         // 需放在 this.loadTech 方法前面
         _this.handleLoadstart = _this.handleLoadstart.bind(_this);
@@ -2033,9 +2049,6 @@ var Player = function (_Component) {
 
             var data = {};
 
-            // @test
-            console.log('fullscreen change');
-
             // 移动端的全屏事件会传 extData
             if (extData.isFullscreen !== undefined) {
                 this.isFullscreen(extData.isFullscreen);
@@ -2124,8 +2137,6 @@ var Player = function (_Component) {
         key: 'handleClick',
         value: function handleClick(event) {
             var _this7 = this;
-
-            console.log('player clicked');
 
             clearTimeout(this.activeTimeoutHandler);
 
@@ -2665,7 +2676,7 @@ Player.prototype.options = {
 
 exports.default = Player;
 
-},{"./component":1,"./html5":2,"./mixins/evented":4,"./mixins/fast-click":5,"./ui/control-bar":9,"./ui/error":12,"./ui/loading":14,"./ui/play-button":15,"./ui/progress-bar-simple":17,"./utils/dom":21,"./utils/events":22,"./utils/fn":23,"./utils/fullscreen":24,"./utils/guid":25,"./utils/log":26,"./utils/obj":30,"./utils/plugin":31,"./utils/to-title-case":34}],7:[function(require,module,exports){
+},{"./component":1,"./html5":2,"./mixins/evented":4,"./ui/control-bar":9,"./ui/error":12,"./ui/loading":14,"./ui/play-button":15,"./ui/progress-bar-simple":17,"./utils/dom":21,"./utils/events":22,"./utils/fn":23,"./utils/fullscreen":24,"./utils/guid":25,"./utils/log":26,"./utils/obj":30,"./utils/plugin":31,"./utils/to-title-case":34}],7:[function(require,module,exports){
 "use strict";
 
 var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
