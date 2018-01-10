@@ -8,7 +8,6 @@
     * [.dispose()](#Player+dispose)
     * [.width([value])](#Player+width) ⇒ <code>number</code>
     * [.height([value])](#Player+height) ⇒ <code>number</code>
-    * [.dimension(dimension, value)](#Player+dimension) ⇒ <code>number</code>
     * [.isFullscreen([isFs])](#Player+isFullscreen) ⇒ <code>boolean</code>
     * [.requestFullscreen()](#Player+requestFullscreen)
     * [.exitFullscreen()](#Player+exitFullscreen)
@@ -34,6 +33,7 @@
     * [.source([source])](#Player+source) ⇒ <code>Array</code>
     * [.playbackRate([playbackRate])](#Player+playbackRate) ⇒ <code>number</code>
     * [.defaultPlaybackRate([playbackRate])](#Player+defaultPlaybackRate) ⇒ <code>number</code>
+    * [.poster([poster])](#Player+poster) ⇒ <code>string</code>
     * ["suspend" (event)](#Player+event_suspend)
     * ["abort" (event)](#Player+event_abort)
     * ["emptied" (event)](#Player+event_emptied)
@@ -94,10 +94,6 @@
 
 **Kind**: instance method of [<code>Player</code>](#Player)  
 **Returns**: <code>number</code> - 不传参数则返回播放器当前宽度  
-**Todo**
-
-- [ ] 未完成
-
 
 | Param | Type | Description |
 | --- | --- | --- |
@@ -110,31 +106,10 @@
 
 **Kind**: instance method of [<code>Player</code>](#Player)  
 **Returns**: <code>number</code> - 不传参数则返回播放器当前高度  
-**Todo**
-
-- [ ] 未完成
-
 
 | Param | Type | Description |
 | --- | --- | --- |
 | [value] | <code>number</code> | 要设置的播放器高度值，可选 |
-
-<a name="Player+dimension"></a>
-
-### player.dimension(dimension, value) ⇒ <code>number</code>
-获取或设置播放器的高宽
-
-**Kind**: instance method of [<code>Player</code>](#Player)  
-**Returns**: <code>number</code> - 对应属性的值  
-**Todo**
-
-- [ ] 未完成
-
-
-| Param | Type | Description |
-| --- | --- | --- |
-| dimension | <code>string</code> | 属性名：width/height |
-| value | <code>number</code> | 要设置的值 |
 
 <a name="Player+isFullscreen"></a>
 
@@ -345,6 +320,18 @@
 | Param | Type | Description |
 | --- | --- | --- |
 | [playbackRate] | <code>number</code> | 要设置的默认播放速率的值，可选 |
+
+<a name="Player+poster"></a>
+
+### player.poster([poster]) ⇒ <code>string</code>
+设置或获取 poster（视频封面） 属性的值
+
+**Kind**: instance method of [<code>Player</code>](#Player)  
+**Returns**: <code>string</code> - 不传参数则返回当前 poster 属性的值  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| [poster] | <code>string</code> | 可选。要设置的 poster 属性的值 |
 
 <a name="Player+event_suspend"></a>
 
