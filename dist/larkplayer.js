@@ -305,7 +305,7 @@ var Component = function () {
 
 exports.default = Component;
 
-},{"./mixins/evented":4,"./utils/dom":21,"./utils/dom-data":20,"./utils/fn":23,"./utils/guid":25,"./utils/merge-options":27,"./utils/to-title-case":34}],2:[function(require,module,exports){
+},{"./mixins/evented":4,"./utils/dom":20,"./utils/dom-data":19,"./utils/fn":22,"./utils/guid":24,"./utils/merge-options":26,"./utils/to-title-case":33}],2:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -721,7 +721,7 @@ Html5.resetMediaElement = function (el) {
 
 exports.default = Html5;
 
-},{"./component":1,"./utils/dom":21,"./utils/normalize-source":29,"./utils/to-title-case":34}],3:[function(require,module,exports){
+},{"./component":1,"./utils/dom":20,"./utils/normalize-source":28,"./utils/to-title-case":33}],3:[function(require,module,exports){
 'use strict';
 
 var _dom = require('./utils/dom');
@@ -752,10 +752,6 @@ var _log = require('./utils/log');
 
 var _log2 = _interopRequireDefault(_log);
 
-var _fastClick = require('./mixins/fast-click');
-
-var _fastClick2 = _interopRequireDefault(_fastClick);
-
 require('./shim/third_party/shim.min.js');
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
@@ -765,16 +761,18 @@ function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj;
 // __uri 只在 fis 环境中支持
 // scriptLoader.loadCss(__uri('../css/larkplayer.less'));
 
-var document = window.document;
-
-// 包含所有兼容 es6 的代码
-// @todo 有没有更好的解决方案，目前看 babel-plugin-transform-runtime 不会解决在原型上的方法
-// @see https://www.zhihu.com/question/49382420/answer/115692473
 /**
  * @file larkplayer.js larkplayer 入口函数
  * @author yuhui<yuhui06@baidu.com>
  * @date 2017/11/7
  */
+
+var document = window.document;
+
+// 包含所有兼容 es6 的代码
+// @todo 有没有更好的解决方案，目前看 babel-plugin-transform-runtime 不会解决在原型上的方法
+// @see https://www.zhihu.com/question/49382420/answer/115692473
+
 
 function normalize(el, options, readyFn) {
     if (typeof el === 'string') {
@@ -809,12 +807,8 @@ function larkplayer(el, options, readyFn) {
 
     var player = new _player2.default(el, options, readyFn);
 
-    // fastClick(player.el);
-
     return player;
 }
-
-larkplayer.version = '1.1.4';
 
 larkplayer.dom = Dom;
 
@@ -835,7 +829,7 @@ larkplayer.deregisterPlugin = Plugin.deregisterPlugin;
 // @see https://github.com/babel/babel/issues/2724
 module.exports = larkplayer;
 
-},{"./component":1,"./mixins/fast-click":5,"./player":6,"./shim/third_party/shim.min.js":7,"./utils/dom":21,"./utils/events":22,"./utils/log":26,"./utils/plugin":31,"./utils/script-loader":32}],4:[function(require,module,exports){
+},{"./component":1,"./player":5,"./shim/third_party/shim.min.js":6,"./utils/dom":20,"./utils/events":21,"./utils/log":25,"./utils/plugin":30,"./utils/script-loader":31}],4:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -907,108 +901,7 @@ function evented(target) {
     };
 }
 
-},{"../utils/dom":21,"../utils/events":22}],5:[function(require,module,exports){
-'use strict';
-
-Object.defineProperty(exports, "__esModule", {
-    value: true
-});
-exports.default = fastClick;
-
-var _events = require('../utils/events');
-
-var Events = _interopRequireWildcard(_events);
-
-var _dom = require('../utils/dom');
-
-var Dom = _interopRequireWildcard(_dom);
-
-function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
-
-/**
- * @file fast-click.js  使一个 DOM 元素具有 fastclick 功能。
- *                      fastclick: 在移动端中，利用 touch 事件手动触发 click，避免移动端 click 的 300ms 延时
- * @author yuhui06
- * @date 2017/1/6
- */
-
-function createClick(event) {
-    var clickEvent = {};
-    for (var attr in event) {
-        clickEvent[attr] = event[attr];
-    }
-    clickEvent.type = 'click';
-}
-
-function fastClick(el) {
-    if (el.childNodes.length) {
-        for (var i = 0; i < el.childNodes.length; i++) {
-            var curEl = el.childNodes[i];
-            if (Dom.isEl(curEl)) {
-                _fastClick(curEl);
-            }
-
-            fastClick(curEl);
-        }
-    }
-}
-
-// @todo 命名规范有问题，但是暂时想不出更好的命名
-function _fastClick(el) {
-    if (!Dom.isEl(el)) {
-        return;
-    }
-
-    // 手指移动的距离超过 10px，则不构造 fastclick 事件
-    var distanceLimit = 10;
-    // 手指按压的时间超过 200ms 则不构造 fastclick 事件
-    var timeLimit = 200;
-    var couldBeFastClick = false;
-    var eventData = {};
-    Events.on(el, 'touchstart', function (event) {
-        if (event.touches.length === 1) {
-            couldBeFastClick = true;
-
-            var touches = event.changedTouches || event.touches;
-            eventData.startTime = Date.now();
-            eventData.startX = touches[0]['pageX'];
-            eventData.startY = touches[0]['pageY'];
-        } else {
-            couldBeFastClick = false;
-        }
-    });
-
-    Events.on(el, 'touchmove', function (event) {
-        if (event.touches.length === 1) {
-            var touches = event.changedTouches || event.touches;
-            var currentX = touches[0]['pageX'];
-            var currentY = touches[0]['pageY'];
-            // 两点之间的距离计算
-            var distance = Math.pow(currentX, 2) + Math.pow(currentY, 2) - (Math.pow(eventData.startX, 2) + Math.pow(eventData.startY, 2));
-            if (distance < distanceLimit) {
-                couldBeFastClick = true;
-            } else {
-                couldBeFastClick = false;
-            }
-        } else {
-            couldBeFastClick = false;
-        }
-    });
-
-    Events.on(el, 'touchend', function (event) {
-        if (couldBeFastClick) {
-            var currentTime = Date.now();
-            if (currentTime - eventData.startTime < timeLimit) {
-                // 使用我们手动触发的 click 时，禁止后续浏览器自己触发的 click 事件
-                event.preventDefault();
-
-                Events.trigger(el, createClick(event), event);
-            }
-        }
-    });
-}
-
-},{"../utils/dom":21,"../utils/events":22}],6:[function(require,module,exports){
+},{"../utils/dom":20,"../utils/events":21}],5:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -1062,6 +955,10 @@ var Plugin = _interopRequireWildcard(_plugin);
 var _log = require('./utils/log');
 
 var _log2 = _interopRequireDefault(_log);
+
+var _computedStyle = require('./utils/computed-style');
+
+var _computedStyle2 = _interopRequireDefault(_computedStyle);
 
 require('./ui/play-button');
 
@@ -1576,7 +1473,6 @@ var Player = function (_Component) {
         /**
          * 获取或设置播放器的宽度
          *
-         * @todo 未完成
          * @param {number=} value 要设置的播放器宽度值，可选
          * @return {number} 不传参数则返回播放器当前宽度
          */
@@ -1584,13 +1480,20 @@ var Player = function (_Component) {
     }, {
         key: 'width',
         value: function width(value) {
-            return this.dimension('width', value);
+            if (value !== undefined) {
+                if (/\d$/.test(value)) {
+                    value = value + 'px';
+                }
+
+                this.el.style.width = value;
+            } else {
+                return (0, _computedStyle2.default)(this.el, 'width');
+            }
         }
 
         /**
          * 获取或设置播放器的高度
          *
-         * @todo 未完成
          * @param {number=} value 要设置的播放器高度值，可选
          * @return {number} 不传参数则返回播放器当前高度
          */
@@ -1598,13 +1501,21 @@ var Player = function (_Component) {
     }, {
         key: 'height',
         value: function height(value) {
-            return this.dimension('height', value);
+            if (value !== undefined) {
+                if (/\d$/.test(value)) {
+                    value = value + 'px';
+                }
+
+                this.el.style.height = value;
+            } else {
+                return (0, _computedStyle2.default)(this.el, 'height');
+            }
         }
 
         /**
          * 获取或设置播放器的高宽
          *
-         * @todo 未完成
+         * @private
          * @param {string} dimension 属性名：width/height
          * @param {number} value 要设置的值
          * @return {number} 对应属性的值
@@ -2593,6 +2504,23 @@ var Player = function (_Component) {
                 return 1.0;
             }
         }
+
+        /**
+         * 设置或获取 poster（视频封面） 属性的值
+         *
+         * @param {string=} poster 可选。要设置的 poster 属性的值
+         * @return {string} 不传参数则返回当前 poster 属性的值
+         */
+
+    }, {
+        key: 'poster',
+        value: function poster(val) {
+            if (val !== undefined) {
+                this.techCall('setPoster', val);
+            } else {
+                return this.techGet('poster');
+            }
+        }
     }]);
 
     return Player;
@@ -2644,7 +2572,7 @@ var Player = function (_Component) {
  * @param {string=} poster 可选。设置 poster 属性的值
  * @return {undefined|string} undefined 或 当前 poster 值
  */
-'poster',
+// 'poster',
 
 /**
  * 设置或获取 preload（预加载的数据） 属性的值
@@ -2659,7 +2587,7 @@ var Player = function (_Component) {
             this.techCall('set' + (0, _toTitleCase2.default)(prop), val);
             this.options[prop] = val;
         } else {
-            this.techGet(prop);
+            return this.techGet(prop);
         }
     };
 });
@@ -2670,7 +2598,7 @@ Player.prototype.options = {
 
 exports.default = Player;
 
-},{"./component":1,"./html5":2,"./mixins/evented":4,"./ui/control-bar":9,"./ui/error":12,"./ui/loading":14,"./ui/play-button":15,"./ui/progress-bar-simple":17,"./utils/dom":21,"./utils/events":22,"./utils/fn":23,"./utils/fullscreen":24,"./utils/guid":25,"./utils/log":26,"./utils/obj":30,"./utils/plugin":31,"./utils/to-title-case":34}],7:[function(require,module,exports){
+},{"./component":1,"./html5":2,"./mixins/evented":4,"./ui/control-bar":8,"./ui/error":11,"./ui/loading":13,"./ui/play-button":14,"./ui/progress-bar-simple":16,"./utils/computed-style":18,"./utils/dom":20,"./utils/events":21,"./utils/fn":22,"./utils/fullscreen":23,"./utils/guid":24,"./utils/log":25,"./utils/obj":29,"./utils/plugin":30,"./utils/to-title-case":33}],6:[function(require,module,exports){
 "use strict";
 
 var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
@@ -6108,7 +6036,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 }(1, 1);
 
 
-},{}],8:[function(require,module,exports){
+},{}],7:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -6213,7 +6141,7 @@ exports.default = BufferBar;
 
 _component2.default.registerComponent('BufferBar', BufferBar);
 
-},{"../component":1,"../utils/dom":21}],9:[function(require,module,exports){
+},{"../component":1,"../utils/dom":20}],8:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -6288,7 +6216,7 @@ _component2.default.registerComponent('ControlBar', ControlBar);
 
 exports.default = ControlBar;
 
-},{"../component":1,"../utils/dom":21,"./current-time":10,"./duration":11,"./fullscreen-button":13,"./progress-bar":18}],10:[function(require,module,exports){
+},{"../component":1,"../utils/dom":20,"./current-time":9,"./duration":10,"./fullscreen-button":12,"./progress-bar":17}],9:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -6369,7 +6297,7 @@ exports.default = CurrentTime;
 
 _component2.default.registerComponent('CurrentTime', CurrentTime);
 
-},{"../component":1,"../utils/dom":21,"../utils/time-format":33}],11:[function(require,module,exports){
+},{"../component":1,"../utils/dom":20,"../utils/time-format":32}],10:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -6447,7 +6375,7 @@ exports.default = Duration;
 
 _component2.default.registerComponent('Duration', Duration);
 
-},{"../component":1,"../utils/dom":21,"../utils/time-format":33}],12:[function(require,module,exports){
+},{"../component":1,"../utils/dom":20,"../utils/time-format":32}],11:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -6537,7 +6465,7 @@ exports.default = Error;
 
 _component2.default.registerComponent('Error', Error);
 
-},{"../component":1,"../utils/dom":21}],13:[function(require,module,exports){
+},{"../component":1,"../utils/dom":20}],12:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -6614,7 +6542,7 @@ exports.default = FullscreenButton;
 
 _component2.default.registerComponent('FullscreenButton', FullscreenButton);
 
-},{"../component":1,"../utils/dom":21}],14:[function(require,module,exports){
+},{"../component":1,"../utils/dom":20}],13:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -6683,7 +6611,7 @@ exports.default = Loading;
 
 _component2.default.registerComponent('Loading', Loading);
 
-},{"../component":1,"../utils/dom":21}],15:[function(require,module,exports){
+},{"../component":1,"../utils/dom":20}],14:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -6785,7 +6713,7 @@ exports.default = PlayButton;
 
 _component2.default.registerComponent('PlayButton', PlayButton);
 
-},{"../component":1,"../utils/dom":21,"../utils/events":22}],16:[function(require,module,exports){
+},{"../component":1,"../utils/dom":20,"../utils/events":21}],15:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -6877,7 +6805,7 @@ ProgressBarExceptFill.prototype.options = {
 
 _component2.default.registerComponent('ProgressBarExceptFill', ProgressBarExceptFill);
 
-},{"../component":1,"../utils/computed-style":19,"../utils/dom":21,"../utils/events":22,"./buffer-bar":8}],17:[function(require,module,exports){
+},{"../component":1,"../utils/computed-style":18,"../utils/dom":20,"../utils/events":21,"./buffer-bar":7}],16:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -6976,7 +6904,7 @@ ProgressBarSimple.prototype.options = {
 
 exports.default = ProgressBarSimple;
 
-},{"../component":1,"../utils/dom":21,"./buffer-bar":8}],18:[function(require,module,exports){
+},{"../component":1,"../utils/dom":20,"./buffer-bar":7}],17:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -7151,7 +7079,7 @@ _component2.default.registerComponent('ProgressBar', ProgressBar);
 
 exports.default = ProgressBar;
 
-},{"../component":1,"../utils/computed-style":19,"../utils/dom":21,"../utils/events":22,"./progress-bar-except-fill":16}],19:[function(require,module,exports){
+},{"../component":1,"../utils/computed-style":18,"../utils/dom":20,"../utils/events":21,"./progress-bar-except-fill":15}],18:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -7187,7 +7115,7 @@ function computedStyle(el, prop) {
     return el.currentStyle && el.currentStyle[prop] || '';
 }
 
-},{}],20:[function(require,module,exports){
+},{}],19:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -7283,7 +7211,7 @@ function removeData(el) {
     }
 }
 
-},{"./guid":25}],21:[function(require,module,exports){
+},{"./guid":24}],20:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -7986,7 +7914,7 @@ var $ = exports.$ = createQuerier('querySelector');
  */
 var $$ = exports.$$ = createQuerier('querySelectorAll');
 
-},{"./computed-style":19,"./obj":30}],22:[function(require,module,exports){
+},{"./computed-style":18,"./obj":29}],21:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -8464,7 +8392,7 @@ function one(elem, type, fn) {
     on(elem, type, executeOnlyOnce);
 }
 
-},{"./dom-data":20,"./guid":25,"./to-title-case":34}],23:[function(require,module,exports){
+},{"./dom-data":19,"./guid":24,"./to-title-case":33}],22:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -8522,7 +8450,7 @@ function throttle(fn, wait) {
     };
 }
 
-},{"./guid":25}],24:[function(require,module,exports){
+},{"./guid":24}],23:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -8605,7 +8533,7 @@ exports.default = {
     }
 };
 
-},{"./events":22}],25:[function(require,module,exports){
+},{"./events":21}],24:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -8630,7 +8558,7 @@ function newGUID() {
   return guid++;
 }
 
-},{}],26:[function(require,module,exports){
+},{}],25:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -8675,7 +8603,7 @@ log.error = console.error;
 
 log.clear = console.clear;
 
-},{}],27:[function(require,module,exports){
+},{}],26:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -8730,7 +8658,7 @@ function mergeOptions() {
    * @date 2017/11/3
    */
 
-},{"./obj.js":30}],28:[function(require,module,exports){
+},{"./obj.js":29}],27:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -8755,7 +8683,7 @@ exports.default = {
     wmv: 'video/x-ms-wmv'
 };
 
-},{}],29:[function(require,module,exports){
+},{}],28:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -8850,7 +8778,7 @@ function nomalizeSource(source) {
     }
 }
 
-},{"./mime-type-map":28,"./obj":30}],30:[function(require,module,exports){
+},{"./mime-type-map":27,"./obj":29}],29:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -8910,7 +8838,7 @@ function each(obj, fn) {
   });
 }
 
-},{}],31:[function(require,module,exports){
+},{}],30:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -8984,7 +8912,7 @@ function deregisterPlugin(name) {
   delete pluginStore[name];
 }
 
-},{}],32:[function(require,module,exports){
+},{}],31:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -9014,7 +8942,7 @@ function loadCss(src) {
     head.appendChild(link);
 }
 
-},{"./dom":21}],33:[function(require,module,exports){
+},{"./dom":20}],32:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -9073,7 +9001,7 @@ function timeFormat(seconds) {
     }
 }
 
-},{}],34:[function(require,module,exports){
+},{}],33:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
