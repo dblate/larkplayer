@@ -809,27 +809,21 @@ function larkplayer(el, options, readyFn) {
 
     var player = new _player2.default(el, options, readyFn);
 
-    (0, _fastClick2.default)(player.el);
+    // fastClick(player.el);
 
     return player;
 }
 
-// verison
-larkplayer.version = '1.0';
+larkplayer.version = '1.1.4';
 
-// dom
 larkplayer.dom = Dom;
 
 // events
 larkplayer.on = Events.on;
-
 larkplayer.one = Events.one;
-
 larkplayer.off = Events.off;
-
 larkplayer.trigger = Events.trigger;
 
-// log
 larkplayer.log = _log2.default;
 
 // plugin
