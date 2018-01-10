@@ -11,7 +11,6 @@ import Player from './player';
 import * as scriptLoader from './utils/script-loader';
 import * as Plugin from './utils/plugin';
 import log from './utils/log';
-import fastClick from './mixins/fast-click';
 
 // 包含所有兼容 es6 的代码
 // @todo 有没有更好的解决方案，目前看 babel-plugin-transform-runtime 不会解决在原型上的方法
@@ -51,28 +50,18 @@ function larkplayer(el, options, readyFn) {
 
     const player = new Player(el, options, readyFn);
 
-    fastClick(player.el);
-
     return player;
 }
 
 
-// verison
-larkplayer.version = '1.0';
-
-// dom
 larkplayer.dom = Dom;
 
 // events
 larkplayer.on = Events.on;
-
 larkplayer.one = Events.one;
-
 larkplayer.off = Events.off;
-
 larkplayer.trigger = Events.trigger;
 
-// log
 larkplayer.log = log;
 
 // plugin
