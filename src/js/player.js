@@ -17,6 +17,7 @@ import evented from './mixins/evented';
 import {each} from './utils/obj';
 import * as Plugin from './utils/plugin';
 import log from './utils/log';
+import computedStyle from './utils/computed-style';
 
 // 确保以下代码都执行一次
 import './ui/play-button';
@@ -510,29 +511,43 @@ class Player extends Component {
     /**
      * 获取或设置播放器的宽度
      *
-     * @todo 未完成
      * @param {number=} value 要设置的播放器宽度值，可选
      * @return {number} 不传参数则返回播放器当前宽度
      */
     width(value) {
-        return this.dimension('width', value);
+        if (value !== undefined) {
+            if (/\d$/.test(value)) {
+                value = value + 'px';
+            }
+
+            this.el.style.width = value;
+        } else {
+            return computedStyle(this.el, 'width');
+        }
     }
 
     /**
      * 获取或设置播放器的高度
      *
-     * @todo 未完成
      * @param {number=} value 要设置的播放器高度值，可选
      * @return {number} 不传参数则返回播放器当前高度
      */
     height(value) {
-        return this.dimension('height', value);
+        if (value !== undefined) {
+            if (/\d$/.test(value)) {
+                value = value + 'px';
+            }
+
+            this.el.style.height = value;
+        } else {
+            return computedStyle(this.el, 'height');
+        }
     }
 
     /**
      * 获取或设置播放器的高宽
      *
-     * @todo 未完成
+     * @private
      * @param {string} dimension 属性名：width/height
      * @param {number} value 要设置的值
      * @return {number} 对应属性的值
@@ -1377,6 +1392,20 @@ class Player extends Component {
         }
     }
 
+    /**
+     * 设置或获取 poster（视频封面） 属性的值
+     *
+     * @param {string=} poster 可选。要设置的 poster 属性的值
+     * @return {string} 不传参数则返回当前 poster 属性的值
+     */
+    poster(val) {
+        if (val !== undefined) {
+            this.techCall('setPoster', val);
+        } else {
+            return this.techGet('poster');
+        }
+    }
+
 }
 
 [
@@ -1425,7 +1454,7 @@ class Player extends Component {
      * @param {string=} poster 可选。设置 poster 属性的值
      * @return {undefined|string} undefined 或 当前 poster 值
      */
-    'poster',
+    // 'poster',
 
     /**
      * 设置或获取 preload（预加载的数据） 属性的值
@@ -1441,7 +1470,7 @@ class Player extends Component {
             this.techCall(`set${toTitleCase(prop)}`, val);
             this.options[prop] = val;
         } else {
-            this.techGet(prop);
+            return this.techGet(prop);
         }
     };
 });
