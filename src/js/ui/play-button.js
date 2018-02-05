@@ -19,10 +19,10 @@ export default class PlayButton extends Component {
         this.pauseBtn = Dom.$('.lark-play-button__pause', this.el);
 
         // @todo 临时处理 ios11 click 事件问题
-        // Events.on(this.playBtn, 'touchend', event => this.togglePlay(event, true));
-        // Events.on(this.pauseBtn, 'touchend', event => this.togglePlay(event, false));
-        Events.on(this.playBtn, 'click', event => this.togglePlay(event, true));
-        Events.on(this.pauseBtn, 'click', event => this.togglePlay(event, false));
+        Events.on(this.playBtn, 'touchend', event => this.togglePlay(event, true));
+        Events.on(this.pauseBtn, 'touchend', event => this.togglePlay(event, false));
+        // Events.on(this.playBtn, 'click', event => this.togglePlay(event, true));
+        // Events.on(this.pauseBtn, 'click', event => this.togglePlay(event, false));
 
     }
 

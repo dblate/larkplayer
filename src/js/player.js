@@ -97,10 +97,11 @@ class Player extends Component {
         // 3000ms 后自动隐藏播放器控制条
         this.activeTimeout = 3000;
 
-        this.on('click', this.handleClick);
+        // @todo ios11 click 事件触发问题
+        // this.on('click', this.handleClick);
         this.on('touchstart', this.handleTouchStart);
 
-        // this.on('touchend', this.handleTouchEnd);
+        this.on('touchend', this.handleTouchEnd);
 
         if (!this.tech) {
             this.tech = this.loadTech();
@@ -888,8 +889,9 @@ class Player extends Component {
                 clearTimeout(this.activeTimeoutHandler);
             }
 
-            Events.on(document, 'touchmove', this.handleTouchMove);
-            Events.on(document, 'touchend', this.handleTouchEnd);
+            // @todo ios11 click 事件触发问题
+            // Events.on(document, 'touchmove', this.handleTouchMove);
+            // Events.on(document, 'touchend', this.handleTouchEnd);
         }
     }
 
@@ -908,14 +910,41 @@ class Player extends Component {
      * @private
      */
     handleTouchEnd(event) {
+        // clearTimeout(this.activeTimeoutHandler);
+
+        // this.activeTimeoutHandler = setTimeout(() => {
+        //     this.removeClass(activeClass);
+        // }, this.activeTimeout);
+
+        // Events.off(document, 'touchmove', this.handleTouchMove);
+        // Events.off(document, 'touchend', this.handleTouchEnd);
+
         clearTimeout(this.activeTimeoutHandler);
 
-        this.activeTimeoutHandler = setTimeout(() => {
-            this.removeClass(activeClass);
-        }, this.activeTimeout);
+        const activeClass = 'lark-user-active';
 
-        Events.off(document, 'touchmove', this.handleTouchMove);
-        Events.off(document, 'touchend', this.handleTouchEnd);
+        // 点在播放按钮或者控制条上，（继续）展现控制条
+        let clickOnControls = false;
+        // @todo 处理得不够优雅
+        if (Dom.parent(event.target, 'lark-play-button')
+            || Dom.parent(event.target, 'lark-control-bar')) {
+
+            clickOnControls = true;
+        }
+
+        if (!clickOnControls) {
+            this.toggleClass(activeClass);
+
+            if (this.paused()) {
+                this.play();
+            }
+        }
+
+        if (this.hasClass(activeClass)) {
+            this.activeTimeoutHandler = setTimeout(() => {
+                this.removeClass(activeClass);
+            }, this.activeTimeout);
+        }
     }
 
     /**

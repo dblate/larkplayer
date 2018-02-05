@@ -10,23 +10,34 @@
     <video id="my-video" src="https://baikebcs.bdimg.com/baike-other/cool.mp4" width="400" height="300" controls></video>
     <script type="text/javascript" src="../dist/larkplayer.js"></script>
     <script type="text/javascript">
-        var player = larkplayer('my-video');
+        var width = Math.min(document.body.clientWidth, 400);
+        var player = larkplayer('my-video', {
+            width: width,
+            height: width * 9 / 16
+        });
+
         player.on('play', function () {
             console.log('play');
         });
+
         player.on('firstplay', function () {
             console.log('firstplay');
         });
+
         player.on('ended', function () {
             console.log('ended');
-            player.src('http://www.w3school.com.cn/i/movie.ogg');
+            player.src('http://www.w3school.com.cn/i/movie.mp4');
+            player.play();
         });
+
         player.on('resize', function () {
             console.log('resize');
         });
+
         player.on('error', function (event, error) {
             console.log('error occured', event, error);
         });
+
     </script>
 </body>
 </html>

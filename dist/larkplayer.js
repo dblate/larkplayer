@@ -1062,10 +1062,11 @@ var Player = function (_Component) {
         // 3000ms 后自动隐藏播放器控制条
         _this.activeTimeout = 3000;
 
-        _this.on('click', _this.handleClick);
+        // @todo ios11 click 事件触发问题
+        // this.on('click', this.handleClick);
         _this.on('touchstart', _this.handleTouchStart);
 
-        // this.on('touchend', this.handleTouchEnd);
+        _this.on('touchend', _this.handleTouchEnd);
 
         if (!_this.tech) {
             _this.tech = _this.loadTech();
@@ -1903,8 +1904,9 @@ var Player = function (_Component) {
                     clearTimeout(this.activeTimeoutHandler);
                 }
 
-                Events.on(document, 'touchmove', this.handleTouchMove);
-                Events.on(document, 'touchend', this.handleTouchEnd);
+                // @todo ios11 click 事件触发问题
+                // Events.on(document, 'touchmove', this.handleTouchMove);
+                // Events.on(document, 'touchend', this.handleTouchEnd);
             }
         }
 
@@ -1929,14 +1931,40 @@ var Player = function (_Component) {
         value: function handleTouchEnd(event) {
             var _this6 = this;
 
+            // clearTimeout(this.activeTimeoutHandler);
+
+            // this.activeTimeoutHandler = setTimeout(() => {
+            //     this.removeClass(activeClass);
+            // }, this.activeTimeout);
+
+            // Events.off(document, 'touchmove', this.handleTouchMove);
+            // Events.off(document, 'touchend', this.handleTouchEnd);
+
             clearTimeout(this.activeTimeoutHandler);
 
-            this.activeTimeoutHandler = setTimeout(function () {
-                _this6.removeClass(activeClass);
-            }, this.activeTimeout);
+            var activeClass = 'lark-user-active';
 
-            Events.off(document, 'touchmove', this.handleTouchMove);
-            Events.off(document, 'touchend', this.handleTouchEnd);
+            // 点在播放按钮或者控制条上，（继续）展现控制条
+            var clickOnControls = false;
+            // @todo 处理得不够优雅
+            if (Dom.parent(event.target, 'lark-play-button') || Dom.parent(event.target, 'lark-control-bar')) {
+
+                clickOnControls = true;
+            }
+
+            if (!clickOnControls) {
+                this.toggleClass(activeClass);
+
+                if (this.paused()) {
+                    this.play();
+                }
+            }
+
+            if (this.hasClass(activeClass)) {
+                this.activeTimeoutHandler = setTimeout(function () {
+                    _this6.removeClass(activeClass);
+                }, this.activeTimeout);
+            }
         }
 
         /**
@@ -6661,14 +6689,14 @@ var PlayButton = function (_Component) {
         _this.pauseBtn = Dom.$('.lark-play-button__pause', _this.el);
 
         // @todo 临时处理 ios11 click 事件问题
-        // Events.on(this.playBtn, 'touchend', event => this.togglePlay(event, true));
-        // Events.on(this.pauseBtn, 'touchend', event => this.togglePlay(event, false));
-        Events.on(_this.playBtn, 'click', function (event) {
+        Events.on(_this.playBtn, 'touchend', function (event) {
             return _this.togglePlay(event, true);
         });
-        Events.on(_this.pauseBtn, 'click', function (event) {
+        Events.on(_this.pauseBtn, 'touchend', function (event) {
             return _this.togglePlay(event, false);
         });
+        // Events.on(this.playBtn, 'click', event => this.togglePlay(event, true));
+        // Events.on(this.pauseBtn, 'click', event => this.togglePlay(event, false));
 
         return _this;
     }
