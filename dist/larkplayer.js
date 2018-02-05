@@ -1011,6 +1011,7 @@ var Player = function (_Component) {
      *                                  - metadata 仅下载 metadata（视频总时长、高宽等信息）
      *                                  - none 不要预下载
      * @param {string=} options.src 视频链接
+     * @param {Array=} options.source 视频 source 标签。为 [{src: 'xxx', type: 'xxx'}] 的形式，type 可选
      * @param {Function=} ready 播放器初始化完成后执行的函数，可选
      */
     function Player(tag, options, ready) {
