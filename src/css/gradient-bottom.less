@@ -1,0 +1,13 @@
+@import (reference) './mixins/mixins.less';
+@import './variables.less';
+
+.lark-gradient-bottom {
+    .mixins-linear-gradient(top, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.5););
+
+    position: absolute;
+    width: 100%;
+    bottom: 0;
+    height: 49px;
+    padding-top: 49px;
+    pointer-events: none;
+}

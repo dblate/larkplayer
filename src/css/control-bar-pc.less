@@ -1,0 +1,30 @@
+@import './variables.less';
+@import './mixins/mixins.less';
+
+
+.lark-control-bar-pc {
+    .mixins-clearfix();
+    line-height: 39px;
+    height: 39px;
+    position: absolute;
+    bottom: 0px;
+    background: rgba(0, 0, 0, 0.5);
+    color: #fff;
+    width: 100%;
+
+    .lark-control__left {
+        .mixins-clearfix();
+        float: left;
+        height: 100%;
+    }
+    .lark-control__right {
+        .mixins-clearfix();
+        float: right;
+        height: 100%;
+    }
+    
+    .lark-play-button-pc {
+        float: left;
+    }
+    
+}

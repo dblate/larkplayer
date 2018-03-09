@@ -10,6 +10,19 @@
     display: none;
 }
 
+.mixins-clearfix() {
+    *zoom: 1;
+    &:after {
+        content     : '\0020';
+        display     : block;
+        height      : 0;
+        font-size   : 0;
+        clear       : both;
+        overflow    : hidden;
+        visibility  : hidden;
+    }
+}
+
 .mixins-animation(
     @name           : none;
     @duration       : 400ms;

@@ -11,11 +11,29 @@
 
 .lark-progress-bar {
     position: relative;
+    cursor: pointer;
 
     .mixins-flex();
     .mixins-flex-center-v();
     flex: 1;
     -webkit-flex: 1;
+}
+
+.lark-progress-bar-pc {
+    margin: 0 10px;
+    
+    .lark-progress-bar-except-fill {
+        height: @line-height-thick;
+    }
+    .lark-buffer-bar {
+        height: @line-height-thick;
+    }
+    .lark-progress-bar-padding {
+        position: absolute;
+        width: 100%;
+        height: @handle-padding * 2;
+        bottom: 0;
+    }
 }
 
 .lark-progress-bar-except-fill {

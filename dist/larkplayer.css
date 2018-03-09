@@ -16,7 +16,7 @@
 .file-placeholder-1510232955822 {
   display: none;
 }
-.lark-play-button {
+.lark-play-button-mobile {
   text-align: center;
   position: absolute;
   left: 50%;
@@ -44,16 +44,26 @@
 .lark-play-button__pause {
   display: none;
 }
+.lark-play-button {
+  cursor: pointer;
+}
+.lark-play-button-pc {
+  margin-right: 14px;
+}
+.lark-play-button-pc .lark-play-button__play,
+.lark-play-button-pc .lark-play-button__pause {
+  padding: 0 14px;
+}
 @font-face {
-  font-family: 'fontello';
-  src: url('resource/font/fontello.eot');
-  src: url('resource/font/fontello.eot#iefix') format('embedded-opentype'), url('resource/font/fontello.woff2') format('woff2'), url('resource/font/fontello.woff') format('woff'), url('resource/font/fontello.ttf') format('truetype'), url('resource/font/fontello.svg#fontello') format('svg');
+  font-family: 'larkplayericon';
+  src: url('resource/font/font.eot');
+  src: url('resource/font/font.eot#iefix') format('embedded-opentype'), url('resource/font/font.woff2') format('woff2'), url('resource/font/font.woff') format('woff'), url('resource/font/font.ttf') format('truetype'), url('resource/font/font.svg#larkplayericon') format('svg');
   font-weight: normal;
   font-style: normal;
 }
 [class^='lark-icon-']:before,
 [class*=' lark-icon-']:before {
-  font-family: 'fontello';
+  font-family: 'larkplayericon';
   font-style: normal;
   font-weight: normal;
   speak: none;
@@ -69,17 +79,26 @@
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
-.lark-icon-triangle-radius:before {
-  content: '\e800';
+.lark-icon-sound-small:before {
+  content: '\e600';
 }
-.lark-icon-play:before {
-  content: '\e801';
+.lark-icon-sound-large:before {
+  content: '\e601';
+}
+.lark-icon-sound-middle:before {
+  content: '\e602';
+}
+.lark-icon-exit-fullscreen:before {
+  content: '\e603';
 }
 .lark-icon-request-fullscreen:before {
-  content: '\e802';
+  content: '\e604';
 }
 .lark-icon-pause:before {
-  content: '\e803';
+  content: '\e606';
+}
+.lark-icon-play:before {
+  content: '\e607';
 }
 /**
  * @file 播放器状态
@@ -111,7 +130,7 @@
 .lark-full-window .lark-request-fullscreen {
   display: none;
 }
-.lark-user-active .lark-play-button {
+.lark-user-active .lark-play-button-mobile {
   display: block;
 }
 .lark-user-active .lark-control-bar {
@@ -123,7 +142,7 @@
 .lark-user-active .lark-progress-bar--simple {
   display: none;
 }
-.lark-play-button {
+.lark-play-button-mobile {
   display: none;
 }
 .lark-control-bar {
@@ -134,13 +153,13 @@
 .lark-loadstart .lark-loading-area {
   display: block;
 }
-.lark-seeking .lark-play-button,
-.lark-waiting .lark-play-button,
-.lark-loadstart .lark-play-button {
+.lark-seeking .lark-play-button-mobile,
+.lark-waiting .lark-play-button-mobile,
+.lark-loadstart .lark-play-button-mobile {
   display: none;
 }
-.lark-paused .lark-play-button,
-.lark-ended .lark-play-button {
+.lark-paused .lark-play-button-mobile,
+.lark-ended .lark-play-button-mobile {
   display: block;
 }
 .lark-paused .lark-play-button__play,
@@ -173,7 +192,7 @@
 .lark-error .lark-error-area {
   display: block;
 }
-.lark-error .lark-play-button {
+.lark-error .lark-play-button-mobile {
   display: none;
 }
 .lark-error .lark-loading-area {
@@ -184,6 +203,7 @@
 }
 .lark-progress-bar {
   position: relative;
+  cursor: pointer;
   display: -webkit-box;
   display: -webkit-flex;
   display: -ms-flexbox;
@@ -194,6 +214,21 @@
   align-items: center;
   flex: 1;
   -webkit-flex: 1;
+}
+.lark-progress-bar-pc {
+  margin: 0 10px;
+}
+.lark-progress-bar-pc .lark-progress-bar-except-fill {
+  height: 3px;
+}
+.lark-progress-bar-pc .lark-buffer-bar {
+  height: 3px;
+}
+.lark-progress-bar-pc .lark-progress-bar-padding {
+  position: absolute;
+  width: 100%;
+  height: 20px;
+  bottom: 0;
 }
 .lark-progress-bar-except-fill {
   position: relative;
@@ -261,6 +296,7 @@
   display: block;
 }
 .lark-fullscreen-button {
+  cursor: pointer;
   padding: 0 14px;
   height: 100%;
   display: -webkit-box;
@@ -356,6 +392,19 @@
     -webkit-transform: rotate(360deg);
     -o-transform: rotate(360deg);
   }
+}
+.lark-loading-pc .lark-loading-cnt {
+  padding: 10px;
+  border-radius: 50%;
+  line-height: 1;
+  background: rgba(0, 0, 0, 0.7);
+}
+.lark-loading-pc .lark-loading-area__spinner {
+  width: 40px;
+  height: 40px;
+}
+.lark-loading-pc .lark-loading-area__text {
+  display: none;
 }
 .lark-control-bar {
   position: absolute;
@@ -462,6 +511,160 @@
     -webkit-transform: rotate(360deg);
     -o-transform: rotate(360deg);
   }
+}
+.lark-error-pc .lark-error-area {
+  font-size: 15px;
+  height: 34px;
+  line-height: 34px;
+}
+.lark-error-pc .lark-error-area__spinner {
+  width: 18px;
+  height: 18px;
+}
+.lark-time {
+  *zoom: 1;
+  font-size: 13px;
+  float: left;
+  margin-right: 14px;
+}
+.lark-time:after {
+  content: '\0020';
+  display: block;
+  height: 0;
+  font-size: 0;
+  clear: both;
+  overflow: hidden;
+  visibility: hidden;
+}
+.lark-time .lark-current-time,
+.lark-time .lark-duration {
+  margin: 0;
+  float: left;
+}
+.lark-time .lark-time-separator {
+  float: left;
+}
+.lark-control-bar-pc {
+  *zoom: 1;
+  line-height: 39px;
+  height: 39px;
+  position: absolute;
+  bottom: 0px;
+  background: rgba(0, 0, 0, 0.5);
+  color: #fff;
+  width: 100%;
+}
+.lark-control-bar-pc:after {
+  content: '\0020';
+  display: block;
+  height: 0;
+  font-size: 0;
+  clear: both;
+  overflow: hidden;
+  visibility: hidden;
+}
+.lark-control-bar-pc .lark-control__left {
+  *zoom: 1;
+  float: left;
+  height: 100%;
+}
+.lark-control-bar-pc .lark-control__left:after {
+  content: '\0020';
+  display: block;
+  height: 0;
+  font-size: 0;
+  clear: both;
+  overflow: hidden;
+  visibility: hidden;
+}
+.lark-control-bar-pc .lark-control__right {
+  *zoom: 1;
+  float: right;
+  height: 100%;
+}
+.lark-control-bar-pc .lark-control__right:after {
+  content: '\0020';
+  display: block;
+  height: 0;
+  font-size: 0;
+  clear: both;
+  overflow: hidden;
+  visibility: hidden;
+}
+.lark-control-bar-pc .lark-play-button-pc {
+  float: left;
+}
+.lark-gradient-bottom {
+  background: -webkit-linear-gradient(top, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.5));
+  background: -moz-linear-gradient(top, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.5));
+  background: -ms-linear-gradient(top, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.5));
+  background: linear-gradient(top, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.5));
+  position: absolute;
+  width: 100%;
+  bottom: 0;
+  height: 49px;
+  padding-top: 49px;
+  pointer-events: none;
+}
+.lark-volume {
+  float: left;
+  *zoom: 1;
+  height: 100%;
+  width: 80px;
+  cursor: pointer;
+  margin-right: 14px;
+}
+.lark-volume:after {
+  content: '\0020';
+  display: block;
+  height: 0;
+  font-size: 0;
+  clear: both;
+  overflow: hidden;
+  visibility: hidden;
+}
+.lark-volume-icon {
+  margin-right: 4px;
+  float: left;
+}
+.lark-volume-line {
+  float: left;
+  position: relative;
+  height: 100%;
+}
+.lark-volume-line__line {
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  -ms-transform: translateY(-50%);
+  -moz-transform: translateY(-50%);
+  -webkit-transform: translateY(-50%);
+  -o-transform: translateY(-50%);
+  width: 50px;
+  height: 3px;
+  background-color: #fff;
+}
+.lark-volume-line__line-padding {
+  position: absolute;
+  bottom: -10px;
+  left: 0;
+  padding: 10px 0;
+  width: 100%;
+}
+.lark-volume-line__ball {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  -ms-transform: translateY(-50%);
+  -moz-transform: translateY(-50%);
+  -webkit-transform: translateY(-50%);
+  -o-transform: translateY(-50%);
+  left: 50px;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: #fff;
 }
 .larkplayer {
   position: relative;

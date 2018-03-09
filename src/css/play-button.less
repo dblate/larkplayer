@@ -4,7 +4,7 @@
 @button-size: 48px;
 @button-font-size: 18px;
 
-.lark-play-button {
+.lark-play-button-mobile {
     text-align: center;
     position: absolute;
     left: 50%;
@@ -30,4 +30,17 @@
 
 .lark-play-button__pause {
     display: none;
+}
+
+.lark-play-button {
+    cursor: pointer;
+}
+
+.lark-play-button-pc {
+    margin-right: @primary-spacing;
+
+    .lark-play-button__play,
+    .lark-play-button__pause {
+        padding: 0 @primary-spacing;
+    }
 }

@@ -86,6 +86,26 @@ export default class Component {
         return Dom.createEl(tagName, properties, attributes);
     }
 
+    createElement(tagName, props, ...child) {
+        const ComponentClass = Component.getComponent(toTitleCase(tagName));
+        if (ComponentClass) {
+            const instance = new ComponentClass(this.player, props);
+            const instanceEl = instance.el;
+
+            if (child) {
+                Dom.appendContent(instanceEl, child);
+            }
+
+            return instanceEl;
+        } else {
+            return Dom.createElement(tagName, props, ...child);
+        }
+    }
+
+    appendChild(el, child) {
+
+    }
+
     contentEl() {
         return this.contentEl || this.el;
     }

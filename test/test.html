@@ -10,11 +10,15 @@
     <video id="my-video" src="https://baikebcs.bdimg.com/baike-other/cool.mp4" width="400" height="300" controls></video>
     <script type="text/javascript" src="../dist/larkplayer.js"></script>
     <script type="text/javascript">
-        var width = Math.min(document.body.clientWidth, 400);
+        var width = Math.min(document.body.clientWidth, 960);
         var player = larkplayer('my-video', {
             width: width,
             height: width * 9 / 16
         });
+        var srcList = [
+            'http://www.w3school.com.cn/i/movie.mp4',
+            'https://baikebcs.bdimg.com/baike-other/cool.mp4'
+        ];
 
         player.on('play', function () {
             console.log('play');
@@ -26,7 +30,7 @@
 
         player.on('ended', function () {
             console.log('ended');
-            player.src('http://www.w3school.com.cn/i/movie.mp4');
+            player.src(srcList[Math.round(Math.random())]);
             player.play();
         });
 

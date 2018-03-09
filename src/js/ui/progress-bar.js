@@ -114,15 +114,28 @@ class ProgressBar extends Component {
     }
 
     createEl() {
-        return Dom.createElement('div', {
-            className: 'lark-progress-bar'
-        });
+        let className = 'lark-progress-bar';
+        if (this.options.className) {
+            className = className + ' ' + this.options.className;
+        }
+
+        return this.createElement(
+            'div',
+            {className},
+            this.createElement(
+                'div',
+                {className: 'lark-progress-bar-padding'}
+            ),
+            this.createElement('progressBarExceptFill')
+        );
+
+        // return Dom.createElement('div', {className});
     }
 }
 
-ProgressBar.prototype.options = {
-    children: ['progressBarExceptFill']
-};
+// ProgressBar.prototype.options = {
+//     children: ['progressBarExceptFill']
+// };
 
 Component.registerComponent('ProgressBar', ProgressBar);
 

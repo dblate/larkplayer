@@ -18,6 +18,7 @@ import {each} from './utils/obj';
 import * as Plugin from './utils/plugin';
 import log from './utils/log';
 import computedStyle from './utils/computed-style';
+import featureDetector from './utils/feature-detector';
 
 // 确保以下代码都执行一次
 import './ui/play-button';
@@ -25,6 +26,10 @@ import './ui/control-bar';
 import './ui/loading';
 import './ui/progress-bar-simple';
 import './ui/error';
+import './ui/control-bar-pc';
+import './ui/loading-pc';
+import './ui/error-pc';
+import './ui/gradient-bottom';
 
 const document = window.document;
 const activeClass = 'lark-user-active';
@@ -100,9 +105,12 @@ class Player extends Component {
 
         // @todo ios11 click 事件触发问题
         // this.on('click', this.handleClick);
-        this.on('touchstart', this.handleTouchStart);
-
-        this.on('touchend', this.handleTouchEnd);
+        if (featureDetector.touch) {
+            this.on('touchstart', this.handleTouchStart);
+            this.on('touchend', this.handleTouchEnd);
+        } else {
+            this.on('click', this.handleClick);
+        }
 
         if (!this.tech) {
             this.tech = this.loadTech();
@@ -1031,6 +1039,8 @@ class Player extends Component {
     /**
      * 处理播放器 click 事件，主要用于控制控制条显隐
      *
+     * pc 上用 click 事件，移动端用 touchend
+     *
      * @deprecate 由于 ios11 video 标签对 click 的支持有问题，目前已弃用，将对应逻辑转移到了 touchend 中
      * @todo 开发 tap 事件来代替 click
      * @private
@@ -1043,8 +1053,8 @@ class Player extends Component {
         // 点在播放按钮或者控制条上，（继续）展现控制条
         let clickOnControls = false;
         // @todo 处理得不够优雅
-        if (Dom.parent(event.target, 'lark-play-button')
-            || Dom.parent(event.target, 'lark-control-bar')) {
+        if (Dom.parent(event.target, 'lark-control-bar-pc')
+            || Dom.hasClass(event.target, 'lark-control-bar-pc')) {
 
             clickOnControls = true;
         }
@@ -1053,8 +1063,12 @@ class Player extends Component {
             this.toggleClass(activeClass);
 
             // 处于暂停状态时，点击非控制条的位置继续播放
-            if (this.paused()) {
+            // 切换暂停／播放状态
+            const isPaused = this.paused();
+            if (isPaused) {
                 this.play();
+            } else {
+                this.pause();
             }
         }
 
@@ -1505,15 +1519,26 @@ class Player extends Component {
     };
 });
 
-Player.prototype.options = {
-    children: [
-        'playButton',
-        'progressBarSimple',
-        'controlBar',
-        'loading',
-        'error'
-    ]
-};
+if (featureDetector.touch) {
+    Player.prototype.options = {
+        children: [
+            'playButton',
+            'progressBarSimple',
+            'controlBar',
+            'loading',
+            'error'
+        ]
+    };
+} else {
+    Player.prototype.options = {
+        children: [
+            'gradientBottom',
+            'controlBarPc',
+            'loadingPc',
+            'errorPc'
+        ]
+    };
+}
 
 export default Player;
 

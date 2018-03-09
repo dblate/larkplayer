@@ -25,7 +25,9 @@ export default class Error extends Component {
     handleClick() {
         const src = this.player.src();
         this.player.reset();
-        this.player.src(src);
+        setTimeout(() => {
+            this.player.src(src);
+        }, 0);
     }
 
     createEl() {
