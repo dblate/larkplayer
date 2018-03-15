@@ -216,7 +216,6 @@
   -webkit-flex: 1;
 }
 .lark-progress-bar-pc {
-  font-size: 16px;
   margin: 0 10px;
   height: 3px;
 }
@@ -633,6 +632,7 @@
 }
 .lark-control-bar-pc {
   *zoom: 1;
+  font-size: 16px;
   line-height: 39px;
   height: 39px;
   position: absolute;
