@@ -68,6 +68,14 @@
     -o-transform:@transform;
 }
 
+.mixins-transition(@transition) {
+    transition: @transition;
+    -ms-transition:@transition;
+    -moz-transition:@transition;
+    -webkit-transition:@transition;
+    -o-transition:@transition;
+}
+
 .mixins-linear-gradient(@gradient){
     background : -webkit-linear-gradient(@gradient);
     background : -moz-linear-gradient(@gradient);

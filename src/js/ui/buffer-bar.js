@@ -33,10 +33,14 @@ export default class BufferBar extends Component {
         const duration = this.player.duration();
         const currentTime = this.player.currentTime();
 
+
+        window.buffered = buffered;
+        console.log(buffered);
+
         if (duration > 0) {
             for (let i = 0; i < buffered.length; i++) {
                 if (buffered.start(i) <= currentTime && buffered.end(i) >= currentTime) {
-                    const width = Math.round((buffered.end(i) / duration)) * 100 + '%';
+                    const width = (buffered.end(i) / duration) * 100 + '%';
                     this.render(width);
                     break;
                 }

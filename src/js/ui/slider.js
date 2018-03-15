@@ -7,7 +7,7 @@
 import Component from '../component';
 import * as Events from '../utils/events';
 
-export default class Slide extends Component {
+export default class Slider extends Component {
     constructor(player, options) {
         super(player, options);
 

@@ -1,3 +1,5 @@
+// @todo 整理 pc mobile fullscreen 3 种状态的样式
+
 @import './mixins/mixins.less';
 @import './variables.less';
 
@@ -24,32 +26,62 @@
 
 .lark-progress-bar-pc {
     margin: 0 10px;
-    
-    .lark-progress-bar-except-fill {
+    height: @line-height-thick;
+
+    .lark-progress-bar-hover-light {
+        background: rgba(231, 231, 231, 0.6);
+    }
+
+    .lark-progress-bar-except-fill,
+    .lark-progress-bar-hover-light {
+        cursor: pointer;
+        position: absolute;
         height: @line-height-thick;
-        transition: all 0.2s;
+        .mixins-transition(all, @transition-duration-fast;);
     }
     .lark-buffer-bar {
         height: @line-height-thick;
-        transition: all 0.2s;
+        .mixins-transition(all, @transition-duration-fast;);
     }
     .lark-progress-bar-padding {
         position: absolute;
         width: 100%;
-        height: @handle-padding * 2;
+        height: 16px;
         bottom: 0;
+        cursor: pointer;
+    }
+    .lark-progress-bar__line__handle {
+        top: (@line-height-thick / 2);
+    }
+    .lark-progress-bar__line__handle-except-fill {
+        width: 0;
+        height: 0;
     }
 
-    // &:hover {
-    //     .lark-sliding;
-    // }
+    &:hover {
+        .lark-sliding;
+    }
+
+    // 进度条滑动时
+    &.lark-sliding {
+        .lark-progress-bar__line__handle-except-fill {
+            width: @handle-size;
+            height: @handle-size;
+        }
+        .lark-progress-bar-except-fill,
+        .lark-buffer-bar,
+        .lark-progress-bar-hover-light {
+            height: @line-height-thick + 2;
+        }
+    }
 }
 
 .lark-progress-bar-except-fill {
+    cursor: pointer;
     position: relative;
     width: 100%;
     height: @line-height;
-    transition: all 0.2s;
+    .mixins-transition(all, @transition-duration-fast;);
 }
 
 .lark-progress-bar__background {
@@ -75,21 +107,54 @@
     position: absolute;
     padding: @handle-padding;
     right: -((@handle-size + 2 * @handle-padding) / 2);
-    top: -((@handle-size + 2 * @handle-padding) / 2 - @line-height / 2);
+    // top: -((@handle-size + 2 * @handle-padding) / 2 - @line-height / 2);
+    top: (@line-height / 2);
+    .mixins-transform(translateY(-50%));
 }
 
 .lark-progress-bar__line__handle-except-fill {
     border-radius: 50%;
+    // 默认隐藏，用户交互时再显示
     width: @handle-size;
     height: @handle-size;
     background: @primary-color;
+    .mixins-transition(all, @transition-duration-fast;);
 }
 
 // 全屏时
 .lark-fullscreen {
     .lark-progress-bar__line__handle {
         right: -((@handle-size-fullscreen + 2 * @handle-padding) / 2);
-        top: -((@handle-size-fullscreen + 2 * @handle-padding) / 2 - @line-height / 2);
+        top: (@line-height / 2);;
+    }
+
+    .lark-progress-bar-pc {
+        .lark-progress-bar__line__handle {
+            top: (@line-height-thick / 2);
+        }
+
+        .lark-progress-bar__line__handle-except-fill {
+            width: 0;
+            height: 0;
+        }
+
+        &:hover {
+            .lark-sliding;
+        }
+
+        // 进度条滑动时
+        &.lark-sliding {
+            .lark-progress-bar__line__handle-except-fill {
+                width: @handle-size;
+                height: @handle-size;
+            }
+            .lark-progress-bar-except-fill {
+                height: @line-height-thick + 2;
+            }
+            .lark-buffer-bar {
+                height: @line-height-thick + 2;
+            }
+        }
     }
 
     .lark-progress-bar__line__handle-except-fill {
@@ -97,22 +162,3 @@
         height: @handle-size-fullscreen;
     }
 }
-
-
-// 进度条滑动时
-// .lark-sliding {
-//     .lark-progress-bar-except-fill {
-//         height: @line-height-sliding;
-//     }
-//     .lark-buffer-bar {
-//         height: @line-height-sliding;
-//     }
-//     .lark-progress-bar__line__handle-except-fill {
-//         width: @handle-size-sliding;
-//         height: @handle-size-sliding
-//     }
-//     .lark-progress-bar__line__handle {
-//         right: -((@handle-size-sliding + 2 * @handle-padding) / 2);
-//         top: -((@handle-size-sliding + 2 * @handle-padding) / 2 - @line-height / 2);
-//     }
-// }

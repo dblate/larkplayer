@@ -217,26 +217,72 @@
 }
 .lark-progress-bar-pc {
   margin: 0 10px;
-}
-.lark-progress-bar-pc .lark-progress-bar-except-fill {
   height: 3px;
-  transition: all 0.2s;
+}
+.lark-progress-bar-pc .lark-progress-bar-hover-light {
+  background: rgba(231, 231, 231, 0.6);
+}
+.lark-progress-bar-pc .lark-progress-bar-except-fill,
+.lark-progress-bar-pc .lark-progress-bar-hover-light {
+  cursor: pointer;
+  position: absolute;
+  height: 3px;
+  transition: all, 0.1s;
+  -ms-transition: all, 0.1s;
+  -moz-transition: all, 0.1s;
+  -webkit-transition: all, 0.1s;
+  -o-transition: all, 0.1s;
 }
 .lark-progress-bar-pc .lark-buffer-bar {
   height: 3px;
-  transition: all 0.2s;
+  transition: all, 0.1s;
+  -ms-transition: all, 0.1s;
+  -moz-transition: all, 0.1s;
+  -webkit-transition: all, 0.1s;
+  -o-transition: all, 0.1s;
 }
 .lark-progress-bar-pc .lark-progress-bar-padding {
   position: absolute;
   width: 100%;
-  height: 20px;
+  height: 16px;
   bottom: 0;
+  cursor: pointer;
+}
+.lark-progress-bar-pc .lark-progress-bar__line__handle {
+  top: 1.5px;
+}
+.lark-progress-bar-pc .lark-progress-bar__line__handle-except-fill {
+  width: 0;
+  height: 0;
+}
+.lark-progress-bar-pc:hover .lark-progress-bar__line__handle-except-fill {
+  width: 12px;
+  height: 12px;
+}
+.lark-progress-bar-pc:hover .lark-progress-bar-except-fill,
+.lark-progress-bar-pc:hover .lark-buffer-bar,
+.lark-progress-bar-pc:hover .lark-progress-bar-hover-light {
+  height: 5px;
+}
+.lark-progress-bar-pc.lark-sliding .lark-progress-bar__line__handle-except-fill {
+  width: 12px;
+  height: 12px;
+}
+.lark-progress-bar-pc.lark-sliding .lark-progress-bar-except-fill,
+.lark-progress-bar-pc.lark-sliding .lark-buffer-bar,
+.lark-progress-bar-pc.lark-sliding .lark-progress-bar-hover-light {
+  height: 5px;
 }
 .lark-progress-bar-except-fill {
+  cursor: pointer;
   position: relative;
   width: 100%;
   height: 1px;
-  transition: all 0.2s;
+  transition: all, 0.1s;
+  -ms-transition: all, 0.1s;
+  -moz-transition: all, 0.1s;
+  -webkit-transition: all, 0.1s;
+  -o-transition: all, 0.1s;
 }
 .lark-progress-bar__background {
   position: absolute;
@@ -256,17 +302,54 @@
   position: absolute;
   padding: 10px;
   right: -16px;
-  top: -15.5px;
+  top: 0.5px;
+  transform: translateY(-50%);
+  -ms-transform: translateY(-50%);
+  -moz-transform: translateY(-50%);
+  -webkit-transform: translateY(-50%);
+  -o-transform: translateY(-50%);
 }
 .lark-progress-bar__line__handle-except-fill {
   border-radius: 50%;
   width: 12px;
   height: 12px;
   background: #fff;
+  transition: all, 0.1s;
+  -ms-transition: all, 0.1s;
+  -moz-transition: all, 0.1s;
+  -webkit-transition: all, 0.1s;
+  -o-transition: all, 0.1s;
 }
 .lark-fullscreen .lark-progress-bar__line__handle {
   right: -17.5px;
-  top: -17px;
+  top: 0.5px;
+}
+.lark-fullscreen .lark-progress-bar-pc .lark-progress-bar__line__handle {
+  top: 1.5px;
+}
+.lark-fullscreen .lark-progress-bar-pc .lark-progress-bar__line__handle-except-fill {
+  width: 0;
+  height: 0;
+}
+.lark-fullscreen .lark-progress-bar-pc:hover .lark-progress-bar__line__handle-except-fill {
+  width: 12px;
+  height: 12px;
+}
+.lark-fullscreen .lark-progress-bar-pc:hover .lark-progress-bar-except-fill {
+  height: 5px;
+}
+.lark-fullscreen .lark-progress-bar-pc:hover .lark-buffer-bar {
+  height: 5px;
+}
+.lark-fullscreen .lark-progress-bar-pc.lark-sliding .lark-progress-bar__line__handle-except-fill {
+  width: 12px;
+  height: 12px;
+}
+.lark-fullscreen .lark-progress-bar-pc.lark-sliding .lark-progress-bar-except-fill {
+  height: 5px;
+}
+.lark-fullscreen .lark-progress-bar-pc.lark-sliding .lark-buffer-bar {
+  height: 5px;
 }
 .lark-fullscreen .lark-progress-bar__line__handle-except-fill {
   width: 15px;
@@ -667,6 +750,15 @@
   height: 10px;
   border-radius: 50%;
   background: #fff;
+}
+.lark-tooltip {
+  position: absolute;
+  display: none;
+  background-color: rgba(0, 0, 0, 0.8);
+  color: #fff;
+  border-radius: 2px;
+  padding: 4px 8px;
+  font-size: 13px;
 }
 .larkplayer {
   position: relative;

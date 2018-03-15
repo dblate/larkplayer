@@ -8,26 +8,31 @@ import Component from '../component';
 import * as Dom from '../utils/dom';
 import * as Events from '../utils/events';
 import featureDetector from '../utils/feature-detector';
-import Slide from './slide';
+import Slider from './slider';
+import tooltip from './tooltip';
 
 const document = window.document;
 
-export default class Volume extends Slide {
+export default class Volume extends Slider {
     constructor(player, options) {
         super(player, options);
 
-        this.iconClick = this.iconClick.bind(this);
         this.onSlideMove = this.onSlideMove.bind(this);
         this.onClick = this.onClick.bind(this);
         this.update = this.update.bind(this);
+        this.iconClick = this.iconClick.bind(this);
+        this.handleIconMouseOver = this.handleIconMouseOver.bind(this);
+        this.handleIconMouseOut = this.handleIconMouseOut.bind(this);
+        this.switchStatus = this.switchStatus.bind(this);
+        this.clearStatus = this.clearStatus.bind(this);
 
         this.line = Dom.$('.lark-volume-line__line', this.el);
         this.ball = Dom.$('.lark-volume-line__ball', this.el);
         this.icon = Dom.$('.lark-volume-icon', this.el);
 
-        this.lineWidth = this.line.offsetWidth;
-
         Events.on(this.icon, 'click', this.iconClick);
+        Events.on(this.icon, 'mouseover', this.handleIconMouseOver);
+        Events.on(this.icon, 'mouseout', this.handleIconMouseOut)
         Events.on(this.line, 'click', this.handleClick);
         Events.on(this.ball, 'mousedown', this.handleSlideStart);
         Events.on(this.ball, 'touchstart', this.handleSlideStart);
@@ -44,34 +49,53 @@ export default class Volume extends Slide {
 
     update(event) {
         const pos = Dom.getPointerPosition(this.line, event);
+
+        console.log(pos);
+
         const percent = pos.x;
         const lineWidth = this.line.offsetWidth;
 
         this.ball.style.left = percent * lineWidth + 'px';
         this.player.volume(percent);
         this.switchStatus(percent);
-
-        console.log(percent);
     }
 
-    iconClick() {
+    iconClick(event) {
         this.ball.style.left = 0;
         this.player.volume(0);
         this.switchStatus(0)
     }
 
-    switchStatus(volume) {
-        this.removeStatusClass();
-        if (volume === 0) {
-            Dom.addClass(this.icon, 'lark-icon-sound-small')
-        } else if (volume <= 0.6 && volume > 0) {
-            Dom.addClass(this.icon, 'lark-icon-sound-middle');
-        } else if (volume > 0.6) {
-            Dom.addClass(this.icon, 'lark-icon-sound-large')
-        }
+    handleIconMouseOver(event) {
+        const pos = Dom.findPosition(this.icon);
+        const rect = Dom.getBoundingClientRect(this.icon);
+        tooltip.show({
+            top: pos.top - rect.height,
+            left: pos.left,
+            content: '静音'
+        });
     }
 
-    removeStatusClass() {
+    handleIconMouseOut(event) {
+        tooltip.hide();
+    }
+
+    switchStatus(volume) {
+        this.clearStatus();
+
+        let status;
+        if (volume === 0) {
+            status = 'small';
+        } else if (volume <= 0.6 && volume > 0) {
+            status = 'middle';
+        } else if (volume > 0.6) {
+            status = 'large';
+        }
+
+        Dom.addClass(this.icon, `lark-icon-sound-${status}`);
+    }
+
+    clearStatus() {
         const statusClass = ['lark-icon-sound-small', 'lark-icon-sound-middle', 'lark-icon-sound-large'];
         statusClass.forEach(className => {
             Dom.removeClass(this.icon, className);

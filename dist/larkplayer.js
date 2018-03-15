@@ -330,7 +330,7 @@ var Component = function () {
 
 exports.default = Component;
 
-},{"./mixins/evented":4,"./utils/dom":26,"./utils/dom-data":25,"./utils/fn":29,"./utils/guid":31,"./utils/merge-options":33,"./utils/to-title-case":40}],2:[function(require,module,exports){
+},{"./mixins/evented":4,"./utils/dom":27,"./utils/dom-data":26,"./utils/fn":30,"./utils/guid":32,"./utils/merge-options":34,"./utils/to-title-case":41}],2:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -746,7 +746,7 @@ Html5.resetMediaElement = function (el) {
 
 exports.default = Html5;
 
-},{"./component":1,"./utils/dom":26,"./utils/normalize-source":35,"./utils/to-title-case":40}],3:[function(require,module,exports){
+},{"./component":1,"./utils/dom":27,"./utils/normalize-source":36,"./utils/to-title-case":41}],3:[function(require,module,exports){
 'use strict';
 
 var _dom = require('./utils/dom');
@@ -854,7 +854,7 @@ larkplayer.deregisterPlugin = Plugin.deregisterPlugin;
 // @see https://github.com/babel/babel/issues/2724
 module.exports = larkplayer;
 
-},{"./component":1,"./player":5,"./shim/third_party/shim.min.js":6,"./utils/dom":26,"./utils/events":27,"./utils/log":32,"./utils/plugin":37,"./utils/script-loader":38}],4:[function(require,module,exports){
+},{"./component":1,"./player":5,"./shim/third_party/shim.min.js":6,"./utils/dom":27,"./utils/events":28,"./utils/log":33,"./utils/plugin":38,"./utils/script-loader":39}],4:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -926,7 +926,7 @@ function evented(target) {
     };
 }
 
-},{"../utils/dom":26,"../utils/events":27}],5:[function(require,module,exports){
+},{"../utils/dom":27,"../utils/events":28}],5:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -2679,7 +2679,7 @@ if (_featureDetector2.default.touch) {
 
 exports.default = Player;
 
-},{"./component":1,"./html5":2,"./mixins/evented":4,"./ui/control-bar":9,"./ui/control-bar-pc":8,"./ui/error":13,"./ui/error-pc":12,"./ui/gradient-bottom":15,"./ui/loading":17,"./ui/loading-pc":16,"./ui/play-button":18,"./ui/progress-bar-simple":20,"./utils/computed-style":24,"./utils/dom":26,"./utils/events":27,"./utils/feature-detector":28,"./utils/fn":29,"./utils/fullscreen":30,"./utils/guid":31,"./utils/log":32,"./utils/obj":36,"./utils/plugin":37,"./utils/to-title-case":40}],6:[function(require,module,exports){
+},{"./component":1,"./html5":2,"./mixins/evented":4,"./ui/control-bar":9,"./ui/control-bar-pc":8,"./ui/error":13,"./ui/error-pc":12,"./ui/gradient-bottom":15,"./ui/loading":17,"./ui/loading-pc":16,"./ui/play-button":18,"./ui/progress-bar-simple":20,"./utils/computed-style":25,"./utils/dom":27,"./utils/events":28,"./utils/feature-detector":29,"./utils/fn":30,"./utils/fullscreen":31,"./utils/guid":32,"./utils/log":33,"./utils/obj":37,"./utils/plugin":38,"./utils/to-title-case":41}],6:[function(require,module,exports){
 "use strict";
 
 var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
@@ -6181,10 +6181,13 @@ var BufferBar = function (_Component) {
             var duration = this.player.duration();
             var currentTime = this.player.currentTime();
 
+            window.buffered = buffered;
+            console.log(buffered);
+
             if (duration > 0) {
                 for (var i = 0; i < buffered.length; i++) {
                     if (buffered.start(i) <= currentTime && buffered.end(i) >= currentTime) {
-                        var width = Math.round(buffered.end(i) / duration) * 100 + '%';
+                        var width = buffered.end(i) / duration * 100 + '%';
                         this.render(width);
                         break;
                     }
@@ -6222,7 +6225,7 @@ exports.default = BufferBar;
 
 _component2.default.registerComponent('BufferBar', BufferBar);
 
-},{"../component":1,"../utils/dom":26}],8:[function(require,module,exports){
+},{"../component":1,"../utils/dom":27}],8:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -6335,7 +6338,7 @@ _component2.default.registerComponent('ControlBarPc', ControlBarPc);
 
 exports.default = ControlBarPc;
 
-},{"../component":1,"../utils/dom":26,"./current-time":10,"./duration":11,"./fullscreen-button":14,"./play-button":18,"./progress-bar":21,"./volume":23}],9:[function(require,module,exports){
+},{"../component":1,"../utils/dom":27,"./current-time":10,"./duration":11,"./fullscreen-button":14,"./play-button":18,"./progress-bar":21,"./volume":24}],9:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -6410,7 +6413,7 @@ _component2.default.registerComponent('ControlBar', ControlBar);
 
 exports.default = ControlBar;
 
-},{"../component":1,"../utils/dom":26,"./current-time":10,"./duration":11,"./fullscreen-button":14,"./progress-bar":21}],10:[function(require,module,exports){
+},{"../component":1,"../utils/dom":27,"./current-time":10,"./duration":11,"./fullscreen-button":14,"./progress-bar":21}],10:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -6491,7 +6494,7 @@ exports.default = CurrentTime;
 
 _component2.default.registerComponent('CurrentTime', CurrentTime);
 
-},{"../component":1,"../utils/dom":26,"../utils/time-format":39}],11:[function(require,module,exports){
+},{"../component":1,"../utils/dom":27,"../utils/time-format":40}],11:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -6569,7 +6572,7 @@ exports.default = Duration;
 
 _component2.default.registerComponent('Duration', Duration);
 
-},{"../component":1,"../utils/dom":26,"../utils/time-format":39}],12:[function(require,module,exports){
+},{"../component":1,"../utils/dom":27,"../utils/time-format":40}],12:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -6627,7 +6630,7 @@ exports.default = ErrorPc;
 
 _component2.default.registerComponent('ErrorPc', ErrorPc);
 
-},{"../component":1,"../utils/dom":26,"./error":13}],13:[function(require,module,exports){
+},{"../component":1,"../utils/dom":27,"./error":13}],13:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -6721,7 +6724,7 @@ exports.default = Error;
 
 _component2.default.registerComponent('Error', Error);
 
-},{"../component":1,"../utils/dom":26}],14:[function(require,module,exports){
+},{"../component":1,"../utils/dom":27}],14:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -6798,7 +6801,7 @@ exports.default = FullscreenButton;
 
 _component2.default.registerComponent('FullscreenButton', FullscreenButton);
 
-},{"../component":1,"../utils/dom":26}],15:[function(require,module,exports){
+},{"../component":1,"../utils/dom":27}],15:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -6853,7 +6856,7 @@ exports.default = GradientBottom;
 
 _component2.default.registerComponent('GradientBottom', GradientBottom);
 
-},{"../component":1,"../utils/dom":26}],16:[function(require,module,exports){
+},{"../component":1,"../utils/dom":27}],16:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -6910,7 +6913,7 @@ exports.default = LoadingPc;
 
 _component2.default.registerComponent('LoadingPc', LoadingPc);
 
-},{"../component":1,"../utils/dom":26,"./loading":17}],17:[function(require,module,exports){
+},{"../component":1,"../utils/dom":27,"./loading":17}],17:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -6979,7 +6982,7 @@ exports.default = Loading;
 
 _component2.default.registerComponent('Loading', Loading);
 
-},{"../component":1,"../utils/dom":26}],18:[function(require,module,exports){
+},{"../component":1,"../utils/dom":27}],18:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -7089,7 +7092,7 @@ exports.default = PlayButton;
 
 _component2.default.registerComponent('PlayButton', PlayButton);
 
-},{"../component":1,"../utils/dom":26,"../utils/events":27,"../utils/feature-detector":28}],19:[function(require,module,exports){
+},{"../component":1,"../utils/dom":27,"../utils/events":28,"../utils/feature-detector":29}],19:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -7181,7 +7184,7 @@ ProgressBarExceptFill.prototype.options = {
 
 _component2.default.registerComponent('ProgressBarExceptFill', ProgressBarExceptFill);
 
-},{"../component":1,"../utils/computed-style":24,"../utils/dom":26,"../utils/events":27,"./buffer-bar":7}],20:[function(require,module,exports){
+},{"../component":1,"../utils/computed-style":25,"../utils/dom":27,"../utils/events":28,"./buffer-bar":7}],20:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -7280,7 +7283,7 @@ ProgressBarSimple.prototype.options = {
 
 exports.default = ProgressBarSimple;
 
-},{"../component":1,"../utils/dom":26,"./buffer-bar":7}],21:[function(require,module,exports){
+},{"../component":1,"../utils/dom":27,"./buffer-bar":7}],21:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -7292,6 +7295,14 @@ var _createClass = function () { function defineProperties(target, props) { for 
 var _component = require('../component');
 
 var _component2 = _interopRequireDefault(_component);
+
+var _slider = require('./slider');
+
+var _slider2 = _interopRequireDefault(_slider);
+
+var _tooltip = require('./tooltip');
+
+var _tooltip2 = _interopRequireDefault(_tooltip);
 
 var _dom = require('../utils/dom');
 
@@ -7309,9 +7320,7 @@ var _featureDetector = require('../utils/feature-detector');
 
 var _featureDetector2 = _interopRequireDefault(_featureDetector);
 
-var _slide = require('./slide');
-
-var _slide2 = _interopRequireDefault(_slide);
+var _timeFormat = require('../utils/time-format');
 
 require('./progress-bar-except-fill');
 
@@ -7327,21 +7336,20 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 * @file progress-bar.js 视频进度条
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 * @author yuhui<yuhui06@baidu.com>
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 * @date 2017/11/6
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                * @desc
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                *    1) 目前用的 click 事件，不支持 tap 事件
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                *    2) 只支持移动端拖拽，不支持 pc 端鼠标拖拽
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                * @date 2018/3/15 支持 pc 端拖拽和 tooltip
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 */
 
 var document = window.document;
 
-var ProgressBar = function (_Slide) {
-    _inherits(ProgressBar, _Slide);
+var ProgressBar = function (_Slider) {
+    _inherits(ProgressBar, _Slider);
 
     function ProgressBar(player, options) {
         _classCallCheck(this, ProgressBar);
 
         var _this = _possibleConstructorReturn(this, (ProgressBar.__proto__ || Object.getPrototypeOf(ProgressBar)).call(this, player, options));
 
+        _this.getTooltipTop = _this.getTooltipTop.bind(_this);
         _this.handleTimeUpdate = _this.handleTimeUpdate.bind(_this);
         _this.onClick = _this.onClick.bind(_this);
         _this.onSlideStart = _this.onSlideStart.bind(_this);
@@ -7349,18 +7357,43 @@ var ProgressBar = function (_Slide) {
         _this.onSlideEnd = _this.onSlideEnd.bind(_this);
         _this.update = _this.update.bind(_this);
         _this.reset = _this.reset.bind(_this);
+        _this.handleMouseOver = _this.handleMouseOver.bind(_this);
+        _this.handleMouseMove = _this.handleMouseMove.bind(_this);
+        _this.handleMouseOut = _this.handleMouseOut.bind(_this);
 
         _this.line = Dom.$('.lark-progress-bar__line', _this.el);
         _this.lineHandle = Dom.$('.lark-progress-bar__line__handle', _this.el);
+        _this.hoverLight = Dom.$('.lark-progress-bar-hover-light', _this.el);
+
+        player.on('ready', function () {
+            _this.tooltipTop = _this.getTooltipTop();
+        });
 
         player.on('timeupdate', _this.handleTimeUpdate);
         _this.on('click', _this.handleClick);
-        Events.on(_this.lineHandle, 'touchstart', _this.handleSlideStart);
-        Events.on(_this.lineHandle, 'mousedown', _this.handleSlideStart);
+        _this.on('touchstart', _this.handleSlideStart);
+
+        if (!_featureDetector2.default.touch) {
+            _this.on('mousedown', _this.handleSlideStart);
+            _this.on('mouseover', _this.handleMouseOver);
+            _this.on('mousemove', _this.handleMouseMove);
+            _this.on('mouseout', _this.handleMouseOut);
+        }
         return _this;
     }
 
     _createClass(ProgressBar, [{
+        key: 'getTooltipTop',
+        value: function getTooltipTop() {
+            var padding = Dom.$('.lark-progress-bar-padding', this.el);
+            var line = Dom.$('.lark-progress-bar__line', this.el);
+            var marginTop = padding.offsetHeight - line.offsetHeight;
+            var elPos = Dom.findPosition(this.el);
+            var top = elPos.top - marginTop;
+
+            return top;
+        }
+    }, {
         key: 'handleTimeUpdate',
         value: function handleTimeUpdate() {
             // 进度条
@@ -7397,7 +7430,7 @@ var ProgressBar = function (_Slide) {
     }, {
         key: 'onSlideEnd',
         value: function onSlideEnd(event) {
-            // 如果播放器在拖动进度条的时候不是处于暂停状态，那么拖动完了之后继续播放
+            // 如果播放器在拖动进度条前不是处于暂停状态，那么拖动完了之后继续播放
             if (this.player.paused && !this.originalPaused && this.originalPaused !== undefined) {
                 this.player.play();
             }
@@ -7421,6 +7454,50 @@ var ProgressBar = function (_Slide) {
             });
         }
     }, {
+        key: 'showToolTip',
+        value: function showToolTip(event) {
+            var pointerPos = Dom.getPointerPosition(this.el, event);
+            var left = this.el.offsetWidth * pointerPos.x;
+            var currentTime = this.player.duration() * pointerPos.x;
+
+            _tooltip2.default.show({
+                top: this.tooltipTop,
+                left: left,
+                content: (0, _timeFormat.timeFormat)(Math.floor(currentTime))
+            });
+        }
+    }, {
+        key: 'showHoverLine',
+        value: function showHoverLine(event) {
+            var pointerPos = Dom.getPointerPosition(this.el, event);
+            var left = this.el.offsetWidth * pointerPos.x;
+
+            this.hoverLight.style.width = left + 'px';
+        }
+    }, {
+        key: 'hideHoverLine',
+        value: function hideHoverLine(event) {
+            this.hoverLight.style.width = 0;
+        }
+    }, {
+        key: 'handleMouseOver',
+        value: function handleMouseOver(event) {
+            this.showToolTip(event);
+            this.showHoverLine(event);
+        }
+    }, {
+        key: 'handleMouseMove',
+        value: function handleMouseMove(event) {
+            this.showToolTip(event);
+            this.showHoverLine(event);
+        }
+    }, {
+        key: 'handleMouseOut',
+        value: function handleMouseOut(event) {
+            _tooltip2.default.hide();
+            this.hideHoverLine(event);
+        }
+    }, {
         key: 'createEl',
         value: function createEl() {
             var className = 'lark-progress-bar';
@@ -7428,18 +7505,18 @@ var ProgressBar = function (_Slide) {
                 className = className + ' ' + this.options.className;
             }
 
-            return this.createElement('div', { className: className }, this.createElement('div', { className: 'lark-progress-bar-padding' }), this.createElement('progressBarExceptFill'));
+            return this.createElement('div', { className: className }, this.createElement('div', { className: 'lark-progress-bar-padding' }), this.createElement('div', { className: 'lark-progress-bar-hover-light' }), this.createElement('progressBarExceptFill'));
         }
     }]);
 
     return ProgressBar;
-}(_slide2.default);
+}(_slider2.default);
 
 _component2.default.registerComponent('ProgressBar', ProgressBar);
 
 exports.default = ProgressBar;
 
-},{"../component":1,"../utils/computed-style":24,"../utils/dom":26,"../utils/events":27,"../utils/feature-detector":28,"./progress-bar-except-fill":19,"./slide":22}],22:[function(require,module,exports){
+},{"../component":1,"../utils/computed-style":25,"../utils/dom":27,"../utils/events":28,"../utils/feature-detector":29,"../utils/time-format":40,"./progress-bar-except-fill":19,"./slider":22,"./tooltip":23}],22:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -7470,13 +7547,13 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 * @date 2018/3/15
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 */
 
-var Slide = function (_Component) {
-    _inherits(Slide, _Component);
+var Slider = function (_Component) {
+    _inherits(Slider, _Component);
 
-    function Slide(player, options) {
-        _classCallCheck(this, Slide);
+    function Slider(player, options) {
+        _classCallCheck(this, Slider);
 
-        var _this = _possibleConstructorReturn(this, (Slide.__proto__ || Object.getPrototypeOf(Slide)).call(this, player, options));
+        var _this = _possibleConstructorReturn(this, (Slider.__proto__ || Object.getPrototypeOf(Slider)).call(this, player, options));
 
         _this.handleClick = _this.handleClick.bind(_this);
         _this.handleSlideStart = _this.handleSlideStart.bind(_this);
@@ -7489,7 +7566,7 @@ var Slide = function (_Component) {
         return _this;
     }
 
-    _createClass(Slide, [{
+    _createClass(Slider, [{
         key: 'onClick',
         value: function onClick(event) {}
     }, {
@@ -7537,12 +7614,86 @@ var Slide = function (_Component) {
         }
     }]);
 
-    return Slide;
+    return Slider;
 }(_component2.default);
 
-exports.default = Slide;
+exports.default = Slider;
 
-},{"../component":1,"../utils/events":27}],23:[function(require,module,exports){
+},{"../component":1,"../utils/events":28}],23:[function(require,module,exports){
+'use strict';
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _component = require('../component');
+
+var _component2 = _interopRequireDefault(_component);
+
+var _dom = require('../utils/dom');
+
+var Dom = _interopRequireWildcard(_dom);
+
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+var tooltip = {
+    id: 'lark-tooltip',
+    el: null,
+    timeoutHandler: null,
+    initial: function initial() {
+        if (this.el) {
+            return;
+        }
+
+        var body = Dom.$('body');
+        var el = Dom.createElement('div', {
+            className: this.id,
+            id: this.id
+        });
+        Dom.appendContent(body, el);
+
+        this.el = el;
+    },
+    normalize: function normalize(options) {
+        return Object.assign({
+            timeout: 0,
+            content: '',
+            top: 0,
+            left: 0
+        }, options);
+    },
+    show: function show(options) {
+        var _this = this;
+
+        clearTimeout(this.timeoutHandler);
+
+        options = this.normalize(options);
+
+        if (!this.el) {
+            this.initial();
+        }
+
+        Dom.replaceContent(this.el, options.content);
+        setTimeout(function () {
+            _this.el.style.top = options.top - _this.el.offsetHeight + 'px';
+            _this.el.style.left = options.left + 'px';
+            _this.el.style.display = 'block';
+        }, 0);
+    },
+    hide: function hide() {
+        var _this2 = this;
+
+        this.timeoutHandler = setTimeout(function () {
+            _this2.el.style.display = 'none';
+        });
+    }
+};
+
+exports.default = tooltip;
+
+},{"../component":1,"../utils/dom":27}],24:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -7567,9 +7718,13 @@ var _featureDetector = require('../utils/feature-detector');
 
 var _featureDetector2 = _interopRequireDefault(_featureDetector);
 
-var _slide = require('./slide');
+var _slider = require('./slider');
 
-var _slide2 = _interopRequireDefault(_slide);
+var _slider2 = _interopRequireDefault(_slider);
+
+var _tooltip = require('./tooltip');
+
+var _tooltip2 = _interopRequireDefault(_tooltip);
 
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
@@ -7587,26 +7742,30 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 
 var document = window.document;
 
-var Volume = function (_Slide) {
-    _inherits(Volume, _Slide);
+var Volume = function (_Slider) {
+    _inherits(Volume, _Slider);
 
     function Volume(player, options) {
         _classCallCheck(this, Volume);
 
         var _this = _possibleConstructorReturn(this, (Volume.__proto__ || Object.getPrototypeOf(Volume)).call(this, player, options));
 
-        _this.iconClick = _this.iconClick.bind(_this);
         _this.onSlideMove = _this.onSlideMove.bind(_this);
         _this.onClick = _this.onClick.bind(_this);
         _this.update = _this.update.bind(_this);
+        _this.iconClick = _this.iconClick.bind(_this);
+        _this.handleIconMouseOver = _this.handleIconMouseOver.bind(_this);
+        _this.handleIconMouseOut = _this.handleIconMouseOut.bind(_this);
+        _this.switchStatus = _this.switchStatus.bind(_this);
+        _this.clearStatus = _this.clearStatus.bind(_this);
 
         _this.line = Dom.$('.lark-volume-line__line', _this.el);
         _this.ball = Dom.$('.lark-volume-line__ball', _this.el);
         _this.icon = Dom.$('.lark-volume-icon', _this.el);
 
-        _this.lineWidth = _this.line.offsetWidth;
-
         Events.on(_this.icon, 'click', _this.iconClick);
+        Events.on(_this.icon, 'mouseover', _this.handleIconMouseOver);
+        Events.on(_this.icon, 'mouseout', _this.handleIconMouseOut);
         Events.on(_this.line, 'click', _this.handleClick);
         Events.on(_this.ball, 'mousedown', _this.handleSlideStart);
         Events.on(_this.ball, 'touchstart', _this.handleSlideStart);
@@ -7628,37 +7787,58 @@ var Volume = function (_Slide) {
         key: 'update',
         value: function update(event) {
             var pos = Dom.getPointerPosition(this.line, event);
+
+            console.log(pos);
+
             var percent = pos.x;
             var lineWidth = this.line.offsetWidth;
 
             this.ball.style.left = percent * lineWidth + 'px';
             this.player.volume(percent);
             this.switchStatus(percent);
-
-            console.log(percent);
         }
     }, {
         key: 'iconClick',
-        value: function iconClick() {
+        value: function iconClick(event) {
             this.ball.style.left = 0;
             this.player.volume(0);
             this.switchStatus(0);
         }
     }, {
-        key: 'switchStatus',
-        value: function switchStatus(volume) {
-            this.removeStatusClass();
-            if (volume === 0) {
-                Dom.addClass(this.icon, 'lark-icon-sound-small');
-            } else if (volume <= 0.6 && volume > 0) {
-                Dom.addClass(this.icon, 'lark-icon-sound-middle');
-            } else if (volume > 0.6) {
-                Dom.addClass(this.icon, 'lark-icon-sound-large');
-            }
+        key: 'handleIconMouseOver',
+        value: function handleIconMouseOver(event) {
+            var pos = Dom.findPosition(this.icon);
+            var rect = Dom.getBoundingClientRect(this.icon);
+            _tooltip2.default.show({
+                top: pos.top - rect.height,
+                left: pos.left,
+                content: '静音'
+            });
         }
     }, {
-        key: 'removeStatusClass',
-        value: function removeStatusClass() {
+        key: 'handleIconMouseOut',
+        value: function handleIconMouseOut(event) {
+            _tooltip2.default.hide();
+        }
+    }, {
+        key: 'switchStatus',
+        value: function switchStatus(volume) {
+            this.clearStatus();
+
+            var status = void 0;
+            if (volume === 0) {
+                status = 'small';
+            } else if (volume <= 0.6 && volume > 0) {
+                status = 'middle';
+            } else if (volume > 0.6) {
+                status = 'large';
+            }
+
+            Dom.addClass(this.icon, 'lark-icon-sound-' + status);
+        }
+    }, {
+        key: 'clearStatus',
+        value: function clearStatus() {
             var _this2 = this;
 
             var statusClass = ['lark-icon-sound-small', 'lark-icon-sound-middle', 'lark-icon-sound-large'];
@@ -7678,14 +7858,14 @@ var Volume = function (_Slide) {
     }]);
 
     return Volume;
-}(_slide2.default);
+}(_slider2.default);
 
 exports.default = Volume;
 
 
 _component2.default.registerComponent('Volume', Volume);
 
-},{"../component":1,"../utils/dom":26,"../utils/events":27,"../utils/feature-detector":28,"./slide":22}],24:[function(require,module,exports){
+},{"../component":1,"../utils/dom":27,"../utils/events":28,"../utils/feature-detector":29,"./slider":22,"./tooltip":23}],25:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -7721,7 +7901,7 @@ function computedStyle(el, prop) {
     return el.currentStyle && el.currentStyle[prop] || '';
 }
 
-},{}],25:[function(require,module,exports){
+},{}],26:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -7817,7 +7997,7 @@ function removeData(el) {
     }
 }
 
-},{"./guid":31}],26:[function(require,module,exports){
+},{"./guid":32}],27:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -7846,7 +8026,7 @@ exports.removeAttribute = removeAttribute;
 exports.blockTextSelection = blockTextSelection;
 exports.unblockTextSelection = unblockTextSelection;
 exports.getBoundingClientRect = getBoundingClientRect;
-exports.findPostion = findPostion;
+exports.findPosition = findPosition;
 exports.getPointerPosition = getPointerPosition;
 exports.emptyEl = emptyEl;
 exports.appendContent = appendContent;
@@ -8373,7 +8553,7 @@ function getBoundingClientRect(el) {
  * @desc
  *      1) clientLeft/clientTop 获取一个元素的左/上边框的宽度，不包括 padding 和 margin 的值
  */
-function findPostion(el) {
+function findPosition(el) {
     var box = getBoundingClientRect(el);
 
     if (!box) {
@@ -8420,7 +8600,7 @@ function findPostion(el) {
  */
 function getPointerPosition(el, event) {
     var position = {};
-    var box = findPostion(el);
+    var box = findPosition(el);
     var boxW = el.offsetWidth;
     var boxH = el.offsetHeight;
     var boxY = box.top;
@@ -8520,7 +8700,7 @@ var $ = exports.$ = createQuerier('querySelector');
  */
 var $$ = exports.$$ = createQuerier('querySelectorAll');
 
-},{"./computed-style":24,"./obj":36}],27:[function(require,module,exports){
+},{"./computed-style":25,"./obj":37}],28:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -8998,7 +9178,7 @@ function one(elem, type, fn) {
     on(elem, type, executeOnlyOnce);
 }
 
-},{"./dom-data":25,"./guid":31,"./to-title-case":40}],28:[function(require,module,exports){
+},{"./dom-data":26,"./guid":32,"./to-title-case":41}],29:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -9018,7 +9198,7 @@ var featureDetector = {
 
 exports.default = featureDetector;
 
-},{}],29:[function(require,module,exports){
+},{}],30:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -9076,7 +9256,7 @@ function throttle(fn, wait) {
     };
 }
 
-},{"./guid":31}],30:[function(require,module,exports){
+},{"./guid":32}],31:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -9159,7 +9339,7 @@ exports.default = {
     }
 };
 
-},{"./events":27}],31:[function(require,module,exports){
+},{"./events":28}],32:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -9184,7 +9364,7 @@ function newGUID() {
   return guid++;
 }
 
-},{}],32:[function(require,module,exports){
+},{}],33:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -9229,7 +9409,7 @@ log.error = console.error;
 
 log.clear = console.clear;
 
-},{}],33:[function(require,module,exports){
+},{}],34:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -9284,7 +9464,7 @@ function mergeOptions() {
    * @date 2017/11/3
    */
 
-},{"./obj.js":36}],34:[function(require,module,exports){
+},{"./obj.js":37}],35:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -9309,7 +9489,7 @@ exports.default = {
     wmv: 'video/x-ms-wmv'
 };
 
-},{}],35:[function(require,module,exports){
+},{}],36:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -9404,7 +9584,7 @@ function nomalizeSource(source) {
     }
 }
 
-},{"./mime-type-map":34,"./obj":36}],36:[function(require,module,exports){
+},{"./mime-type-map":35,"./obj":37}],37:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -9464,7 +9644,7 @@ function each(obj, fn) {
   });
 }
 
-},{}],37:[function(require,module,exports){
+},{}],38:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -9538,7 +9718,7 @@ function deregisterPlugin(name) {
   delete pluginStore[name];
 }
 
-},{}],38:[function(require,module,exports){
+},{}],39:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -9568,7 +9748,7 @@ function loadCss(src) {
     head.appendChild(link);
 }
 
-},{"./dom":26}],39:[function(require,module,exports){
+},{"./dom":27}],40:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -9627,7 +9807,7 @@ function timeFormat(seconds) {
     }
 }
 
-},{}],40:[function(require,module,exports){
+},{}],41:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {

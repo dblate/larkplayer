@@ -510,7 +510,7 @@ export function getBoundingClientRect(el) {
  * @desc
  *      1) clientLeft/clientTop 获取一个元素的左/上边框的宽度，不包括 padding 和 margin 的值
  */
-export function findPostion(el) {
+export function findPosition(el) {
     let box = getBoundingClientRect(el);
 
     if (!box) {
@@ -557,7 +557,7 @@ export function findPostion(el) {
  */
 export function getPointerPosition(el, event) {
     const position = {};
-    const box = findPostion(el);
+    const box = findPosition(el);
     const boxW = el.offsetWidth;
     const boxH = el.offsetHeight;
     const boxY = box.top;
