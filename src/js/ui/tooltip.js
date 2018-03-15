@@ -40,7 +40,7 @@ const tooltip = {
         Dom.replaceContent(this.el, options.content);
         setTimeout(() => {
             this.el.style.top = options.top - this.el.offsetHeight + 'px';
-            this.el.style.left = options.left + 'px';
+            this.el.style.left = options.left - (this.el.offsetWidth / 2) + 'px';
             this.el.style.display = 'block';
         }, 0);
     },

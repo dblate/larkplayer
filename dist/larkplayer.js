@@ -7367,6 +7367,7 @@ var ProgressBar = function (_Slider) {
 
         player.on('ready', function () {
             _this.tooltipTop = _this.getTooltipTop();
+            _this.elPos = Dom.findPosition(_this.el);
         });
 
         player.on('timeupdate', _this.handleTimeUpdate);
@@ -7457,7 +7458,7 @@ var ProgressBar = function (_Slider) {
         key: 'showToolTip',
         value: function showToolTip(event) {
             var pointerPos = Dom.getPointerPosition(this.el, event);
-            var left = this.el.offsetWidth * pointerPos.x;
+            var left = this.elPos.left + this.el.offsetWidth * pointerPos.x;
             var currentTime = this.player.duration() * pointerPos.x;
 
             _tooltip2.default.show({
@@ -7678,7 +7679,7 @@ var tooltip = {
         Dom.replaceContent(this.el, options.content);
         setTimeout(function () {
             _this.el.style.top = options.top - _this.el.offsetHeight + 'px';
-            _this.el.style.left = options.left + 'px';
+            _this.el.style.left = options.left - _this.el.offsetWidth / 2 + 'px';
             _this.el.style.display = 'block';
         }, 0);
     },

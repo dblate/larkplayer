@@ -40,6 +40,7 @@ class ProgressBar extends Slider {
 
         player.on('ready', () => {
             this.tooltipTop = this.getTooltipTop();
+            this.elPos = Dom.findPosition(this.el);
         });
 
         player.on('timeupdate', this.handleTimeUpdate);
@@ -119,7 +120,7 @@ class ProgressBar extends Slider {
 
     showToolTip(event) {
         const pointerPos = Dom.getPointerPosition(this.el, event);
-        const left = this.el.offsetWidth * pointerPos.x;
+        const left = this.elPos.left + this.el.offsetWidth * pointerPos.x;
         const currentTime = this.player.duration() * pointerPos.x;
 
         tooltip.show({
