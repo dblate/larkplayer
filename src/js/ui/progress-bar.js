@@ -11,29 +11,32 @@ import Component from '../component';
 import * as Dom from '../utils/dom';
 import * as Events from '../utils/events';
 import computedStyle from '../utils/computed-style';
+import featureDetector from '../utils/feature-detector';
+import Slide from './slide';
 
 import './progress-bar-except-fill';
 
 const document = window.document;
 
-class ProgressBar extends Component {
+class ProgressBar extends Slide {
     constructor(player, options) {
         super(player, options);
 
         this.handleTimeUpdate = this.handleTimeUpdate.bind(this);
-        this.handleClick = this.handleClick.bind(this);
-        this.handleTouchStart = this.handleTouchStart.bind(this);
-        this.handleTouchMove = this.handleTouchMove.bind(this);
-        this.handleTouchEnd = this.handleTouchEnd.bind(this);
+        this.onClick = this.onClick.bind(this);
+        this.onSlideStart = this.onSlideStart.bind(this);
+        this.onSlideMove = this.onSlideMove.bind(this);
+        this.onSlideEnd = this.onSlideEnd.bind(this);
+        this.update = this.update.bind(this);
+        this.reset = this.reset.bind(this);
 
         this.line = Dom.$('.lark-progress-bar__line', this.el);
         this.lineHandle = Dom.$('.lark-progress-bar__line__handle', this.el);
+
         player.on('timeupdate', this.handleTimeUpdate);
         this.on('click', this.handleClick);
-
-        // 拖拽
-        Events.on(this.lineHandle, 'touchstart', this.handleTouchStart);
-        Events.on(document, 'touchend', this.handleTouchEnd);
+        Events.on(this.lineHandle, 'touchstart', this.handleSlideStart);
+        Events.on(this.lineHandle, 'mousedown', this.handleSlideStart);
     }
 
     handleTimeUpdate() {
@@ -42,68 +45,44 @@ class ProgressBar extends Component {
         let duration = this.player.duration();
         let currentTime = this.player.currentTime();
         if (duration && currentTime) {
-            // 保留两位小数四舍五入
-            percent = Math.round(currentTime / duration * 100) / 100;
-            // 转换为百分数
-            percent = percent * 100 + '%';
+            percent = currentTime / duration * 100 + '%';
         }
 
         this.line.style.width = percent;
     }
 
-    handleClick(event) {
-        const pos = Dom.getPointerPosition(this.el, event);
-        const xPos = Math.round(pos.x * 10000) / 10000;
-        const xPercent = xPos * 100 + '%';
-        const currentTime = this.player.duration() * xPos;
-
-        // 跳到指定位置播放
-        this.player.currentTime(currentTime);
-        // 更新 ui
-        this.line.style.width = xPercent;
+    onClick(event) {
+        this.update(event);
     }
 
-    handleTouchStart(event) {
-        const pos = Dom.getPointerPosition(this.el, event);
-        const xPos = Math.round(pos.x * 10000) / 10000;
-        const xPercent = xPos * 100 + '%';
-
-
-        const touches = event.changedTouches || event.touches;
-        this.startX = touches[0]['pageX'];
-        this.originalLineWidth = parseInt(computedStyle(this.line, 'width'), 10);
-        this.originalBarWidth = parseInt(computedStyle(this.el, 'width'), 10);
-
-        Events.on(document, 'touchmove', this.handleTouchMove);
-        Events.on(document, 'touchend', this.handleTouchEnd);
-
+    onSlideStart(event) {
         this.originalPaused = this.player.paused();
     }
 
-    // @todo 跟 pm 确认是滑动时不断设置 currentTime 还是松手后才设置
-    handleTouchMove(event) {
-        const touches = event.changedTouches || event.touches;
-        this.curX = touches[0]['pageX'];
-        this.diffX = this.curX - this.startX;
-        const xPos = Math.round((this.originalLineWidth + this.diffX) / this.originalBarWidth * 10000) / 10000;
-        const xPercent = Math.min(xPos, 1) * 100 + '%';
-        this.line.style.width = xPercent;
+    onSlideMove(event) {
+        event.preventDefault();
 
-        // 拖动进度条的时候暂停视频，避免杂音
         if (!this.player.paused()) {
             this.player.pause();
         }
-        const duration = this.player.duration();
-        this.player.currentTime(xPos * duration);
+
+        this.update(event);
     }
 
-    handleTouchEnd(event) {
+    onSlideEnd(event) {
         // 如果播放器在拖动进度条的时候不是处于暂停状态，那么拖动完了之后继续播放
         if (this.player.paused && !this.originalPaused && this.originalPaused !== undefined) {
             this.player.play();
         }
-        Events.off(document, 'touchmove', this.handleTouchMove);
-        Events.off(document, 'touchend', this.handleTouchEnd);
+    }
+
+    update(event) {
+        const pos = Dom.getPointerPosition(this.el, event);
+        const percent = pos.x * 100 + '%';
+        const currentTime = this.player.duration() * pos.x;
+
+        this.player.currentTime(currentTime);
+        this.line.style.width = percent;
     }
 
     reset() {
@@ -128,15 +107,11 @@ class ProgressBar extends Component {
             ),
             this.createElement('progressBarExceptFill')
         );
-
-        // return Dom.createElement('div', {className});
     }
 }
 
-// ProgressBar.prototype.options = {
-//     children: ['progressBarExceptFill']
-// };
 
 Component.registerComponent('ProgressBar', ProgressBar);
+
 
 export default ProgressBar;

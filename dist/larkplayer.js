@@ -330,7 +330,7 @@ var Component = function () {
 
 exports.default = Component;
 
-},{"./mixins/evented":4,"./utils/dom":25,"./utils/dom-data":24,"./utils/fn":28,"./utils/guid":30,"./utils/merge-options":32,"./utils/to-title-case":39}],2:[function(require,module,exports){
+},{"./mixins/evented":4,"./utils/dom":26,"./utils/dom-data":25,"./utils/fn":29,"./utils/guid":31,"./utils/merge-options":33,"./utils/to-title-case":40}],2:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -746,7 +746,7 @@ Html5.resetMediaElement = function (el) {
 
 exports.default = Html5;
 
-},{"./component":1,"./utils/dom":25,"./utils/normalize-source":34,"./utils/to-title-case":39}],3:[function(require,module,exports){
+},{"./component":1,"./utils/dom":26,"./utils/normalize-source":35,"./utils/to-title-case":40}],3:[function(require,module,exports){
 'use strict';
 
 var _dom = require('./utils/dom');
@@ -854,7 +854,7 @@ larkplayer.deregisterPlugin = Plugin.deregisterPlugin;
 // @see https://github.com/babel/babel/issues/2724
 module.exports = larkplayer;
 
-},{"./component":1,"./player":5,"./shim/third_party/shim.min.js":6,"./utils/dom":25,"./utils/events":26,"./utils/log":31,"./utils/plugin":36,"./utils/script-loader":37}],4:[function(require,module,exports){
+},{"./component":1,"./player":5,"./shim/third_party/shim.min.js":6,"./utils/dom":26,"./utils/events":27,"./utils/log":32,"./utils/plugin":37,"./utils/script-loader":38}],4:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -926,7 +926,7 @@ function evented(target) {
     };
 }
 
-},{"../utils/dom":25,"../utils/events":26}],5:[function(require,module,exports){
+},{"../utils/dom":26,"../utils/events":27}],5:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -2679,7 +2679,7 @@ if (_featureDetector2.default.touch) {
 
 exports.default = Player;
 
-},{"./component":1,"./html5":2,"./mixins/evented":4,"./ui/control-bar":9,"./ui/control-bar-pc":8,"./ui/error":13,"./ui/error-pc":12,"./ui/gradient-bottom":15,"./ui/loading":17,"./ui/loading-pc":16,"./ui/play-button":18,"./ui/progress-bar-simple":20,"./utils/computed-style":23,"./utils/dom":25,"./utils/events":26,"./utils/feature-detector":27,"./utils/fn":28,"./utils/fullscreen":29,"./utils/guid":30,"./utils/log":31,"./utils/obj":35,"./utils/plugin":36,"./utils/to-title-case":39}],6:[function(require,module,exports){
+},{"./component":1,"./html5":2,"./mixins/evented":4,"./ui/control-bar":9,"./ui/control-bar-pc":8,"./ui/error":13,"./ui/error-pc":12,"./ui/gradient-bottom":15,"./ui/loading":17,"./ui/loading-pc":16,"./ui/play-button":18,"./ui/progress-bar-simple":20,"./utils/computed-style":24,"./utils/dom":26,"./utils/events":27,"./utils/feature-detector":28,"./utils/fn":29,"./utils/fullscreen":30,"./utils/guid":31,"./utils/log":32,"./utils/obj":36,"./utils/plugin":37,"./utils/to-title-case":40}],6:[function(require,module,exports){
 "use strict";
 
 var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
@@ -6222,7 +6222,7 @@ exports.default = BufferBar;
 
 _component2.default.registerComponent('BufferBar', BufferBar);
 
-},{"../component":1,"../utils/dom":25}],8:[function(require,module,exports){
+},{"../component":1,"../utils/dom":26}],8:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -6335,7 +6335,7 @@ _component2.default.registerComponent('ControlBarPc', ControlBarPc);
 
 exports.default = ControlBarPc;
 
-},{"../component":1,"../utils/dom":25,"./current-time":10,"./duration":11,"./fullscreen-button":14,"./play-button":18,"./progress-bar":21,"./volume":22}],9:[function(require,module,exports){
+},{"../component":1,"../utils/dom":26,"./current-time":10,"./duration":11,"./fullscreen-button":14,"./play-button":18,"./progress-bar":21,"./volume":23}],9:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -6410,7 +6410,7 @@ _component2.default.registerComponent('ControlBar', ControlBar);
 
 exports.default = ControlBar;
 
-},{"../component":1,"../utils/dom":25,"./current-time":10,"./duration":11,"./fullscreen-button":14,"./progress-bar":21}],10:[function(require,module,exports){
+},{"../component":1,"../utils/dom":26,"./current-time":10,"./duration":11,"./fullscreen-button":14,"./progress-bar":21}],10:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -6491,7 +6491,7 @@ exports.default = CurrentTime;
 
 _component2.default.registerComponent('CurrentTime', CurrentTime);
 
-},{"../component":1,"../utils/dom":25,"../utils/time-format":38}],11:[function(require,module,exports){
+},{"../component":1,"../utils/dom":26,"../utils/time-format":39}],11:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -6569,7 +6569,7 @@ exports.default = Duration;
 
 _component2.default.registerComponent('Duration', Duration);
 
-},{"../component":1,"../utils/dom":25,"../utils/time-format":38}],12:[function(require,module,exports){
+},{"../component":1,"../utils/dom":26,"../utils/time-format":39}],12:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -6627,7 +6627,7 @@ exports.default = ErrorPc;
 
 _component2.default.registerComponent('ErrorPc', ErrorPc);
 
-},{"../component":1,"../utils/dom":25,"./error":13}],13:[function(require,module,exports){
+},{"../component":1,"../utils/dom":26,"./error":13}],13:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -6721,7 +6721,7 @@ exports.default = Error;
 
 _component2.default.registerComponent('Error', Error);
 
-},{"../component":1,"../utils/dom":25}],14:[function(require,module,exports){
+},{"../component":1,"../utils/dom":26}],14:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -6798,7 +6798,7 @@ exports.default = FullscreenButton;
 
 _component2.default.registerComponent('FullscreenButton', FullscreenButton);
 
-},{"../component":1,"../utils/dom":25}],15:[function(require,module,exports){
+},{"../component":1,"../utils/dom":26}],15:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -6853,7 +6853,7 @@ exports.default = GradientBottom;
 
 _component2.default.registerComponent('GradientBottom', GradientBottom);
 
-},{"../component":1,"../utils/dom":25}],16:[function(require,module,exports){
+},{"../component":1,"../utils/dom":26}],16:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -6910,7 +6910,7 @@ exports.default = LoadingPc;
 
 _component2.default.registerComponent('LoadingPc', LoadingPc);
 
-},{"../component":1,"../utils/dom":25,"./loading":17}],17:[function(require,module,exports){
+},{"../component":1,"../utils/dom":26,"./loading":17}],17:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -6979,7 +6979,7 @@ exports.default = Loading;
 
 _component2.default.registerComponent('Loading', Loading);
 
-},{"../component":1,"../utils/dom":25}],18:[function(require,module,exports){
+},{"../component":1,"../utils/dom":26}],18:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -7089,7 +7089,7 @@ exports.default = PlayButton;
 
 _component2.default.registerComponent('PlayButton', PlayButton);
 
-},{"../component":1,"../utils/dom":25,"../utils/events":26,"../utils/feature-detector":27}],19:[function(require,module,exports){
+},{"../component":1,"../utils/dom":26,"../utils/events":27,"../utils/feature-detector":28}],19:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -7181,7 +7181,7 @@ ProgressBarExceptFill.prototype.options = {
 
 _component2.default.registerComponent('ProgressBarExceptFill', ProgressBarExceptFill);
 
-},{"../component":1,"../utils/computed-style":23,"../utils/dom":25,"../utils/events":26,"./buffer-bar":7}],20:[function(require,module,exports){
+},{"../component":1,"../utils/computed-style":24,"../utils/dom":26,"../utils/events":27,"./buffer-bar":7}],20:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -7280,7 +7280,7 @@ ProgressBarSimple.prototype.options = {
 
 exports.default = ProgressBarSimple;
 
-},{"../component":1,"../utils/dom":25,"./buffer-bar":7}],21:[function(require,module,exports){
+},{"../component":1,"../utils/dom":26,"./buffer-bar":7}],21:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -7305,6 +7305,14 @@ var _computedStyle = require('../utils/computed-style');
 
 var _computedStyle2 = _interopRequireDefault(_computedStyle);
 
+var _featureDetector = require('../utils/feature-detector');
+
+var _featureDetector2 = _interopRequireDefault(_featureDetector);
+
+var _slide = require('./slide');
+
+var _slide2 = _interopRequireDefault(_slide);
+
 require('./progress-bar-except-fill');
 
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
@@ -7326,8 +7334,8 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 
 var document = window.document;
 
-var ProgressBar = function (_Component) {
-    _inherits(ProgressBar, _Component);
+var ProgressBar = function (_Slide) {
+    _inherits(ProgressBar, _Slide);
 
     function ProgressBar(player, options) {
         _classCallCheck(this, ProgressBar);
@@ -7335,19 +7343,20 @@ var ProgressBar = function (_Component) {
         var _this = _possibleConstructorReturn(this, (ProgressBar.__proto__ || Object.getPrototypeOf(ProgressBar)).call(this, player, options));
 
         _this.handleTimeUpdate = _this.handleTimeUpdate.bind(_this);
-        _this.handleClick = _this.handleClick.bind(_this);
-        _this.handleTouchStart = _this.handleTouchStart.bind(_this);
-        _this.handleTouchMove = _this.handleTouchMove.bind(_this);
-        _this.handleTouchEnd = _this.handleTouchEnd.bind(_this);
+        _this.onClick = _this.onClick.bind(_this);
+        _this.onSlideStart = _this.onSlideStart.bind(_this);
+        _this.onSlideMove = _this.onSlideMove.bind(_this);
+        _this.onSlideEnd = _this.onSlideEnd.bind(_this);
+        _this.update = _this.update.bind(_this);
+        _this.reset = _this.reset.bind(_this);
 
         _this.line = Dom.$('.lark-progress-bar__line', _this.el);
         _this.lineHandle = Dom.$('.lark-progress-bar__line__handle', _this.el);
+
         player.on('timeupdate', _this.handleTimeUpdate);
         _this.on('click', _this.handleClick);
-
-        // 拖拽
-        Events.on(_this.lineHandle, 'touchstart', _this.handleTouchStart);
-        Events.on(document, 'touchend', _this.handleTouchEnd);
+        Events.on(_this.lineHandle, 'touchstart', _this.handleSlideStart);
+        Events.on(_this.lineHandle, 'mousedown', _this.handleSlideStart);
         return _this;
     }
 
@@ -7359,73 +7368,49 @@ var ProgressBar = function (_Component) {
             var duration = this.player.duration();
             var currentTime = this.player.currentTime();
             if (duration && currentTime) {
-                // 保留两位小数四舍五入
-                percent = Math.round(currentTime / duration * 100) / 100;
-                // 转换为百分数
-                percent = percent * 100 + '%';
+                percent = currentTime / duration * 100 + '%';
             }
 
             this.line.style.width = percent;
         }
     }, {
-        key: 'handleClick',
-        value: function handleClick(event) {
-            var pos = Dom.getPointerPosition(this.el, event);
-            var xPos = Math.round(pos.x * 10000) / 10000;
-            var xPercent = xPos * 100 + '%';
-            var currentTime = this.player.duration() * xPos;
-
-            // 跳到指定位置播放
-            this.player.currentTime(currentTime);
-            // 更新 ui
-            this.line.style.width = xPercent;
+        key: 'onClick',
+        value: function onClick(event) {
+            this.update(event);
         }
     }, {
-        key: 'handleTouchStart',
-        value: function handleTouchStart(event) {
-            var pos = Dom.getPointerPosition(this.el, event);
-            var xPos = Math.round(pos.x * 10000) / 10000;
-            var xPercent = xPos * 100 + '%';
-
-            var touches = event.changedTouches || event.touches;
-            this.startX = touches[0]['pageX'];
-            this.originalLineWidth = parseInt((0, _computedStyle2.default)(this.line, 'width'), 10);
-            this.originalBarWidth = parseInt((0, _computedStyle2.default)(this.el, 'width'), 10);
-
-            Events.on(document, 'touchmove', this.handleTouchMove);
-            Events.on(document, 'touchend', this.handleTouchEnd);
-
+        key: 'onSlideStart',
+        value: function onSlideStart(event) {
             this.originalPaused = this.player.paused();
         }
-
-        // @todo 跟 pm 确认是滑动时不断设置 currentTime 还是松手后才设置
-
     }, {
-        key: 'handleTouchMove',
-        value: function handleTouchMove(event) {
-            var touches = event.changedTouches || event.touches;
-            this.curX = touches[0]['pageX'];
-            this.diffX = this.curX - this.startX;
-            var xPos = Math.round((this.originalLineWidth + this.diffX) / this.originalBarWidth * 10000) / 10000;
-            var xPercent = Math.min(xPos, 1) * 100 + '%';
-            this.line.style.width = xPercent;
+        key: 'onSlideMove',
+        value: function onSlideMove(event) {
+            event.preventDefault();
 
-            // 拖动进度条的时候暂停视频，避免杂音
             if (!this.player.paused()) {
                 this.player.pause();
             }
-            var duration = this.player.duration();
-            this.player.currentTime(xPos * duration);
+
+            this.update(event);
         }
     }, {
-        key: 'handleTouchEnd',
-        value: function handleTouchEnd(event) {
+        key: 'onSlideEnd',
+        value: function onSlideEnd(event) {
             // 如果播放器在拖动进度条的时候不是处于暂停状态，那么拖动完了之后继续播放
             if (this.player.paused && !this.originalPaused && this.originalPaused !== undefined) {
                 this.player.play();
             }
-            Events.off(document, 'touchmove', this.handleTouchMove);
-            Events.off(document, 'touchend', this.handleTouchEnd);
+        }
+    }, {
+        key: 'update',
+        value: function update(event) {
+            var pos = Dom.getPointerPosition(this.el, event);
+            var percent = pos.x * 100 + '%';
+            var currentTime = this.player.duration() * pos.x;
+
+            this.player.currentTime(currentTime);
+            this.line.style.width = percent;
         }
     }, {
         key: 'reset',
@@ -7444,24 +7429,125 @@ var ProgressBar = function (_Component) {
             }
 
             return this.createElement('div', { className: className }, this.createElement('div', { className: 'lark-progress-bar-padding' }), this.createElement('progressBarExceptFill'));
-
-            // return Dom.createElement('div', {className});
         }
     }]);
 
     return ProgressBar;
-}(_component2.default);
-
-// ProgressBar.prototype.options = {
-//     children: ['progressBarExceptFill']
-// };
+}(_slide2.default);
 
 _component2.default.registerComponent('ProgressBar', ProgressBar);
 
 exports.default = ProgressBar;
 
-},{"../component":1,"../utils/computed-style":23,"../utils/dom":25,"../utils/events":26,"./progress-bar-except-fill":19}],22:[function(require,module,exports){
+},{"../component":1,"../utils/computed-style":24,"../utils/dom":26,"../utils/events":27,"../utils/feature-detector":28,"./progress-bar-except-fill":19,"./slide":22}],22:[function(require,module,exports){
 'use strict';
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _component = require('../component');
+
+var _component2 = _interopRequireDefault(_component);
+
+var _events = require('../utils/events');
+
+var Events = _interopRequireWildcard(_events);
+
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; } /**
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                * @file slide.js 所有需要拖动的元素的父类
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                * @author yuhui06
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                * @date 2018/3/15
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                */
+
+var Slide = function (_Component) {
+    _inherits(Slide, _Component);
+
+    function Slide(player, options) {
+        _classCallCheck(this, Slide);
+
+        var _this = _possibleConstructorReturn(this, (Slide.__proto__ || Object.getPrototypeOf(Slide)).call(this, player, options));
+
+        _this.handleClick = _this.handleClick.bind(_this);
+        _this.handleSlideStart = _this.handleSlideStart.bind(_this);
+        _this.handleSlideMove = _this.handleSlideMove.bind(_this);
+        _this.handleSlideEnd = _this.handleSlideEnd.bind(_this);
+        _this.onClick = _this.onClick.bind(_this);
+        _this.onSlideStart = _this.onSlideStart.bind(_this);
+        _this.onSlideMove = _this.onSlideMove.bind(_this);
+        _this.onSlideEnd = _this.onSlideEnd.bind(_this);
+        return _this;
+    }
+
+    _createClass(Slide, [{
+        key: 'onClick',
+        value: function onClick(event) {}
+    }, {
+        key: 'onSlideStart',
+        value: function onSlideStart(event) {}
+    }, {
+        key: 'onSlideMove',
+        value: function onSlideMove(event) {}
+    }, {
+        key: 'onSlideEnd',
+        value: function onSlideEnd(event) {}
+    }, {
+        key: 'handleClick',
+        value: function handleClick(event) {
+            this.onClick(event);
+        }
+    }, {
+        key: 'handleSlideStart',
+        value: function handleSlideStart(event) {
+            this.onSlideStart(event);
+
+            this.addClass('lark-sliding');
+
+            Events.on(document, 'touchmove', this.handleSlideMove);
+            Events.on(document, 'touchend', this.handleSlideEnd);
+            Events.on(document, 'mousemove', this.handleSlideMove);
+            Events.on(document, 'mouseup', this.handleSlideEnd);
+        }
+    }, {
+        key: 'handleSlideMove',
+        value: function handleSlideMove(event) {
+            this.onSlideMove(event);
+        }
+    }, {
+        key: 'handleSlideEnd',
+        value: function handleSlideEnd(event) {
+            this.onSlideEnd(event);
+
+            this.removeClass('lark-sliding');
+
+            Events.off(document, 'touchmove', this.handleSlideMove);
+            Events.off(document, 'touchend', this.handleSlideEnd);
+            Events.off(document, 'mousemove', this.handleSlideMove);
+            Events.off(document, 'mouseup', this.handleSlideEnd);
+        }
+    }]);
+
+    return Slide;
+}(_component2.default);
+
+exports.default = Slide;
+
+},{"../component":1,"../utils/events":27}],23:[function(require,module,exports){
+'use strict';
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
@@ -7477,6 +7563,14 @@ var _events = require('../utils/events');
 
 var Events = _interopRequireWildcard(_events);
 
+var _featureDetector = require('../utils/feature-detector');
+
+var _featureDetector2 = _interopRequireDefault(_featureDetector);
+
+var _slide = require('./slide');
+
+var _slide2 = _interopRequireDefault(_slide);
+
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
@@ -7491,16 +7585,20 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 * @date 2018/3/9
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 */
 
-var Volume = function (_Component) {
-    _inherits(Volume, _Component);
+var document = window.document;
+
+var Volume = function (_Slide) {
+    _inherits(Volume, _Slide);
 
     function Volume(player, options) {
         _classCallCheck(this, Volume);
 
         var _this = _possibleConstructorReturn(this, (Volume.__proto__ || Object.getPrototypeOf(Volume)).call(this, player, options));
 
-        _this.lineClick = _this.lineClick.bind(_this);
         _this.iconClick = _this.iconClick.bind(_this);
+        _this.onSlideMove = _this.onSlideMove.bind(_this);
+        _this.onClick = _this.onClick.bind(_this);
+        _this.update = _this.update.bind(_this);
 
         _this.line = Dom.$('.lark-volume-line__line', _this.el);
         _this.ball = Dom.$('.lark-volume-line__ball', _this.el);
@@ -7508,22 +7606,36 @@ var Volume = function (_Component) {
 
         _this.lineWidth = _this.line.offsetWidth;
 
-        Events.on(_this.line, 'click', _this.lineClick);
         Events.on(_this.icon, 'click', _this.iconClick);
+        Events.on(_this.line, 'click', _this.handleClick);
+        Events.on(_this.ball, 'mousedown', _this.handleSlideStart);
+        Events.on(_this.ball, 'touchstart', _this.handleSlideStart);
         return _this;
     }
 
     _createClass(Volume, [{
-        key: 'lineClick',
-        value: function lineClick(event) {
+        key: 'onSlideMove',
+        value: function onSlideMove(event) {
+            event.preventDefault();
+            this.update(event);
+        }
+    }, {
+        key: 'onClick',
+        value: function onClick(event) {
+            this.update(event);
+        }
+    }, {
+        key: 'update',
+        value: function update(event) {
             var pos = Dom.getPointerPosition(this.line, event);
-            var percent = Math.round(pos.x * 10) / 10;
+            var percent = pos.x;
             var lineWidth = this.line.offsetWidth;
 
             this.ball.style.left = percent * lineWidth + 'px';
             this.player.volume(percent);
-
             this.switchStatus(percent);
+
+            console.log(percent);
         }
     }, {
         key: 'iconClick',
@@ -7566,11 +7678,14 @@ var Volume = function (_Component) {
     }]);
 
     return Volume;
-}(_component2.default);
+}(_slide2.default);
+
+exports.default = Volume;
+
 
 _component2.default.registerComponent('Volume', Volume);
 
-},{"../component":1,"../utils/dom":25,"../utils/events":26}],23:[function(require,module,exports){
+},{"../component":1,"../utils/dom":26,"../utils/events":27,"../utils/feature-detector":28,"./slide":22}],24:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -7606,7 +7721,7 @@ function computedStyle(el, prop) {
     return el.currentStyle && el.currentStyle[prop] || '';
 }
 
-},{}],24:[function(require,module,exports){
+},{}],25:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -7702,7 +7817,7 @@ function removeData(el) {
     }
 }
 
-},{"./guid":30}],25:[function(require,module,exports){
+},{"./guid":31}],26:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -8405,7 +8520,7 @@ var $ = exports.$ = createQuerier('querySelector');
  */
 var $$ = exports.$$ = createQuerier('querySelectorAll');
 
-},{"./computed-style":23,"./obj":35}],26:[function(require,module,exports){
+},{"./computed-style":24,"./obj":36}],27:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -8883,7 +8998,7 @@ function one(elem, type, fn) {
     on(elem, type, executeOnlyOnce);
 }
 
-},{"./dom-data":24,"./guid":30,"./to-title-case":39}],27:[function(require,module,exports){
+},{"./dom-data":25,"./guid":31,"./to-title-case":40}],28:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -8903,7 +9018,7 @@ var featureDetector = {
 
 exports.default = featureDetector;
 
-},{}],28:[function(require,module,exports){
+},{}],29:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -8961,7 +9076,7 @@ function throttle(fn, wait) {
     };
 }
 
-},{"./guid":30}],29:[function(require,module,exports){
+},{"./guid":31}],30:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -9044,7 +9159,7 @@ exports.default = {
     }
 };
 
-},{"./events":26}],30:[function(require,module,exports){
+},{"./events":27}],31:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -9069,7 +9184,7 @@ function newGUID() {
   return guid++;
 }
 
-},{}],31:[function(require,module,exports){
+},{}],32:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -9114,7 +9229,7 @@ log.error = console.error;
 
 log.clear = console.clear;
 
-},{}],32:[function(require,module,exports){
+},{}],33:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -9169,7 +9284,7 @@ function mergeOptions() {
    * @date 2017/11/3
    */
 
-},{"./obj.js":35}],33:[function(require,module,exports){
+},{"./obj.js":36}],34:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -9194,7 +9309,7 @@ exports.default = {
     wmv: 'video/x-ms-wmv'
 };
 
-},{}],34:[function(require,module,exports){
+},{}],35:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -9289,7 +9404,7 @@ function nomalizeSource(source) {
     }
 }
 
-},{"./mime-type-map":33,"./obj":35}],35:[function(require,module,exports){
+},{"./mime-type-map":34,"./obj":36}],36:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -9349,7 +9464,7 @@ function each(obj, fn) {
   });
 }
 
-},{}],36:[function(require,module,exports){
+},{}],37:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -9423,7 +9538,7 @@ function deregisterPlugin(name) {
   delete pluginStore[name];
 }
 
-},{}],37:[function(require,module,exports){
+},{}],38:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -9453,7 +9568,7 @@ function loadCss(src) {
     head.appendChild(link);
 }
 
-},{"./dom":25}],38:[function(require,module,exports){
+},{"./dom":26}],39:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -9512,7 +9627,7 @@ function timeFormat(seconds) {
     }
 }
 
-},{}],39:[function(require,module,exports){
+},{}],40:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {

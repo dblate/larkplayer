@@ -7,13 +7,19 @@
 import Component from '../component';
 import * as Dom from '../utils/dom';
 import * as Events from '../utils/events';
+import featureDetector from '../utils/feature-detector';
+import Slide from './slide';
 
-class Volume extends Component {
+const document = window.document;
+
+export default class Volume extends Slide {
     constructor(player, options) {
         super(player, options);
 
-        this.lineClick = this.lineClick.bind(this);
         this.iconClick = this.iconClick.bind(this);
+        this.onSlideMove = this.onSlideMove.bind(this);
+        this.onClick = this.onClick.bind(this);
+        this.update = this.update.bind(this);
 
         this.line = Dom.$('.lark-volume-line__line', this.el);
         this.ball = Dom.$('.lark-volume-line__ball', this.el);
@@ -21,19 +27,31 @@ class Volume extends Component {
 
         this.lineWidth = this.line.offsetWidth;
 
-        Events.on(this.line, 'click', this.lineClick);
         Events.on(this.icon, 'click', this.iconClick);
+        Events.on(this.line, 'click', this.handleClick);
+        Events.on(this.ball, 'mousedown', this.handleSlideStart);
+        Events.on(this.ball, 'touchstart', this.handleSlideStart);
     }
 
-    lineClick(event) {
+    onSlideMove(event) {
+        event.preventDefault();
+        this.update(event);
+    }
+
+    onClick(event) {
+        this.update(event);
+    }
+
+    update(event) {
         const pos = Dom.getPointerPosition(this.line, event);
-        const percent = Math.round(pos.x * 10) / 10;
+        const percent = pos.x;
         const lineWidth = this.line.offsetWidth;
 
         this.ball.style.left = percent * lineWidth + 'px';
         this.player.volume(percent);
-
         this.switchStatus(percent);
+
+        console.log(percent);
     }
 
     iconClick() {

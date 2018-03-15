@@ -9,6 +9,9 @@
 // 小球的 padding，为了让用户更容易点击，给 10px 的 padding
 @handle-padding: 10px;
 
+@line-height-sliding: round(@line-height-thick * 1.5);
+@handle-size-sliding: @handle-size * 1.3;
+
 .lark-progress-bar {
     position: relative;
     cursor: pointer;
@@ -24,9 +27,11 @@
     
     .lark-progress-bar-except-fill {
         height: @line-height-thick;
+        transition: all 0.2s;
     }
     .lark-buffer-bar {
         height: @line-height-thick;
+        transition: all 0.2s;
     }
     .lark-progress-bar-padding {
         position: absolute;
@@ -34,12 +39,17 @@
         height: @handle-padding * 2;
         bottom: 0;
     }
+
+    // &:hover {
+    //     .lark-sliding;
+    // }
 }
 
 .lark-progress-bar-except-fill {
     position: relative;
     width: 100%;
     height: @line-height;
+    transition: all 0.2s;
 }
 
 .lark-progress-bar__background {
@@ -87,3 +97,22 @@
         height: @handle-size-fullscreen;
     }
 }
+
+
+// 进度条滑动时
+// .lark-sliding {
+//     .lark-progress-bar-except-fill {
+//         height: @line-height-sliding;
+//     }
+//     .lark-buffer-bar {
+//         height: @line-height-sliding;
+//     }
+//     .lark-progress-bar__line__handle-except-fill {
+//         width: @handle-size-sliding;
+//         height: @handle-size-sliding
+//     }
+//     .lark-progress-bar__line__handle {
+//         right: -((@handle-size-sliding + 2 * @handle-padding) / 2);
+//         top: -((@handle-size-sliding + 2 * @handle-padding) / 2 - @line-height / 2);
+//     }
+// }
