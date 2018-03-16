@@ -21,6 +21,16 @@ larkplayer 是一款轻量级的 html5 播放器，无其他库的依赖
 * 插件机制，支持自定义插件开发
 * 自定义样式
 
+<h3>截图</h3>
+
+__pc__
+
+<img alt="larkplayer pc screenshot" src="https://github.com/dblate/larkplayer/blob/master/screenshots/larkplayer-pc.png" width="640" height="360">
+
+__wap__
+
+<img alt="larkplayer wap screenshot" src="https://github.com/dblate/larkplayer/blob/master/screenshots/larkplayer-mobile.png" width="640" height="360">
+
 <h3>下载</h3>
 
 npm
@@ -41,6 +51,7 @@ cdn
 <html>
 <head>
     <title>larkplayer quick start</title>
+    <!-- 此 cdn 只是拿来作为示例使用，生产环境中请使用自己的 cdn -->
     <link rel="stylesheet" type="text/css" href="https://unpkg.com/larkplayer@latest/dist/larkplayer.min.css" ／>
 </head>
 <body>
