@@ -16,11 +16,20 @@ export default class LoadingPc extends Component {
     }
 
     createEl() {
-        return this.createElement(
+        const el = this.createElement(
             'div',
             {className: 'lark-loading-pc'},
-            this.createElement('Loading')
+            this.createElement(
+                'div',
+                {className: 'lark-loading-area'},
+                this.createElement(
+                    'div',
+                    {className: 'lark-loading-spinner'}
+                )
+            ),
         );
+
+        return el;
     }
 }
 

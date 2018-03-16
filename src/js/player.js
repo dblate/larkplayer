@@ -99,6 +99,9 @@ class Player extends Component {
         this.handleFullscreenError = this.handleFullscreenError.bind(this);
         this.handleError = this.handleError.bind(this);
         this.handleClick = this.handleClick.bind(this);
+        this.handleMouseOver = this.handleMouseOver.bind(this);
+        this.handleMouseMove = this.handleMouseMove.bind(this);
+        this.handleMouseOut = this.handleMouseOut.bind(this);
 
         // 3000ms 后自动隐藏播放器控制条
         this.activeTimeout = 3000;
@@ -110,6 +113,9 @@ class Player extends Component {
             this.on('touchend', this.handleTouchEnd);
         } else {
             this.on('click', this.handleClick);
+            this.on('mouseover', this.handleMouseOver);
+            this.on('mousemove', this.handleMouseMove);
+            this.on('mouseout', this.handleMouseOut);
         }
 
         if (!this.tech) {
@@ -1077,6 +1083,30 @@ class Player extends Component {
                 this.removeClass(activeClass);
             }, this.activeTimeout);
         }
+    }
+
+    handleMouseOver(event) {
+        clearTimeout(this.activeTimeoutHandler);
+
+        if (!this.hasClass(activeClass)) {
+            this.addClass(activeClass);
+        }
+
+        this.activeTimeoutHandler = setTimeout(() => {
+            this.removeClass(activeClass);
+        }, this.activeTimeout);
+    }
+
+    handleMouseMove(event) {
+        this.handleMouseOver(event);
+    }
+
+    handleMouseOut(event) {
+        clearTimeout(this.activeTimeoutHandler);
+
+        this.activeTimeoutHandler = setTimeout(() => {
+            this.removeClass(activeClass);
+        }, this.activeTimeout / 2);
     }
 
 

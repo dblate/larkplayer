@@ -55,22 +55,39 @@
 
 // pc
 .lark-loading-pc {
-    .lark-loading-cnt {
-        padding: 10px;
-        border-radius: 50%;
-        line-height: 1;
-        background: rgba(0,0,0,0.7);
-    }
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
 
-    .lark-loading-area__spinner {
-        width: 40px;
-        height: 40px;   
-    }
-
-    .lark-loading-area__text {
-        display: none;
+    .lark-loading-area {
+        position: relative;
     }
 }
+
+@size: 65px;
+.lark-loading-spinner {
+  display: inline-block;
+  width: @size;
+  height: @size;
+  border-radius: 50%;
+  -webkit-box-sizing: border-box;
+  border: solid floor(@size / 10) #ddd;
+  border-top-color: transparent;
+  border-left-color: transparent;
+  .mixins-animation(
+    @name: spinner;
+    @duration: 0.8s;
+    @iterationCount: infinite;
+    @timingFunction: linear
+  );
+}
+
+.mixins-keyframes(@name: spinner; @frames: {
+  100% {
+    -webkit-transform: rotate(360deg);
+  }
+});
 
 
 

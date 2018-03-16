@@ -13,6 +13,9 @@
 
 @line-height-sliding: round(@line-height-thick * 1.5);
 @handle-size-sliding: @handle-size * 1.3;
+.progress-bar-transition() {
+    .mixins-transition(all .1s cubic-bezier(0.0,0.0,0.2,1));
+}
 
 .lark-progress-bar {
     position: relative;
@@ -29,7 +32,7 @@
     height: @line-height-thick;
 
     .lark-progress-bar-hover-light {
-        background: rgba(231, 231, 231, 0.6);
+        background: rgba(231, 231, 231, 0.7);
     }
 
     .lark-progress-bar-except-fill,
@@ -37,11 +40,11 @@
         cursor: pointer;
         position: absolute;
         height: @line-height-thick;
-        .mixins-transition(all, @transition-duration-fast;);
+        .progress-bar-transition();
     }
     .lark-buffer-bar {
         height: @line-height-thick;
-        .mixins-transition(all, @transition-duration-fast;);
+        .progress-bar-transition();
     }
     .lark-progress-bar-padding {
         position: absolute;
@@ -81,7 +84,7 @@
     position: relative;
     width: 100%;
     height: @line-height;
-    .mixins-transition(all, @transition-duration-fast;);
+    .progress-bar-transition();
 }
 
 .lark-progress-bar__background {
@@ -118,7 +121,7 @@
     width: @handle-size;
     height: @handle-size;
     background: @primary-color;
-    .mixins-transition(all, @transition-duration-fast;);
+    .progress-bar-transition();
 }
 
 // 全屏时

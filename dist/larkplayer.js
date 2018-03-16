@@ -1096,6 +1096,9 @@ var Player = function (_Component) {
         _this.handleFullscreenError = _this.handleFullscreenError.bind(_this);
         _this.handleError = _this.handleError.bind(_this);
         _this.handleClick = _this.handleClick.bind(_this);
+        _this.handleMouseOver = _this.handleMouseOver.bind(_this);
+        _this.handleMouseMove = _this.handleMouseMove.bind(_this);
+        _this.handleMouseOut = _this.handleMouseOut.bind(_this);
 
         // 3000ms 后自动隐藏播放器控制条
         _this.activeTimeout = 3000;
@@ -1107,6 +1110,9 @@ var Player = function (_Component) {
             _this.on('touchend', _this.handleTouchEnd);
         } else {
             _this.on('click', _this.handleClick);
+            _this.on('mouseover', _this.handleMouseOver);
+            _this.on('mousemove', _this.handleMouseMove);
+            _this.on('mouseout', _this.handleMouseOut);
         }
 
         if (!_this.tech) {
@@ -2144,6 +2150,37 @@ var Player = function (_Component) {
                     _this7.removeClass(activeClass);
                 }, this.activeTimeout);
             }
+        }
+    }, {
+        key: 'handleMouseOver',
+        value: function handleMouseOver(event) {
+            var _this8 = this;
+
+            clearTimeout(this.activeTimeoutHandler);
+
+            if (!this.hasClass(activeClass)) {
+                this.addClass(activeClass);
+            }
+
+            this.activeTimeoutHandler = setTimeout(function () {
+                _this8.removeClass(activeClass);
+            }, this.activeTimeout);
+        }
+    }, {
+        key: 'handleMouseMove',
+        value: function handleMouseMove(event) {
+            this.handleMouseOver(event);
+        }
+    }, {
+        key: 'handleMouseOut',
+        value: function handleMouseOut(event) {
+            var _this9 = this;
+
+            clearTimeout(this.activeTimeoutHandler);
+
+            this.activeTimeoutHandler = setTimeout(function () {
+                _this9.removeClass(activeClass);
+            }, this.activeTimeout / 2);
         }
 
         // = = = = = = = = = = = = = 对外 api = = = = = = = = = = = = = =
@@ -6901,7 +6938,9 @@ var LoadingPc = function (_Component) {
     _createClass(LoadingPc, [{
         key: 'createEl',
         value: function createEl() {
-            return this.createElement('div', { className: 'lark-loading-pc' }, this.createElement('Loading'));
+            var el = this.createElement('div', { className: 'lark-loading-pc' }, this.createElement('div', { className: 'lark-loading-area' }, this.createElement('div', { className: 'lark-loading-spinner' })));
+
+            return el;
         }
     }]);
 
