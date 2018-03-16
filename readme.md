@@ -25,11 +25,11 @@ larkplayer 是一款轻量级的 html5 播放器，无其他库的依赖
 
 __pc__
 
-<img alt="larkplayer pc screenshot" src="https://github.com/dblate/larkplayer/blob/master/screenshots/larkplayer-pc.png" width="640" height="360">
+<img alt="larkplayer pc screenshot" src="https://raw.githubusercontent.com/dblate/larkplayer/master/screenshots/larkplayer-pc.png" width="640" height="360">
 
 __wap__
 
-<img alt="larkplayer wap screenshot" src="https://github.com/dblate/larkplayer/blob/master/screenshots/larkplayer-mobile.png" width="640" height="360">
+<img alt="larkplayer wap screenshot" src="https://raw.githubusercontent.com/dblate/larkplayer/master/screenshots/larkplayer-mobile.png" width="640" height="360">
 
 <h3>下载</h3>
 
