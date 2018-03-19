@@ -1,7 +1,7 @@
 <h1 align="left">larkplayer</h1>
 
 <p align="left">
-轻量级 html5 播放器
+html5 播放器，支持 pc 与移动端，支持 m3u8 mp4 等格式。
 </p>
 
 <p align="left">
@@ -11,15 +11,13 @@
 
 <h3>简介</h3>
 
-<b>支持移动端和 pc 端</b>
-
 larkplayer 是一款轻量级的 html5 播放器，无其他库的依赖
 
 有如下特性
 
 * 事件机制，可通过 on off one trigger 处理原生及自定义事件
 * 插件机制，支持自定义插件开发
-* 自定义样式
+* 自定义 UI（适应 pc 与移动端）
 
 <h3>截图</h3>
 
@@ -111,6 +109,6 @@ cdn
 
 2018/3/7 前增加以下功能
 * 支持 vr 视频
-* 支持 hls(m3u8) 格式
+* ~~支持 hls(m3u8) 格式~~ √（[larkplayer-hls](https://github.com/dblate/larkplayer-hls)）
 * 支持 flv 格式
 * ~~同步支持 pc 与移动端的使用~~ √

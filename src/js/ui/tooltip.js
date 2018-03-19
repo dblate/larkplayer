@@ -45,6 +45,10 @@ const tooltip = {
         }, 0);
     },
     hide() {
+        if (!this.el) {
+            return;
+        }
+
         this.timeoutHandler = setTimeout(() => {
             this.el.style.display = 'none';
         });

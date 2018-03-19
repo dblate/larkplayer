@@ -111,7 +111,7 @@ class ProgressBar extends Slider {
 
             const top = elPos.top - (this.paddingEl.offsetHeight - this.line.offsetHeight);
             const left = elPos.left + this.el.offsetWidth * pointerPos.x;
-            const currentTime = duration * pointerPos.x;
+            const currentTime = parseInt(duration * pointerPos.x, 10);
 
             if (!isNaN(currentTime)) {
                 tooltip.show({

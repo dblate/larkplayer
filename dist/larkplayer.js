@@ -7528,7 +7528,7 @@ var ProgressBar = function (_Slider) {
 
                 var top = elPos.top - (this.paddingEl.offsetHeight - this.line.offsetHeight);
                 var left = elPos.left + this.el.offsetWidth * pointerPos.x;
-                var currentTime = duration * pointerPos.x;
+                var currentTime = parseInt(duration * pointerPos.x, 10);
 
                 if (!isNaN(currentTime)) {
                     _tooltip2.default.show({
@@ -7757,6 +7757,10 @@ var tooltip = {
     },
     hide: function hide() {
         var _this2 = this;
+
+        if (!this.el) {
+            return;
+        }
 
         this.timeoutHandler = setTimeout(function () {
             _this2.el.style.display = 'none';
