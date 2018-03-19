@@ -47,5 +47,7 @@ export function timeFormat(seconds) {
         }
 
         return result.join(':');
+    } else {
+        return '- -';
     }
 }

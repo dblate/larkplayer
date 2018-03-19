@@ -430,9 +430,13 @@ export function getAttribute(el, attribute) {
  * @param {Mixed} value 要设置的属性的值
  */
 export function setAttribute(el, attr, value) {
-    // 应该没有属性的值为 "true" 的形式，对于这种，直接转换为空的字符串
-    // 如 controls = "true" => controls
-    el.setAttribute(attr, (value === true ? '' : value));
+    if (value === false) {
+        removeAttribute(el, attr);
+    } else {
+        // 应该没有属性的值为 "true" 的形式，对于这种，直接转换为空的字符串
+        // 如 controls = "true" => controls
+        el.setAttribute(attr, (value === true ? '' : value));
+    }
 }
 
 /**

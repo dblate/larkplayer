@@ -52,24 +52,33 @@ cdn
 <head>
     <title>larkplayer quick start</title>
     <!-- 此 cdn 只是拿来作为示例使用，生产环境中请使用自己的 cdn -->
-    <link rel="stylesheet" type="text/css" href="https://unpkg.com/larkplayer@latest/dist/larkplayer.min.css" ／>
+    <link rel="stylesheet" type="text/css" href="https://unpkg.com/larkplayer@latest/dist/larkplayer.css">
 </head>
 <body>
-    <video id="my-video" src="https://baikebcs.bdimg.com/baike-other/cool.mp4" width="400" height="300" controls>
+    <video id="my-video" src="https://baikebcs.bdimg.com/baike-other/big-buck-bunny.mp4" width="400" height="300" controls>
         请升级浏览器以支持 html5 video
     </video>
  
-    <script type="text/javascript" src="https://unpkg.com/larkplayer@latest/dist/larkplayer.min.js"></script>
+    <script type="text/javascript" src="https://unpkg.com/larkplayer@latest/dist/larkplayer.js"></script>
     <script type="text/javascript">
         // js 文件以 umd 的形式包装，以 script 的形式引用时，larkplayer 会直接挂载在 window 上
-        var player = larkplayer('my-video');
-        // 支持所有的 html5 标准事件
-        player.on('play', function () {
-            console.log('play');
+        var player = larkplayer('my-video', {
+            // options 对象用于设置一些其他属性，可选
+            width: 640,
+            height: 360
+        }, function () {
+            // player ready 时的回调函数，可选
+            console.log('player is ready');
         });
+
         // 支持自定义 firstplay 事件，每个视频播放时只触发一次
         player.on('firstplay', function () {
             console.log('firstplay');
+        });
+
+        // 支持所有的 html5 标准事件
+        player.on('play', function () {
+            console.log('play');
         });
         player.on('ended', function () {
             console.log('ended');

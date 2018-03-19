@@ -95,7 +95,7 @@ class Html5 extends Component {
     }
 
     exitFullScreen() {
-        if (typeof this.el.webkitExitFullScreenm === 'function') {
+        if (typeof this.el.webkitExitFullScreen === 'function') {
             // @test
             this.player.removeClass('lark-fullscreen');
 

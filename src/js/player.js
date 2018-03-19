@@ -1405,16 +1405,14 @@ class Player extends Component {
      */
     src(src) {
         if (src !== undefined) {
-            if (src !== this.techGet('src')) {
-                // 应该先暂停一下比较好
-                this.techCall('pause');
-                this.techCall('setSrc', src);
+            // 应该先暂停一下比较好
+            this.techCall('pause');
+            this.techCall('setSrc', src);
 
-                // src 改变后，重新绑定一次 firstplay 方法
-                // 先 off 确保只绑定一次
-                this.off('play', this.handleFirstplay);
-                this.one('play', this.handleFirstplay);
-            }
+            // src 改变后，重新绑定一次 firstplay 方法
+            // 先 off 确保只绑定一次
+            this.off('play', this.handleFirstplay);
+            this.one('play', this.handleFirstplay);
         } else {
             return this.techGet('src');
         }

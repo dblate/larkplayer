@@ -27,6 +27,7 @@ export default class Error extends Component {
         this.player.reset();
         setTimeout(() => {
             this.player.src(src);
+            this.player.play();
         }, 0);
     }
 

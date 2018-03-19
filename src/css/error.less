@@ -49,13 +49,17 @@
 // pc
 .lark-error-pc {
     .lark-error-area {
-        font-size: 15px;
-        height: 34px;
-        line-height: 34px;
+        font-size: 14px;
+        height: 100%;
+        background: rgba(0, 0,0, 0.8);
+        z-index: 2;
     }
 
-    .lark-error-area__spinner {
-        width: 18px;
-        height: 18px;
+    .lark-error-text {
+        position: absolute;
+        width: 100%;
+        left: 0;
+        top: 50%;
+        transform: translateY(-50%);
     }
 }

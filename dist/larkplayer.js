@@ -471,7 +471,7 @@ var Html5 = function (_Component) {
     }, {
         key: 'exitFullScreen',
         value: function exitFullScreen() {
-            if (typeof this.el.webkitExitFullScreenm === 'function') {
+            if (typeof this.el.webkitExitFullScreen === 'function') {
                 // @test
                 this.player.removeClass('lark-fullscreen');
 
@@ -782,9 +782,6 @@ require('./shim/third_party/shim.min.js');
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
-
-// __uri 只在 fis 环境中支持
-// scriptLoader.loadCss(__uri('../css/larkplayer.less'));
 
 /**
  * @file larkplayer.js larkplayer 入口函数
@@ -2547,16 +2544,14 @@ var Player = function (_Component) {
         key: 'src',
         value: function src(_src) {
             if (_src !== undefined) {
-                if (_src !== this.techGet('src')) {
-                    // 应该先暂停一下比较好
-                    this.techCall('pause');
-                    this.techCall('setSrc', _src);
+                // 应该先暂停一下比较好
+                this.techCall('pause');
+                this.techCall('setSrc', _src);
 
-                    // src 改变后，重新绑定一次 firstplay 方法
-                    // 先 off 确保只绑定一次
-                    this.off('play', this.handleFirstplay);
-                    this.one('play', this.handleFirstplay);
-                }
+                // src 改变后，重新绑定一次 firstplay 方法
+                // 先 off 确保只绑定一次
+                this.off('play', this.handleFirstplay);
+                this.one('play', this.handleFirstplay);
             } else {
                 return this.techGet('src');
             }
@@ -6218,9 +6213,6 @@ var BufferBar = function (_Component) {
             var duration = this.player.duration();
             var currentTime = this.player.currentTime();
 
-            window.buffered = buffered;
-            console.log(buffered);
-
             if (duration > 0) {
                 for (var i = 0; i < buffered.length; i++) {
                     if (buffered.start(i) <= currentTime && buffered.end(i) >= currentTime) {
@@ -6646,16 +6638,64 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 var ErrorPc = function (_Component) {
     _inherits(ErrorPc, _Component);
 
-    function ErrorPc() {
+    function ErrorPc(player, options) {
         _classCallCheck(this, ErrorPc);
 
-        return _possibleConstructorReturn(this, (ErrorPc.__proto__ || Object.getPrototypeOf(ErrorPc)).apply(this, arguments));
+        var _this = _possibleConstructorReturn(this, (ErrorPc.__proto__ || Object.getPrototypeOf(ErrorPc)).call(this, player, options));
+
+        _this.handleError = _this.handleError.bind(_this);
+        _this.handleClick = _this.handleClick.bind(_this);
+
+        _this.player.on('error', _this.handleError);
+        _this.on('click', _this.handleClick);
+
+        _this.textEl = Dom.$('.lark-error-text', _this.el);
+        return _this;
     }
 
     _createClass(ErrorPc, [{
+        key: 'handleClick',
+        value: function handleClick() {
+            var _this2 = this;
+
+            var src = this.player.src();
+            this.player.reset();
+            setTimeout(function () {
+                _this2.player.src(src);
+                _this2.player.play();
+            }, 0);
+        }
+    }, {
+        key: 'handleError',
+        value: function handleError(event, error) {
+            var text = void 0;
+            switch (parseInt(error.code, 10)) {
+                // MEDIA_ERR_ABORTED 
+                case 1:
+                    text = '加载失败，点击重试(MEDIA_ERR_ABORTED)';
+                    break;
+                // MEDIA_ERR_NETWORK 
+                case 2:
+                    text = '加载失败，请检查您的网络(MEDIA_ERR_NETWORK)';
+                    break;
+                // MEDIA_ERR_DECODE
+                case 3:
+                    text = '视频解码失败(MEDIA_ERR_DECODE)';
+                    break;
+                // MEDIA_ERR_SRC_NOT_SUPPORTED 
+                case 4:
+                    text = '资源无法访问，或者浏览器不支持该视频类型(MEDIA_ERR_SRC_NOT_SUPPORTED)';
+                    break;
+                default:
+                    text = '加载失败，点击重试';
+            }
+
+            Dom.replaceContent(this.textEl, text);
+        }
+    }, {
         key: 'createEl',
         value: function createEl() {
-            return this.createElement('div', { className: 'lark-error-pc' }, this.createElement('Error'));
+            return this.createElement('div', { className: 'lark-error-pc' }, this.createElement('div', { className: 'lark-error-area' }, this.createElement('div', { className: 'lark-error-text' }, '加载失败，请稍后重试')));
         }
     }]);
 
@@ -6730,6 +6770,7 @@ var Error = function (_Component) {
             this.player.reset();
             setTimeout(function () {
                 _this2.player.src(src);
+                _this2.player.play();
             }, 0);
         }
     }, {
@@ -7388,7 +7429,6 @@ var ProgressBar = function (_Slider) {
 
         var _this = _possibleConstructorReturn(this, (ProgressBar.__proto__ || Object.getPrototypeOf(ProgressBar)).call(this, player, options));
 
-        _this.getTooltipTop = _this.getTooltipTop.bind(_this);
         _this.handleTimeUpdate = _this.handleTimeUpdate.bind(_this);
         _this.onClick = _this.onClick.bind(_this);
         _this.onSlideStart = _this.onSlideStart.bind(_this);
@@ -7403,11 +7443,7 @@ var ProgressBar = function (_Slider) {
         _this.line = Dom.$('.lark-progress-bar__line', _this.el);
         _this.lineHandle = Dom.$('.lark-progress-bar__line__handle', _this.el);
         _this.hoverLight = Dom.$('.lark-progress-bar-hover-light', _this.el);
-
-        player.on('ready', function () {
-            _this.tooltipTop = _this.getTooltipTop();
-            _this.elPos = Dom.findPosition(_this.el);
-        });
+        _this.paddingEl = Dom.$('.lark-progress-bar-padding', _this.el);
 
         player.on('timeupdate', _this.handleTimeUpdate);
         _this.on('click', _this.handleClick);
@@ -7423,17 +7459,6 @@ var ProgressBar = function (_Slider) {
     }
 
     _createClass(ProgressBar, [{
-        key: 'getTooltipTop',
-        value: function getTooltipTop() {
-            var padding = Dom.$('.lark-progress-bar-padding', this.el);
-            var line = Dom.$('.lark-progress-bar__line', this.el);
-            var marginTop = padding.offsetHeight - line.offsetHeight;
-            var elPos = Dom.findPosition(this.el);
-            var top = elPos.top - marginTop;
-
-            return top;
-        }
-    }, {
         key: 'handleTimeUpdate',
         value: function handleTimeUpdate() {
             // 进度条
@@ -7496,15 +7521,23 @@ var ProgressBar = function (_Slider) {
     }, {
         key: 'showToolTip',
         value: function showToolTip(event) {
-            var pointerPos = Dom.getPointerPosition(this.el, event);
-            var left = this.elPos.left + this.el.offsetWidth * pointerPos.x;
-            var currentTime = this.player.duration() * pointerPos.x;
+            var duration = this.player.duration();
+            if (duration) {
+                var pointerPos = Dom.getPointerPosition(this.el, event);
+                var elPos = Dom.findPosition(this.el);
 
-            _tooltip2.default.show({
-                top: this.tooltipTop,
-                left: left,
-                content: (0, _timeFormat.timeFormat)(Math.floor(currentTime))
-            });
+                var top = elPos.top - (this.paddingEl.offsetHeight - this.line.offsetHeight);
+                var left = elPos.left + this.el.offsetWidth * pointerPos.x;
+                var currentTime = duration * pointerPos.x;
+
+                if (!isNaN(currentTime)) {
+                    _tooltip2.default.show({
+                        top: top,
+                        left: left,
+                        content: (0, _timeFormat.timeFormat)(Math.floor(currentTime))
+                    });
+                }
+            }
         }
     }, {
         key: 'showHoverLine',
@@ -8513,9 +8546,13 @@ function getAttribute(el, attribute) {
  * @param {Mixed} value 要设置的属性的值
  */
 function setAttribute(el, attr, value) {
-    // 应该没有属性的值为 "true" 的形式，对于这种，直接转换为空的字符串
-    // 如 controls = "true" => controls
-    el.setAttribute(attr, value === true ? '' : value);
+    if (value === false) {
+        removeAttribute(el, attr);
+    } else {
+        // 应该没有属性的值为 "true" 的形式，对于这种，直接转换为空的字符串
+        // 如 controls = "true" => controls
+        el.setAttribute(attr, value === true ? '' : value);
+    }
 }
 
 /**
@@ -9844,6 +9881,8 @@ function timeFormat(seconds) {
         }
 
         return result.join(':');
+    } else {
+        return '- -';
     }
 }
 

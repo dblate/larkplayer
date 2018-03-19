@@ -22,7 +22,6 @@ class ProgressBar extends Slider {
     constructor(player, options) {
         super(player, options);
 
-        this.getTooltipTop = this.getTooltipTop.bind(this);
         this.handleTimeUpdate = this.handleTimeUpdate.bind(this);
         this.onClick = this.onClick.bind(this);
         this.onSlideStart = this.onSlideStart.bind(this);
@@ -37,11 +36,7 @@ class ProgressBar extends Slider {
         this.line = Dom.$('.lark-progress-bar__line', this.el);
         this.lineHandle = Dom.$('.lark-progress-bar__line__handle', this.el);
         this.hoverLight = Dom.$('.lark-progress-bar-hover-light', this.el);
-
-        player.on('ready', () => {
-            this.tooltipTop = this.getTooltipTop();
-            this.elPos = Dom.findPosition(this.el);
-        });
+        this.paddingEl = Dom.$('.lark-progress-bar-padding', this.el);
 
         player.on('timeupdate', this.handleTimeUpdate);
         this.on('click', this.handleClick);
@@ -53,16 +48,6 @@ class ProgressBar extends Slider {
             this.on('mousemove', this.handleMouseMove);
             this.on('mouseout', this.handleMouseOut);
         }
-    }
-
-    getTooltipTop() {
-        const padding = Dom.$('.lark-progress-bar-padding', this.el);
-        const line = Dom.$('.lark-progress-bar__line', this.el);
-        const marginTop = padding.offsetHeight - line.offsetHeight;
-        const elPos = Dom.findPosition(this.el);
-        const top = elPos.top - marginTop;
-
-        return top;
     }
 
     handleTimeUpdate() {
@@ -119,15 +104,23 @@ class ProgressBar extends Slider {
     }
 
     showToolTip(event) {
-        const pointerPos = Dom.getPointerPosition(this.el, event);
-        const left = this.elPos.left + this.el.offsetWidth * pointerPos.x;
-        const currentTime = this.player.duration() * pointerPos.x;
+        const duration = this.player.duration();
+        if (duration) {
+            const pointerPos = Dom.getPointerPosition(this.el, event);
+            const elPos = Dom.findPosition(this.el);
 
-        tooltip.show({
-            top: this.tooltipTop,
-            left: left,
-            content: timeFormat(Math.floor(currentTime))
-        });
+            const top = elPos.top - (this.paddingEl.offsetHeight - this.line.offsetHeight);
+            const left = elPos.left + this.el.offsetWidth * pointerPos.x;
+            const currentTime = duration * pointerPos.x;
+
+            if (!isNaN(currentTime)) {
+                tooltip.show({
+                    top: top,
+                    left: left,
+                    content: timeFormat(Math.floor(currentTime))
+                });
+            }
+        }
     }
 
     showHoverLine(event) {
