@@ -47,7 +47,7 @@ export default class ErrorPc extends Component {
                 break;
             // MEDIA_ERR_SRC_NOT_SUPPORTED 
             case 4:
-                text = '资源无法访问，或者浏览器不支持该视频类型(MEDIA_ERR_SRC_NOT_SUPPORTED)';
+                text = '加载失败，该资源无法访问或者浏览器不支持该视频类型(MEDIA_ERR_SRC_NOT_SUPPORTED)';
                 break;
             default:
                 text = '加载失败，点击重试'

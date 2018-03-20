@@ -1413,6 +1413,14 @@ class Player extends Component {
             // 先 off 确保只绑定一次
             this.off('play', this.handleFirstplay);
             this.one('play', this.handleFirstplay);
+
+            /**
+             * srcchange 时触发
+             *
+             * @event Player#srcchange
+             * @param {string} src 更换后的视频地址
+             */ 
+            this.trigger('srcchange', src);
         } else {
             return this.techGet('src');
         }
@@ -1427,6 +1435,14 @@ class Player extends Component {
     source(source) {
         if (source !== undefined) {
             this.techCall('source', source);
+
+            /**
+             * srcchange 时触发
+             *
+             * @event Player#srcchange
+             * @param {string} src 更换后的视频地址
+             */ 
+            this.trigger('srcchange', this.player.src());
         } else {
             return this.techGet('source');
         }
