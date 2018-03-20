@@ -1125,12 +1125,14 @@ var Player = function (_Component) {
         }
 
         // plugins
+        _this.plugins = {};
         var plugins = _this.options.plugins;
         if (plugins) {
             Object.keys(plugins).forEach(function (name) {
                 var plugin = Plugin.getPlugin(name);
-                if (plugin) {
+                if (typeof plugin === 'function') {
                     plugin.call(_this, plugins[name]);
+                    _this.plugins[name] = plugin;
                 } else {
                     throw new Error('Plugin ' + name + ' not exist');
                 }
@@ -2552,6 +2554,14 @@ var Player = function (_Component) {
                 // 先 off 确保只绑定一次
                 this.off('play', this.handleFirstplay);
                 this.one('play', this.handleFirstplay);
+
+                /**
+                 * srcchange 时触发
+                 *
+                 * @event Player#srcchange
+                 * @param {string} src 更换后的视频地址
+                 */
+                this.trigger('srcchange', _src);
             } else {
                 return this.techGet('src');
             }
@@ -2569,6 +2579,14 @@ var Player = function (_Component) {
         value: function source(_source) {
             if (_source !== undefined) {
                 this.techCall('source', _source);
+
+                /**
+                 * srcchange 时触发
+                 *
+                 * @event Player#srcchange
+                 * @param {string} src 更换后的视频地址
+                 */
+                this.trigger('srcchange', this.player.src());
             } else {
                 return this.techGet('source');
             }
@@ -6684,7 +6702,7 @@ var ErrorPc = function (_Component) {
                     break;
                 // MEDIA_ERR_SRC_NOT_SUPPORTED 
                 case 4:
-                    text = '资源无法访问，或者浏览器不支持该视频类型(MEDIA_ERR_SRC_NOT_SUPPORTED)';
+                    text = '加载失败，该资源无法访问或者浏览器不支持该视频类型(MEDIA_ERR_SRC_NOT_SUPPORTED)';
                     break;
                 default:
                     text = '加载失败，点击重试';

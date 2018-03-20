@@ -131,12 +131,14 @@ class Player extends Component {
         }
 
         // plugins
+        this.plugins = {};
         const plugins = this.options.plugins;
         if (plugins) {
             Object.keys(plugins).forEach(name => {
                 let plugin = Plugin.getPlugin(name);
-                if (plugin) {
+                if (typeof plugin === 'function') {
                     plugin.call(this, plugins[name]);
+                    this.plugins[name] = plugin;
                 } else {
                     throw new Error(`Plugin ${name} not exist`);
                 }
