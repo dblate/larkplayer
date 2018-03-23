@@ -341,6 +341,10 @@ var _createClass = function () { function defineProperties(target, props) { for 
 
 var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
 
+var _component = require('./component');
+
+var _component2 = _interopRequireDefault(_component);
+
 var _dom = require('./utils/dom');
 
 var Dom = _interopRequireWildcard(_dom);
@@ -353,13 +357,11 @@ var _normalizeSource = require('./utils/normalize-source');
 
 var _normalizeSource2 = _interopRequireDefault(_normalizeSource);
 
-var _component = require('./component');
-
-var _component2 = _interopRequireDefault(_component);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+var _obj = require('./utils/obj');
 
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -692,6 +694,30 @@ Html5.resetMediaElement = function (el) {
     }
 };
 
+Html5.mediaSourceHandler = [];
+
+Html5.validateMediaSourceHandler = function (handler) {
+    if ((0, _obj.isPlain)(handler) && typeof handler.canHandleSource === 'function' && typeof handler.handleSource === 'function') {
+        return true;
+    } else {
+        return false;
+    }
+};
+
+Html5.registerMediaSourceHandler = function (handler) {
+    if (Html5.validateMediaSourceHandler(handler)) {
+        Html5.mediaSourceHandler.push(handler);
+    } else {
+        console.error('Invalid mediaSourceHandler');
+    }
+};
+
+Html5.selectMediaSourceHandler = function (source) {
+    return Html5.mediaSourceHandler.find(function (handler) {
+        return handler.canHandleSource(source);
+    });
+};
+
 // HTML5 video attributes proxy
 // 获取对应属性的值
 // muted defaultMuted autoplay controls loop playsinline
@@ -746,7 +772,7 @@ Html5.resetMediaElement = function (el) {
 
 exports.default = Html5;
 
-},{"./component":1,"./utils/dom":27,"./utils/normalize-source":36,"./utils/to-title-case":41}],3:[function(require,module,exports){
+},{"./component":1,"./utils/dom":27,"./utils/normalize-source":36,"./utils/obj":37,"./utils/to-title-case":41}],3:[function(require,module,exports){
 'use strict';
 
 var _dom = require('./utils/dom');
@@ -777,24 +803,26 @@ var _log = require('./utils/log');
 
 var _log2 = _interopRequireDefault(_log);
 
+var _html = require('./html5');
+
+var _html2 = _interopRequireDefault(_html);
+
 require('./shim/third_party/shim.min.js');
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
-/**
- * @file larkplayer.js larkplayer 入口函数
- * @author yuhui<yuhui06@baidu.com>
- * @date 2017/11/7
- */
-
 var document = window.document;
 
 // 包含所有兼容 es6 的代码
 // @todo 有没有更好的解决方案，目前看 babel-plugin-transform-runtime 不会解决在原型上的方法
 // @see https://www.zhihu.com/question/49382420/answer/115692473
-
+/**
+ * @file larkplayer.js larkplayer 入口函数
+ * @author yuhui<yuhui06@baidu.com>
+ * @date 2017/11/7
+ */
 
 function normalize(el, options, readyFn) {
     if (typeof el === 'string') {
@@ -832,6 +860,8 @@ function larkplayer(el, options, readyFn) {
     return player;
 }
 
+larkplayer.Html5 = _html2.default;
+
 larkplayer.dom = Dom;
 
 // events
@@ -851,7 +881,7 @@ larkplayer.deregisterPlugin = Plugin.deregisterPlugin;
 // @see https://github.com/babel/babel/issues/2724
 module.exports = larkplayer;
 
-},{"./component":1,"./player":5,"./shim/third_party/shim.min.js":6,"./utils/dom":27,"./utils/events":28,"./utils/log":33,"./utils/plugin":38,"./utils/script-loader":39}],4:[function(require,module,exports){
+},{"./component":1,"./html5":2,"./player":5,"./shim/third_party/shim.min.js":6,"./utils/dom":27,"./utils/events":28,"./utils/log":33,"./utils/plugin":38,"./utils/script-loader":39}],4:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -986,6 +1016,10 @@ var _featureDetector = require('./utils/feature-detector');
 
 var _featureDetector2 = _interopRequireDefault(_featureDetector);
 
+var _normalizeSource = require('./utils/normalize-source');
+
+var _normalizeSource2 = _interopRequireDefault(_normalizeSource);
+
 require('./ui/play-button');
 
 require('./ui/control-bar');
@@ -1119,9 +1153,17 @@ var Player = function (_Component) {
         _this.initChildren();
 
         _this.addClass('lark-paused');
-        // 如果视频已经存在，看下是不是错过了 loadstart 事件
-        if (_this.src()) {
+        var src = _this.src();
+        if (src) {
+            // 如果视频已经存在，看下是不是错过了 loadstart 事件
             _this.handleLateInit(_this.tech.el);
+
+            var source = (0, _normalizeSource2.default)({ src: src })[0];
+            _this.mediaSourceHandler = _html2.default.selectMediaSourceHandler(source);
+            if (_this.mediaSourceHandler) {
+                var handlerOptions = _this.getMediaSourceHanlderOptions(_this.mediaSourceHandler.name);
+                _this.mediaSourceHandler.handleSource(source, _this, handlerOptions);
+            }
         }
 
         // plugins
@@ -1148,13 +1190,25 @@ var Player = function (_Component) {
         return _this;
     }
 
-    /**
-     * 销毁播放器
-     *
-     */
-
-
     _createClass(Player, [{
+        key: 'getMediaSourceHanlderOptions',
+        value: function getMediaSourceHanlderOptions() {
+            var name = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : '';
+
+            if (this.options && this.options.mediaSourceHandler && this.options.mediaSourceHandler[name]) {
+
+                return this.options.mediaSourceHandler[name];
+            } else {
+                return {};
+            }
+        }
+
+        /**
+         * 销毁播放器
+         *
+         */
+
+    }, {
         key: 'dispose',
         value: function dispose() {
             this.trigger('dispose');
@@ -1704,6 +1758,12 @@ var Player = function (_Component) {
         key: 'handleCanplay',
         value: function handleCanplay() {
             this.removeClass('lark-waiting');
+            this.removeClass('lark-loadstart');
+
+            if (this.paused()) {
+                this.removeClass('lark-playing');
+                this.addClass('lark-paused');
+            }
 
             /**
              * 视频能开始播发时触发，并不保证能流畅的播完
@@ -2281,13 +2341,16 @@ var Player = function (_Component) {
     }, {
         key: 'play',
         value: function play() {
+            var _this10 = this;
+
             if (!this.src()) {
                 _log2.default.warn('No video src applied');
                 return;
             }
 
             // changingSrc 现在用不上，后面支持 source 的时候可能会用上
-            if (this.isReady && this.src()) {
+            // if (this.isReady && this.src()) {
+            if (this.isReady) {
                 // play 可能返回一个 Promise
                 var playReturn = this.techGet('play');
                 if (playReturn && playReturn.then) {
@@ -2296,6 +2359,16 @@ var Player = function (_Component) {
                         _log2.default.error(err);
                     });
                 }
+            } else {
+                this.ready(function () {
+                    var playReturn = _this10.techGet('play');
+                    if (playReturn && playReturn.then) {
+                        playReturn.then(null, function (err) {
+                            // @todo 这里返回的 err 可以利用下？
+                            _log2.default.error(err);
+                        });
+                    }
+                });
             }
         }
 
@@ -2546,9 +2619,21 @@ var Player = function (_Component) {
         key: 'src',
         value: function src(_src) {
             if (_src !== undefined) {
-                // 应该先暂停一下比较好
-                this.techCall('pause');
-                this.techCall('setSrc', _src);
+                if (this.mediaSourceHandler) {
+                    this.mediaSourceHandler.dispose();
+                    this.mediaSourceHandler = null;
+                }
+
+                var source = (0, _normalizeSource2.default)({ src: _src })[0];
+                this.mediaSourceHandler = _html2.default.selectMediaSourceHandler(source);
+                if (this.mediaSourceHandler) {
+                    var handlerOptions = this.getMediaSourceHanlderOptions(this.mediaSourceHandler.name);
+                    this.mediaSourceHandler.handleSource(source, this, handlerOptions);
+                } else {
+                    // 应该先暂停一下比较好
+                    // this.techCall('pause');
+                    this.techCall('setSrc', _src);
+                }
 
                 // src 改变后，重新绑定一次 firstplay 方法
                 // 先 off 确保只绑定一次
@@ -2729,7 +2814,7 @@ if (_featureDetector2.default.touch) {
 
 exports.default = Player;
 
-},{"./component":1,"./html5":2,"./mixins/evented":4,"./ui/control-bar":9,"./ui/control-bar-pc":8,"./ui/error":13,"./ui/error-pc":12,"./ui/gradient-bottom":15,"./ui/loading":17,"./ui/loading-pc":16,"./ui/play-button":18,"./ui/progress-bar-simple":20,"./utils/computed-style":25,"./utils/dom":27,"./utils/events":28,"./utils/feature-detector":29,"./utils/fn":30,"./utils/fullscreen":31,"./utils/guid":32,"./utils/log":33,"./utils/obj":37,"./utils/plugin":38,"./utils/to-title-case":41}],6:[function(require,module,exports){
+},{"./component":1,"./html5":2,"./mixins/evented":4,"./ui/control-bar":9,"./ui/control-bar-pc":8,"./ui/error":13,"./ui/error-pc":12,"./ui/gradient-bottom":15,"./ui/loading":17,"./ui/loading-pc":16,"./ui/play-button":18,"./ui/progress-bar-simple":20,"./utils/computed-style":25,"./utils/dom":27,"./utils/events":28,"./utils/feature-detector":29,"./utils/fn":30,"./utils/fullscreen":31,"./utils/guid":32,"./utils/log":33,"./utils/normalize-source":36,"./utils/obj":37,"./utils/plugin":38,"./utils/to-title-case":41}],6:[function(require,module,exports){
 "use strict";
 
 var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };

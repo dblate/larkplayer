@@ -19,6 +19,7 @@ import * as Plugin from './utils/plugin';
 import log from './utils/log';
 import computedStyle from './utils/computed-style';
 import featureDetector from './utils/feature-detector';
+import normalizeSource from './utils/normalize-source';
 
 // 确保以下代码都执行一次
 import './ui/play-button';
@@ -125,9 +126,17 @@ class Player extends Component {
         this.initChildren();
 
         this.addClass('lark-paused');
-        // 如果视频已经存在，看下是不是错过了 loadstart 事件
-        if (this.src()) {
+        const src = this.src();
+        if (src) {
+            // 如果视频已经存在，看下是不是错过了 loadstart 事件
             this.handleLateInit(this.tech.el);
+
+            const source = normalizeSource({src})[0];
+            this.mediaSourceHandler = Html5.selectMediaSourceHandler(source);
+            if (this.mediaSourceHandler) {
+                const handlerOptions = this.getMediaSourceHanlderOptions(this.mediaSourceHandler.name);
+                this.mediaSourceHandler.handleSource(source, this, handlerOptions);
+            }
         }
 
         // plugins
@@ -151,6 +160,17 @@ class Player extends Component {
         }
 
         this.triggerReady();
+    }
+
+    getMediaSourceHanlderOptions(name = '') {
+        if (this.options
+            && this.options.mediaSourceHandler
+            && this.options.mediaSourceHandler[name]) {
+
+            return this.options.mediaSourceHandler[name];
+        } else {
+            return {};
+        }
     }
 
     /**
@@ -690,6 +710,12 @@ class Player extends Component {
      */
     handleCanplay() {
         this.removeClass('lark-waiting');
+        this.removeClass('lark-loadstart');
+
+        if (this.paused()) {
+            this.removeClass('lark-playing');
+            this.addClass('lark-paused');
+        }
 
         /**
          * 视频能开始播发时触发，并不保证能流畅的播完
@@ -1200,7 +1226,8 @@ class Player extends Component {
         }
 
         // changingSrc 现在用不上，后面支持 source 的时候可能会用上
-        if (this.isReady && this.src()) {
+        // if (this.isReady && this.src()) {
+        if (this.isReady) {
             // play 可能返回一个 Promise
             const playReturn = this.techGet('play');
             if (playReturn && playReturn.then) {
@@ -1209,6 +1236,16 @@ class Player extends Component {
                     log.error(err);
                 });
             }
+        } else {
+            this.ready(() => {
+                const playReturn = this.techGet('play');
+                if (playReturn && playReturn.then) {
+                    playReturn.then(null, err => {
+                        // @todo 这里返回的 err 可以利用下？
+                        log.error(err);
+                    });
+                }
+            });
         }
     }
 
@@ -1407,9 +1444,22 @@ class Player extends Component {
      */
     src(src) {
         if (src !== undefined) {
-            // 应该先暂停一下比较好
-            this.techCall('pause');
-            this.techCall('setSrc', src);
+            if (this.mediaSourceHandler) {
+                this.mediaSourceHandler.dispose();
+                this.mediaSourceHandler = null;
+            }
+
+            const source = normalizeSource({src})[0];
+            this.mediaSourceHandler = Html5.selectMediaSourceHandler(source);
+            if (this.mediaSourceHandler) {
+                const handlerOptions = this.getMediaSourceHanlderOptions(this.mediaSourceHandler.name);
+                this.mediaSourceHandler.handleSource(source, this, handlerOptions);
+            } else {
+                // 应该先暂停一下比较好
+                // this.techCall('pause');
+                this.techCall('setSrc', src);
+            }
+
 
             // src 改变后，重新绑定一次 firstplay 方法
             // 先 off 确保只绑定一次

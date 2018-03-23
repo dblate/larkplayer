@@ -6,10 +6,11 @@
  * @see https://www.w3.org/TR/html5/embedded-content-0.html#attr-media-src
  */
 
+import Component from './component';
 import * as Dom from './utils/dom';
 import toTitleCase from './utils/to-title-case';
 import normalizeSource from './utils/normalize-source';
-import Component from './component';
+import {isPlain} from './utils/obj';
 
 const document = window.document;
 
@@ -332,6 +333,29 @@ Html5.resetMediaElement = function (el) {
     }
 };
 
+Html5.mediaSourceHandler = [];
+
+Html5.validateMediaSourceHandler = function (handler) {
+    if (isPlain(handler)
+        && typeof handler.canHandleSource === 'function'
+        && typeof handler.handleSource === 'function') {
+        return true;
+    } else {
+        return false;
+    }
+}
+
+Html5.registerMediaSourceHandler = function (handler) {
+    if (Html5.validateMediaSourceHandler(handler)) {
+        Html5.mediaSourceHandler.push(handler);
+    } else {
+        console.error('Invalid mediaSourceHandler');
+    }
+};
+
+Html5.selectMediaSourceHandler = function (source) {
+    return Html5.mediaSourceHandler.find(handler => handler.canHandleSource(source));
+};
 
 // HTML5 video attributes proxy
 // 获取对应属性的值
