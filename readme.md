@@ -44,6 +44,7 @@ cdn
 
 <h3>快速上手</h3>
 
+[在线示例](https://s.codepen.io/dblate/debug/qojzZZ/ZoMBajEzGyDk)
 
 <h4>通过 script 的方式</h4>
 
