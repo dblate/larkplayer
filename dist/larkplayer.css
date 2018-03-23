@@ -48,7 +48,16 @@
   cursor: pointer;
 }
 .lark-play-button-pc {
+  opacity: 0.9;
   margin-right: 14px;
+  transition: opacity 0.1s ease-out;
+  -ms-transition: opacity 0.1s ease-out;
+  -moz-transition: opacity 0.1s ease-out;
+  -webkit-transition: opacity 0.1s ease-out;
+  -o-transition: opacity 0.1s ease-out;
+}
+.lark-play-button-pc:hover {
+  opacity: 1;
 }
 .lark-play-button-pc .lark-play-button__play,
 .lark-play-button-pc .lark-play-button__pause {
@@ -146,7 +155,7 @@
   display: none;
 }
 .lark-user-active .lark-control-bar-pc {
-  display: block;
+  opacity: 1;
 }
 .lark-play-button-mobile {
   display: none;
@@ -155,7 +164,12 @@
   display: none;
 }
 .lark-control-bar-pc {
-  display: none;
+  opacity: 0;
+  transition: opacity 0.25s cubic-bezier(0, 0, 0.2, 1);
+  -ms-transition: opacity 0.25s cubic-bezier(0, 0, 0.2, 1);
+  -moz-transition: opacity 0.25s cubic-bezier(0, 0, 0.2, 1);
+  -webkit-transition: opacity 0.25s cubic-bezier(0, 0, 0.2, 1);
+  -o-transition: opacity 0.25s cubic-bezier(0, 0, 0.2, 1);
 }
 .lark-seeking .lark-loading-area,
 .lark-waiting .lark-loading-area,
@@ -200,7 +214,7 @@
 }
 .lark-paused .lark-control-bar-pc,
 .lark-ended .lark-control-bar-pc {
-  display: block;
+  opacity: 1;
 }
 .lark-error .lark-error-area {
   display: block;
@@ -703,6 +717,7 @@
   *zoom: 1;
   float: left;
   height: 100%;
+  position: relative;
 }
 .lark-control-bar-pc .lark-control__left:after {
   content: '\0020';
@@ -717,6 +732,7 @@
   *zoom: 1;
   float: right;
   height: 100%;
+  position: relative;
 }
 .lark-control-bar-pc .lark-control__right:after {
   content: '\0020';
@@ -810,6 +826,7 @@
   border-radius: 2px;
   padding: 4px 8px;
   font-size: 13px;
+  white-space: nowrap;
 }
 .larkplayer {
   position: relative;

@@ -1036,8 +1036,6 @@ require('./ui/loading-pc');
 
 require('./ui/error-pc');
 
-require('./ui/gradient-bottom');
-
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
@@ -1127,9 +1125,9 @@ var Player = function (_Component) {
         _this.handleFullscreenError = _this.handleFullscreenError.bind(_this);
         _this.handleError = _this.handleError.bind(_this);
         _this.handleClick = _this.handleClick.bind(_this);
-        _this.handleMouseOver = _this.handleMouseOver.bind(_this);
+        _this.handleMouseEnter = _this.handleMouseEnter.bind(_this);
         _this.handleMouseMove = _this.handleMouseMove.bind(_this);
-        _this.handleMouseOut = _this.handleMouseOut.bind(_this);
+        _this.handleMouseLeave = _this.handleMouseLeave.bind(_this);
 
         // 3000ms 后自动隐藏播放器控制条
         _this.activeTimeout = 3000;
@@ -1141,9 +1139,9 @@ var Player = function (_Component) {
             _this.on('touchend', _this.handleTouchEnd);
         } else {
             _this.on('click', _this.handleClick);
-            _this.on('mouseover', _this.handleMouseOver);
+            _this.on('mouseenter', _this.handleMouseEnter);
             _this.on('mousemove', _this.handleMouseMove);
-            _this.on('mouseout', _this.handleMouseOut);
+            _this.on('mouseleave', _this.handleMouseLeave);
         }
 
         if (!_this.tech) {
@@ -1704,6 +1702,8 @@ var Player = function (_Component) {
     }, {
         key: 'handlePlay',
         value: function handlePlay() {
+            var _this5 = this;
+
             // @todo removeClass 支持一次 remove 多个 class
             this.removeClass('lark-loadstart');
             this.removeClass('lark-ended');
@@ -1712,6 +1712,12 @@ var Player = function (_Component) {
             this.removeClass('lark-seeking');
             this.removeClass('lark-waiting');
             this.addClass('lark-playing');
+
+            clearTimeout(this.activeTimeoutHandler);
+            this.addClass(activeClass);
+            this.activeTimeoutHandler = setTimeout(function () {
+                _this5.removeClass(activeClass);
+            }, this.activeTimeout);
 
             /**
              * 视频播放时触发，无论是第一次播放还是暂停、卡顿后恢复播放
@@ -1871,15 +1877,15 @@ var Player = function (_Component) {
     }, {
         key: 'handleFirstplay',
         value: function handleFirstplay() {
-            var _this5 = this;
+            var _this6 = this;
 
             // @todo 不清楚有什么用
             this.addClass('lark-has-started');
 
-            //
+            clearTimeout(this.activeTimeoutHandler);
             this.addClass(activeClass);
             this.activeTimeoutHandler = setTimeout(function () {
-                _this5.removeClass(activeClass);
+                _this6.removeClass(activeClass);
             }, this.activeTimeout);
 
             /**
@@ -2035,7 +2041,7 @@ var Player = function (_Component) {
     }, {
         key: 'handleTouchEnd',
         value: function handleTouchEnd(event) {
-            var _this6 = this;
+            var _this7 = this;
 
             // clearTimeout(this.activeTimeoutHandler);
 
@@ -2068,7 +2074,7 @@ var Player = function (_Component) {
 
             if (this.hasClass(activeClass)) {
                 this.activeTimeoutHandler = setTimeout(function () {
-                    _this6.removeClass(activeClass);
+                    _this7.removeClass(activeClass);
                 }, this.activeTimeout);
             }
         }
@@ -2177,11 +2183,7 @@ var Player = function (_Component) {
     }, {
         key: 'handleClick',
         value: function handleClick(event) {
-            var _this7 = this;
-
-            clearTimeout(this.activeTimeoutHandler);
-
-            var activeClass = 'lark-user-active';
+            // clearTimeout(this.activeTimeoutHandler);
 
             // 点在播放按钮或者控制条上，（继续）展现控制条
             var clickOnControls = false;
@@ -2192,8 +2194,6 @@ var Player = function (_Component) {
             }
 
             if (!clickOnControls) {
-                this.toggleClass(activeClass);
-
                 // 处于暂停状态时，点击非控制条的位置继续播放
                 // 切换暂停／播放状态
                 var isPaused = this.paused();
@@ -2203,16 +2203,10 @@ var Player = function (_Component) {
                     this.pause();
                 }
             }
-
-            if (this.hasClass(activeClass)) {
-                this.activeTimeoutHandler = setTimeout(function () {
-                    _this7.removeClass(activeClass);
-                }, this.activeTimeout);
-            }
         }
     }, {
-        key: 'handleMouseOver',
-        value: function handleMouseOver(event) {
+        key: 'handleMouseEnter',
+        value: function handleMouseEnter(event) {
             var _this8 = this;
 
             clearTimeout(this.activeTimeoutHandler);
@@ -2228,18 +2222,13 @@ var Player = function (_Component) {
     }, {
         key: 'handleMouseMove',
         value: function handleMouseMove(event) {
-            this.handleMouseOver(event);
+            this.handleMouseEnter(event);
         }
     }, {
-        key: 'handleMouseOut',
-        value: function handleMouseOut(event) {
-            var _this9 = this;
-
+        key: 'handleMouseLeave',
+        value: function handleMouseLeave(event) {
             clearTimeout(this.activeTimeoutHandler);
-
-            this.activeTimeoutHandler = setTimeout(function () {
-                _this9.removeClass(activeClass);
-            }, this.activeTimeout / 2);
+            this.removeClass(activeClass);
         }
 
         // = = = = = = = = = = = = = 对外 api = = = = = = = = = = = = = =
@@ -2341,7 +2330,7 @@ var Player = function (_Component) {
     }, {
         key: 'play',
         value: function play() {
-            var _this10 = this;
+            var _this9 = this;
 
             if (!this.src()) {
                 _log2.default.warn('No video src applied');
@@ -2361,7 +2350,7 @@ var Player = function (_Component) {
                 }
             } else {
                 this.ready(function () {
-                    var playReturn = _this10.techGet('play');
+                    var playReturn = _this9.techGet('play');
                     if (playReturn && playReturn.then) {
                         playReturn.then(null, function (err) {
                             // @todo 这里返回的 err 可以利用下？
@@ -2808,13 +2797,13 @@ if (_featureDetector2.default.touch) {
     };
 } else {
     Player.prototype.options = {
-        children: ['gradientBottom', 'controlBarPc', 'loadingPc', 'errorPc']
+        children: ['controlBarPc', 'loadingPc', 'errorPc']
     };
 }
 
 exports.default = Player;
 
-},{"./component":1,"./html5":2,"./mixins/evented":4,"./ui/control-bar":9,"./ui/control-bar-pc":8,"./ui/error":13,"./ui/error-pc":12,"./ui/gradient-bottom":15,"./ui/loading":17,"./ui/loading-pc":16,"./ui/play-button":18,"./ui/progress-bar-simple":20,"./utils/computed-style":25,"./utils/dom":27,"./utils/events":28,"./utils/feature-detector":29,"./utils/fn":30,"./utils/fullscreen":31,"./utils/guid":32,"./utils/log":33,"./utils/normalize-source":36,"./utils/obj":37,"./utils/plugin":38,"./utils/to-title-case":41}],6:[function(require,module,exports){
+},{"./component":1,"./html5":2,"./mixins/evented":4,"./ui/control-bar":9,"./ui/control-bar-pc":8,"./ui/error":13,"./ui/error-pc":12,"./ui/loading":17,"./ui/loading-pc":16,"./ui/play-button":18,"./ui/progress-bar-simple":20,"./utils/computed-style":25,"./utils/dom":27,"./utils/events":28,"./utils/feature-detector":29,"./utils/fn":30,"./utils/fullscreen":31,"./utils/guid":32,"./utils/log":33,"./utils/normalize-source":36,"./utils/obj":37,"./utils/plugin":38,"./utils/to-title-case":41}],6:[function(require,module,exports){
 "use strict";
 
 var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
@@ -6394,6 +6383,10 @@ var _progressBar = require('./progress-bar');
 
 var _progressBar2 = _interopRequireDefault(_progressBar);
 
+var _gradientBottom = require('./gradient-bottom');
+
+var _gradientBottom2 = _interopRequireDefault(_gradientBottom);
+
 require('./volume');
 
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
@@ -6434,6 +6427,7 @@ var ControlBarPc = function (_Component) {
             var playButton = this.createElement('playButton', { className: 'lark-play-button-pc' });
 
             var fullscreenButton = this.createElement('FullscreenButton');
+            var gradientBottom = this.createElement('GradientBottom');
 
             // jsxParser(`
             //     <div className="lark-control-bar-pc">
@@ -6459,7 +6453,7 @@ var ControlBarPc = function (_Component) {
 
             var progressBarPc = this.createElement('progressBar', { className: 'lark-progress-bar-pc' });
 
-            return this.createElement('div', { className: 'lark-control-bar-pc' }, progressBarPc, controlLeft, controlRight);
+            return this.createElement('div', { className: 'lark-control-bar-pc' }, gradientBottom, progressBarPc, controlLeft, controlRight);
         }
     }]);
 
@@ -6470,7 +6464,7 @@ _component2.default.registerComponent('ControlBarPc', ControlBarPc);
 
 exports.default = ControlBarPc;
 
-},{"../component":1,"../utils/dom":27,"./current-time":10,"./duration":11,"./fullscreen-button":14,"./play-button":18,"./progress-bar":21,"./volume":24}],9:[function(require,module,exports){
+},{"../component":1,"../utils/dom":27,"./current-time":10,"./duration":11,"./fullscreen-button":14,"./gradient-bottom":15,"./play-button":18,"./progress-bar":21,"./volume":24}],9:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -6922,6 +6916,18 @@ var _dom = require('../utils/dom');
 
 var Dom = _interopRequireWildcard(_dom);
 
+var _events = require('../utils/events');
+
+var Events = _interopRequireWildcard(_events);
+
+var _tooltip = require('./tooltip');
+
+var _tooltip2 = _interopRequireDefault(_tooltip);
+
+var _featureDetector = require('../utils/feature-detector');
+
+var _featureDetector2 = _interopRequireDefault(_featureDetector);
+
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
@@ -6945,8 +6951,24 @@ var FullscreenButton = function (_Component) {
         var _this = _possibleConstructorReturn(this, (FullscreenButton.__proto__ || Object.getPrototypeOf(FullscreenButton)).call(this, player, options));
 
         _this.handleClick = _this.handleClick.bind(_this);
+        _this.handleMouseOver = _this.handleMouseOver.bind(_this);
+        _this.handleMouseOut = _this.handleMouseOut.bind(_this);
 
         _this.on('click', _this.handleClick);
+
+        if (!_featureDetector2.default.touch) {
+            _this.fullscreenButton = Dom.$('.lark-request-fullscreen', _this.el);
+            _this.exitFullscreenButton = Dom.$('.lark-exit-fullscreen', _this.el);
+
+            Events.on(_this.fullscreenButton, 'mouseover', function () {
+                return _this.handleMouseOver(_this.fullscreenButton, '全屏');
+            });
+            Events.on(_this.exitFullscreenButton, 'mouseover', function () {
+                return _this.handleMouseOver(_this.exitFullscreenButton, '退出全屏');
+            });
+
+            _this.on('mouseout', _this.handleMouseOut);
+        }
         return _this;
     }
 
@@ -6958,6 +6980,21 @@ var FullscreenButton = function (_Component) {
             } else {
                 this.player.exitFullscreen();
             }
+        }
+    }, {
+        key: 'handleMouseOver',
+        value: function handleMouseOver(el, content) {
+            _tooltip2.default.show({
+                hostEl: el,
+                placement: 'top',
+                margin: 16,
+                content: content
+            });
+        }
+    }, {
+        key: 'handleMouseOut',
+        value: function handleMouseOut(event) {
+            _tooltip2.default.hide();
         }
     }, {
         key: 'createEl',
@@ -6982,7 +7019,7 @@ exports.default = FullscreenButton;
 
 _component2.default.registerComponent('FullscreenButton', FullscreenButton);
 
-},{"../component":1,"../utils/dom":27}],15:[function(require,module,exports){
+},{"../component":1,"../utils/dom":27,"../utils/events":28,"../utils/feature-detector":29,"./tooltip":23}],15:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -7627,16 +7664,21 @@ var ProgressBar = function (_Slider) {
             var duration = this.player.duration();
             if (duration) {
                 var pointerPos = Dom.getPointerPosition(this.el, event);
-                var elPos = Dom.findPosition(this.el);
+                // const elPos = Dom.findPosition(this.el);
 
-                var top = elPos.top - (this.paddingEl.offsetHeight - this.line.offsetHeight);
-                var left = elPos.left + this.el.offsetWidth * pointerPos.x;
+                // const top = elPos.top - (this.paddingEl.offsetHeight - this.line.offsetHeight);
+                // const left = elPos.left + this.el.offsetWidth * pointerPos.x;
                 var currentTime = parseInt(duration * pointerPos.x, 10);
 
                 if (!isNaN(currentTime)) {
                     _tooltip2.default.show({
-                        top: top,
-                        left: left,
+                        // top: top,
+                        // left: left,
+                        hostEl: this.el,
+                        margin: 13,
+                        placement: 'top',
+                        isFollowMouse: true,
+                        event: event,
                         content: (0, _timeFormat.timeFormat)(Math.floor(currentTime))
                     });
                 }
@@ -7818,27 +7860,66 @@ var tooltip = {
     id: 'lark-tooltip',
     el: null,
     timeoutHandler: null,
-    initial: function initial() {
+    initial: function initial(container) {
         if (this.el) {
             return;
         }
 
-        var body = Dom.$('body');
+        if (!Dom.isEl(container)) {
+            return;
+        }
+
         var el = Dom.createElement('div', {
             className: this.id,
             id: this.id
         });
-        Dom.appendContent(body, el);
+        Dom.appendContent(container, el);
 
         this.el = el;
+        this.container = container;
     },
     normalize: function normalize(options) {
         return Object.assign({
             timeout: 0,
             content: '',
             top: 0,
-            left: 0
+            left: 0,
+            margin: 0,
+            hostEl: null,
+            placement: 'top',
+            isFollowMouse: false,
+            // 这个 event 有点鸡肋，但要获取鼠标位置的时候（即 isFollowMouse: true），必须得从 event 参数里获取
+            event: null
         }, options);
+    },
+    getCoordinate: function getCoordinate(options) {
+        var coordinate = void 0;
+
+        switch (options.placement) {
+            case 'top':
+                // @todo 可以 cache
+                var hostElRect = Dom.getBoundingClientRect(options.hostEl);
+                var containerRect = Dom.getBoundingClientRect(this.container);
+
+                var left = void 0;
+                if (options.isFollowMouse) {
+                    var pointerPos = Dom.getPointerPosition(options.hostEl, options.event);
+                    left = hostElRect.left - containerRect.left + hostElRect.width * pointerPos.x - this.el.offsetWidth / 2;
+                } else {
+                    left = hostElRect.left - containerRect.left + (hostElRect.width - this.el.offsetWidth) / 2;
+                }
+
+                var outOfBounds = left + this.el.offsetWidth - this.container.offsetWidth;
+                if (outOfBounds > 0) {
+                    left = left - outOfBounds;
+                }
+
+                var top = hostElRect.top - containerRect.top - this.el.offsetHeight - options.margin;
+                coordinate = { left: left, top: top };
+                break;
+        }
+
+        return coordinate;
     },
     show: function show(options) {
         var _this = this;
@@ -7847,15 +7928,26 @@ var tooltip = {
 
         options = this.normalize(options);
 
+        if (!Dom.isEl(options.hostEl)) {
+            return;
+        }
+
         if (!this.el) {
-            this.initial();
+            var container = Dom.parent(options.hostEl, 'larkplayer');
+            this.initial(container);
         }
 
         Dom.replaceContent(this.el, options.content);
+
         setTimeout(function () {
-            _this.el.style.top = options.top - _this.el.offsetHeight + 'px';
-            _this.el.style.left = options.left - _this.el.offsetWidth / 2 + 'px';
+            // 元素 display none 时获取到的 offsetHeight 和 offsetWidth 是 0
+            // 所以先以 visibility: hidden 的方式“显示”元素，以获取正确的高宽
+            _this.el.style.visibility = 'hidden';
             _this.el.style.display = 'block';
+            var coordinate = _this.getCoordinate(options);
+            _this.el.style.top = coordinate.top + 'px';
+            _this.el.style.left = coordinate.left + 'px';
+            _this.el.style.visibility = 'visible';
         }, 0);
     },
     hide: function hide() {
@@ -7930,7 +8022,9 @@ var Volume = function (_Slider) {
 
         var _this = _possibleConstructorReturn(this, (Volume.__proto__ || Object.getPrototypeOf(Volume)).call(this, player, options));
 
+        _this.onSlideStart = _this.onSlideStart.bind(_this);
         _this.onSlideMove = _this.onSlideMove.bind(_this);
+        _this.onSlideEnd = _this.onSlideEnd.bind(_this);
         _this.onClick = _this.onClick.bind(_this);
         _this.update = _this.update.bind(_this);
         _this.iconClick = _this.iconClick.bind(_this);
@@ -7953,24 +8047,41 @@ var Volume = function (_Slider) {
     }
 
     _createClass(Volume, [{
+        key: 'onSlideStart',
+        value: function onSlideStart(event) {
+            var pos = Dom.getPointerPosition(this.line, event);
+            this.lastVolume = this.player.volume();
+        }
+    }, {
         key: 'onSlideMove',
         value: function onSlideMove(event) {
             event.preventDefault();
-            this.update(event);
+            var pos = Dom.getPointerPosition(this.line, event);
+            this.update(pos.x);
+        }
+    }, {
+        key: 'onSlideEnd',
+        value: function onSlideEnd(event) {
+            var pos = Dom.getPointerPosition(this.line, event);
+            if (this.player.volume() !== 0) {
+                this.lastVolume = null;
+            }
         }
     }, {
         key: 'onClick',
         value: function onClick(event) {
-            this.update(event);
+            this.lastVolume = this.player.volume();
+
+            var pos = Dom.getPointerPosition(this.line, event);
+            this.update(pos.x);
+
+            if (this.player.volume() !== 0) {
+                this.lastVolume = null;
+            }
         }
     }, {
         key: 'update',
-        value: function update(event) {
-            var pos = Dom.getPointerPosition(this.line, event);
-
-            console.log(pos);
-
-            var percent = pos.x;
+        value: function update(percent) {
             var lineWidth = this.line.offsetWidth;
 
             this.ball.style.left = percent * lineWidth + 'px';
@@ -7980,18 +8091,22 @@ var Volume = function (_Slider) {
     }, {
         key: 'iconClick',
         value: function iconClick(event) {
-            this.ball.style.left = 0;
-            this.player.volume(0);
-            this.switchStatus(0);
+            // 点击静音
+            if (this.lastVolume == null) {
+                this.lastVolume = this.player.volume();
+                this.update(0);
+            } else {
+                // 再次点击时恢复上次的声音
+                this.update(this.lastVolume);
+                this.lastVolume = null;
+            }
         }
     }, {
         key: 'handleIconMouseOver',
         value: function handleIconMouseOver(event) {
-            var pos = Dom.findPosition(this.icon);
-            var rect = Dom.getBoundingClientRect(this.icon);
             _tooltip2.default.show({
-                top: pos.top - rect.height,
-                left: pos.left,
+                hostEl: this.icon,
+                margin: 16,
                 content: '静音'
             });
         }

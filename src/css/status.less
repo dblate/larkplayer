@@ -56,7 +56,7 @@
     }
 
     .lark-control-bar-pc {
-        display: block;
+        opacity: 1;
     }
 }
 
@@ -69,7 +69,8 @@
 }
 
 .lark-control-bar-pc {
-    display: none;
+    opacity: 0;
+    .mixins-transition(opacity .25s cubic-bezier(0, 0, 0.2, 1));
 }
 
 // 播放器处于加载中状态时，显示 loading
@@ -119,7 +120,7 @@
     }
 
     .lark-control-bar-pc {
-        display: block;
+        opacity: 1;
     }
 }
 

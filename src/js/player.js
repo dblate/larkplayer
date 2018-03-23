@@ -30,7 +30,6 @@ import './ui/error';
 import './ui/control-bar-pc';
 import './ui/loading-pc';
 import './ui/error-pc';
-import './ui/gradient-bottom';
 
 const document = window.document;
 const activeClass = 'lark-user-active';
@@ -100,9 +99,9 @@ class Player extends Component {
         this.handleFullscreenError = this.handleFullscreenError.bind(this);
         this.handleError = this.handleError.bind(this);
         this.handleClick = this.handleClick.bind(this);
-        this.handleMouseOver = this.handleMouseOver.bind(this);
+        this.handleMouseEnter = this.handleMouseEnter.bind(this);
         this.handleMouseMove = this.handleMouseMove.bind(this);
-        this.handleMouseOut = this.handleMouseOut.bind(this);
+        this.handleMouseLeave = this.handleMouseLeave.bind(this);
 
         // 3000ms 后自动隐藏播放器控制条
         this.activeTimeout = 3000;
@@ -114,9 +113,9 @@ class Player extends Component {
             this.on('touchend', this.handleTouchEnd);
         } else {
             this.on('click', this.handleClick);
-            this.on('mouseover', this.handleMouseOver);
+            this.on('mouseenter', this.handleMouseEnter);
             this.on('mousemove', this.handleMouseMove);
-            this.on('mouseout', this.handleMouseOut);
+            this.on('mouseleave', this.handleMouseLeave);
         }
 
         if (!this.tech) {
@@ -670,6 +669,11 @@ class Player extends Component {
         this.removeClass('lark-waiting');
         this.addClass('lark-playing');
 
+        clearTimeout(this.activeTimeoutHandler);
+        this.addClass(activeClass);
+        this.activeTimeoutHandler = setTimeout(() => {
+            this.removeClass(activeClass);
+        }, this.activeTimeout);
 
         /**
          * 视频播放时触发，无论是第一次播放还是暂停、卡顿后恢复播放
@@ -811,7 +815,7 @@ class Player extends Component {
         // @todo 不清楚有什么用
         this.addClass('lark-has-started');
 
-        //
+        clearTimeout(this.activeTimeoutHandler);
         this.addClass(activeClass);
         this.activeTimeoutHandler = setTimeout(() => {
             this.removeClass(activeClass);
@@ -1080,9 +1084,7 @@ class Player extends Component {
      * @private
      */
     handleClick(event) {
-        clearTimeout(this.activeTimeoutHandler);
-
-        const activeClass = 'lark-user-active';
+        // clearTimeout(this.activeTimeoutHandler);
 
         // 点在播放按钮或者控制条上，（继续）展现控制条
         let clickOnControls = false;
@@ -1094,8 +1096,6 @@ class Player extends Component {
         }
 
         if (!clickOnControls) {
-            this.toggleClass(activeClass);
-
             // 处于暂停状态时，点击非控制条的位置继续播放
             // 切换暂停／播放状态
             const isPaused = this.paused();
@@ -1105,15 +1105,9 @@ class Player extends Component {
                 this.pause();
             }
         }
-
-        if (this.hasClass(activeClass)) {
-            this.activeTimeoutHandler = setTimeout(() => {
-                this.removeClass(activeClass);
-            }, this.activeTimeout);
-        }
     }
 
-    handleMouseOver(event) {
+    handleMouseEnter(event) {
         clearTimeout(this.activeTimeoutHandler);
 
         if (!this.hasClass(activeClass)) {
@@ -1126,15 +1120,12 @@ class Player extends Component {
     }
 
     handleMouseMove(event) {
-        this.handleMouseOver(event);
+        this.handleMouseEnter(event);
     }
 
-    handleMouseOut(event) {
+    handleMouseLeave(event) {
         clearTimeout(this.activeTimeoutHandler);
-
-        this.activeTimeoutHandler = setTimeout(() => {
-            this.removeClass(activeClass);
-        }, this.activeTimeout / 2);
+        this.removeClass(activeClass);
     }
 
 
@@ -1628,7 +1619,6 @@ if (featureDetector.touch) {
 } else {
     Player.prototype.options = {
         children: [
-            'gradientBottom',
             'controlBarPc',
             'loadingPc',
             'errorPc'

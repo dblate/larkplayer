@@ -37,7 +37,13 @@
 }
 
 .lark-play-button-pc {
+    opacity: 0.9;
     margin-right: @primary-spacing;
+    .mixins-transition(opacity 0.1s ease-out);
+
+    &:hover {
+        opacity: 1;
+    }
 
     .lark-play-button__play,
     .lark-play-button__pause {

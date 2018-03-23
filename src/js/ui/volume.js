@@ -17,7 +17,9 @@ export default class Volume extends Slider {
     constructor(player, options) {
         super(player, options);
 
+        this.onSlideStart = this.onSlideStart.bind(this);
         this.onSlideMove = this.onSlideMove.bind(this);
+        this.onSlideEnd = this.onSlideEnd.bind(this);
         this.onClick = this.onClick.bind(this);
         this.update = this.update.bind(this);
         this.iconClick = this.iconClick.bind(this);
@@ -38,21 +40,36 @@ export default class Volume extends Slider {
         Events.on(this.ball, 'touchstart', this.handleSlideStart);
     }
 
+    onSlideStart(event) {
+        const pos = Dom.getPointerPosition(this.line, event);
+        this.lastVolume = this.player.volume();
+    }
+
     onSlideMove(event) {
         event.preventDefault();
-        this.update(event);
+        const pos = Dom.getPointerPosition(this.line, event);
+        this.update(pos.x);
+    }
+
+    onSlideEnd(event) {
+        const pos = Dom.getPointerPosition(this.line, event);
+        if (this.player.volume() !== 0) {
+            this.lastVolume = null;
+        }
     }
 
     onClick(event) {
-        this.update(event);
+        this.lastVolume = this.player.volume();
+
+        const pos = Dom.getPointerPosition(this.line, event);
+        this.update(pos.x);
+
+        if (this.player.volume() !== 0) {
+            this.lastVolume = null;
+        }
     }
 
-    update(event) {
-        const pos = Dom.getPointerPosition(this.line, event);
-
-        console.log(pos);
-
-        const percent = pos.x;
+    update(percent) {
         const lineWidth = this.line.offsetWidth;
 
         this.ball.style.left = percent * lineWidth + 'px';
@@ -61,17 +78,21 @@ export default class Volume extends Slider {
     }
 
     iconClick(event) {
-        this.ball.style.left = 0;
-        this.player.volume(0);
-        this.switchStatus(0)
+        // 点击静音
+        if (this.lastVolume == null) {
+            this.lastVolume = this.player.volume();
+            this.update(0);
+        } else {
+            // 再次点击时恢复上次的声音
+            this.update(this.lastVolume);
+            this.lastVolume = null;
+        }
     }
 
     handleIconMouseOver(event) {
-        const pos = Dom.findPosition(this.icon);
-        const rect = Dom.getBoundingClientRect(this.icon);
         tooltip.show({
-            top: pos.top - rect.height,
-            left: pos.left,
+            hostEl: this.icon,
+            margin: 16,
             content: '静音'
         });
     }

@@ -6,14 +6,29 @@
 
 import Component from '../component';
 import * as Dom from '../utils/dom';
+import * as Events from '../utils/events';
+import tooltip from './tooltip';
+import featureDetector from '../utils/feature-detector';
 
 export default class FullscreenButton extends Component {
     constructor(player, options) {
         super(player, options);
 
         this.handleClick = this.handleClick.bind(this);
+        this.handleMouseOver = this.handleMouseOver.bind(this);
+        this.handleMouseOut = this.handleMouseOut.bind(this);
 
         this.on('click', this.handleClick);
+
+        if (!featureDetector.touch) {
+            this.fullscreenButton = Dom.$('.lark-request-fullscreen', this.el);
+            this.exitFullscreenButton = Dom.$('.lark-exit-fullscreen', this.el);
+
+            Events.on(this.fullscreenButton, 'mouseover', () => this.handleMouseOver(this.fullscreenButton, '全屏'));
+            Events.on(this.exitFullscreenButton, 'mouseover', () => this.handleMouseOver(this.exitFullscreenButton, '退出全屏'));
+
+            this.on('mouseout', this.handleMouseOut);
+        }
     }
 
     handleClick() {
@@ -22,6 +37,19 @@ export default class FullscreenButton extends Component {
         } else {
             this.player.exitFullscreen();
         }
+    }
+
+    handleMouseOver(el, content) {
+        tooltip.show({
+            hostEl: el,
+            placement: 'top',
+            margin: 16,
+            content: content
+        });
+    }
+
+    handleMouseOut(event) {
+        tooltip.hide();
     }
 
     createEl() {

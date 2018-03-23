@@ -107,16 +107,21 @@ class ProgressBar extends Slider {
         const duration = this.player.duration();
         if (duration) {
             const pointerPos = Dom.getPointerPosition(this.el, event);
-            const elPos = Dom.findPosition(this.el);
+            // const elPos = Dom.findPosition(this.el);
 
-            const top = elPos.top - (this.paddingEl.offsetHeight - this.line.offsetHeight);
-            const left = elPos.left + this.el.offsetWidth * pointerPos.x;
+            // const top = elPos.top - (this.paddingEl.offsetHeight - this.line.offsetHeight);
+            // const left = elPos.left + this.el.offsetWidth * pointerPos.x;
             const currentTime = parseInt(duration * pointerPos.x, 10);
 
             if (!isNaN(currentTime)) {
                 tooltip.show({
-                    top: top,
-                    left: left,
+                    // top: top,
+                    // left: left,
+                    hostEl: this.el,
+                    margin: 13,
+                    placement: 'top',
+                    isFollowMouse: true,
+                    event: event,
                     content: timeFormat(Math.floor(currentTime))
                 });
             }

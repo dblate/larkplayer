@@ -11,6 +11,7 @@ import Duration from './duration';
 import PlayButton from './play-button';
 import FullscreenButton from './fullscreen-button';
 import ProgressBar from './progress-bar';
+import GradientBottom from './gradient-bottom';
 
 import './current-time';
 import './duration';
@@ -49,6 +50,7 @@ class ControlBarPc extends Component {
         );
 
         const fullscreenButton = this.createElement('FullscreenButton');
+        const gradientBottom = this.createElement('GradientBottom');
 
 
         // jsxParser(`
@@ -91,6 +93,7 @@ class ControlBarPc extends Component {
         return this.createElement(
             'div',
             {className: 'lark-control-bar-pc'},
+            gradientBottom,
             progressBarPc,
             controlLeft,
             controlRight
