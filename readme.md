@@ -19,6 +19,8 @@ larkplayer 是一款轻量级的 html5 播放器，无其他库的依赖
 * 插件机制，支持自定义插件开发
 * 自定义 UI（适应 pc 与移动端）
 
+[在线示例](https://s.codepen.io/dblate/debug/qojzZZ/ZoMBajEzGyDk)
+
 <h3>截图</h3>
 
 __pc__
@@ -43,8 +45,6 @@ cdn
 ```
 
 <h3>快速上手</h3>
-
-[在线示例](https://s.codepen.io/dblate/debug/qojzZZ/ZoMBajEzGyDk)
 
 <h4>通过 script 的方式</h4>
 
