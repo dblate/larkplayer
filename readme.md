@@ -85,6 +85,7 @@ cdn
         player.on('ended', function () {
             console.log('ended');
             player.src('http://www.w3school.com.cn/i/movie.ogg');
+            player.play();
             
             // larkplayer 同时也提供对 source 标签的处理方法
             // player.source([{
