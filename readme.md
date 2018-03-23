@@ -44,6 +44,9 @@ cdn
 
 <h3>快速上手</h3>
 
+
+<h4>通过 script 的方式</h4>
+
 ```html
 <!DOCTYPE html>
 <html>
@@ -95,6 +98,18 @@ cdn
 </body>
 </html>
 ```
+
+<h4>通过 npm + es6 的方式</h4>
+
+* require 和 import 使用方式相似，毕竟目前 import 也是转化为 require 来使用的
+
+```javascript
+import larkplayer from 'larkplayer';
+
+const player = larkplayer('video-el');
+
+```
+
 <h3>文档</h3>
 
 [GitBook](https://dblate.gitbooks.io/larkplayer/content/gai-lan.html)上的文档正在建设中 ;)
