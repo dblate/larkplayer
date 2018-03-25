@@ -16,8 +16,7 @@ import * as Dom from '../utils/dom';
  */
 export default function evented(target, options = {}) {
     if (target.isEvented && target.eventBusEl === options.eventBusKey) {
-        console.log(options.eventBusKey, ' returned');
-        return
+        return;
     } else {
         target.isEvented = true;
     }

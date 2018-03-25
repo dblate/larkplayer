@@ -5,7 +5,6 @@
  */
 
 import Component from '../component';
-import * as Dom from '../utils/dom';
 
 
 export default class GradientBottom extends Component {

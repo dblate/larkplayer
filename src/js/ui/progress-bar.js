@@ -9,16 +9,13 @@ import Component from '../component';
 import Slider from './slider';
 import tooltip from './tooltip';
 import * as Dom from '../utils/dom';
-import * as Events from '../utils/events';
-import computedStyle from '../utils/computed-style';
 import featureDetector from '../utils/feature-detector';
 import {timeFormat} from '../utils/time-format';
 
 import './progress-bar-except-fill';
 
-const document = window.document;
 
-class ProgressBar extends Slider {
+export default class ProgressBar extends Slider {
     constructor(player, options) {
         super(player, options);
 
@@ -178,6 +175,3 @@ class ProgressBar extends Slider {
 
 
 Component.registerComponent('ProgressBar', ProgressBar);
-
-
-export default ProgressBar;

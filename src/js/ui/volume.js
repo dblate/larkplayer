@@ -7,11 +7,9 @@
 import Component from '../component';
 import * as Dom from '../utils/dom';
 import * as Events from '../utils/events';
-import featureDetector from '../utils/feature-detector';
 import Slider from './slider';
 import tooltip from './tooltip';
 
-const document = window.document;
 
 export default class Volume extends Slider {
     constructor(player, options) {
@@ -34,14 +32,13 @@ export default class Volume extends Slider {
 
         Events.on(this.icon, 'click', this.iconClick);
         Events.on(this.icon, 'mouseover', this.handleIconMouseOver);
-        Events.on(this.icon, 'mouseout', this.handleIconMouseOut)
+        Events.on(this.icon, 'mouseout', this.handleIconMouseOut);
         Events.on(this.line, 'click', this.handleClick);
         Events.on(this.ball, 'mousedown', this.handleSlideStart);
         Events.on(this.ball, 'touchstart', this.handleSlideStart);
     }
 
     onSlideStart(event) {
-        const pos = Dom.getPointerPosition(this.line, event);
         this.lastVolume = this.player.volume();
     }
 
@@ -52,7 +49,6 @@ export default class Volume extends Slider {
     }
 
     onSlideEnd(event) {
-        const pos = Dom.getPointerPosition(this.line, event);
         if (this.player.volume() !== 0) {
             this.lastVolume = null;
         }
@@ -87,13 +83,15 @@ export default class Volume extends Slider {
             this.update(this.lastVolume);
             this.lastVolume = null;
         }
+
+        this.handleIconMouseOver();
     }
 
-    handleIconMouseOver(event) {
+    handleIconMouseOver() {
         tooltip.show({
             hostEl: this.icon,
             margin: 16,
-            content: '静音'
+            content: this.lastVolume == null ? '静音' : '取消静音'
         });
     }
 
@@ -144,7 +142,7 @@ export default class Volume extends Slider {
                 'div',
                 {className: 'lark-volume-line__ball'}
             )
-        );        
+        );
 
         return this.createElement(
             'div',

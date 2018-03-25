@@ -6,8 +6,6 @@
 
 const document = window.document;
 
-const featureDetector = {
-    touch: "ontouchend" in document ? true : false
+export default {
+    touch: 'ontouchend' in document
 };
-
-export default featureDetector;

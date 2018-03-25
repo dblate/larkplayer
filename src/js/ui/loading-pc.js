@@ -5,16 +5,11 @@
  */
 
 import Component from '../component';
-import * as Dom from '../utils/dom';
 
 import './loading';
 
 
 export default class LoadingPc extends Component {
-    constructor(player, options) {
-        super(player, options);
-    }
-
     createEl() {
         const el = this.createElement(
             'div',

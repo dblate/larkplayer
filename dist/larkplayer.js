@@ -16,14 +16,6 @@ var _dom = require('./utils/dom');
 
 var Dom = _interopRequireWildcard(_dom);
 
-var _domData = require('./utils/dom-data');
-
-var DomData = _interopRequireWildcard(_domData);
-
-var _fn = require('./utils/fn');
-
-var Fn = _interopRequireWildcard(_fn);
-
 var _guid = require('./utils/guid');
 
 var _toTitleCase = require('./utils/to-title-case');
@@ -43,8 +35,6 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-var document = window.document;
 
 var Component = function () {
     function Component(player, options, ready) {
@@ -330,7 +320,7 @@ var Component = function () {
 
 exports.default = Component;
 
-},{"./mixins/evented":4,"./utils/dom":27,"./utils/dom-data":26,"./utils/fn":30,"./utils/guid":32,"./utils/merge-options":34,"./utils/to-title-case":41}],2:[function(require,module,exports){
+},{"./mixins/evented":4,"./utils/dom":27,"./utils/guid":31,"./utils/merge-options":33,"./utils/to-title-case":39}],2:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -403,7 +393,9 @@ var Html5 = function (_Component) {
             try {
                 this.el.currentTime = seconds;
             } catch (ex) {
+                /* eslint-disable no-console */
                 console.log(ex, 'Video is not ready');
+                /* eslint-enbale no-console */
             }
         }
     }, {
@@ -662,7 +654,9 @@ Html5.disposeMediaElement = function (el) {
             try {
                 el.load();
             } catch (ex) {
+                /* eslint-disable no-console */
                 console.log(ex);
+                /* eslint-enbale no-console */
             }
         })();
     }
@@ -708,7 +702,9 @@ Html5.registerMediaSourceHandler = function (handler) {
     if (Html5.validateMediaSourceHandler(handler)) {
         Html5.mediaSourceHandler.push(handler);
     } else {
+        /* eslint-disable no-console */
         console.error('Invalid mediaSourceHandler');
+        /* eslint-enbale no-console */
     }
 };
 
@@ -772,7 +768,7 @@ Html5.selectMediaSourceHandler = function (source) {
 
 exports.default = Html5;
 
-},{"./component":1,"./utils/dom":27,"./utils/normalize-source":36,"./utils/obj":37,"./utils/to-title-case":41}],3:[function(require,module,exports){
+},{"./component":1,"./utils/dom":27,"./utils/normalize-source":35,"./utils/obj":36,"./utils/to-title-case":39}],3:[function(require,module,exports){
 'use strict';
 
 var _dom = require('./utils/dom');
@@ -783,17 +779,9 @@ var _events = require('./utils/events');
 
 var Events = _interopRequireWildcard(_events);
 
-var _component = require('./component');
-
-var _component2 = _interopRequireDefault(_component);
-
 var _player = require('./player');
 
 var _player2 = _interopRequireDefault(_player);
-
-var _scriptLoader = require('./utils/script-loader');
-
-var scriptLoader = _interopRequireWildcard(_scriptLoader);
 
 var _plugin = require('./utils/plugin');
 
@@ -813,7 +801,25 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
-var document = window.document;
+function normalize(el) {
+    var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+    var readyFn = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : function () {};
+
+    if (typeof el === 'string') {
+        if (el.charAt(0) !== '#') {
+            el = '#' + el;
+        }
+
+        el = Dom.$(el);
+    }
+
+    // 默认添加 playsinline 属性
+    if (options.playsinline === undefined) {
+        options.playsinline = true;
+    }
+
+    return { el: el, options: options, readyFn: readyFn };
+}
 
 // 包含所有兼容 es6 的代码
 // @todo 有没有更好的解决方案，目前看 babel-plugin-transform-runtime 不会解决在原型上的方法
@@ -823,27 +829,6 @@ var document = window.document;
  * @author yuhui<yuhui06@baidu.com>
  * @date 2017/11/7
  */
-
-function normalize(el, options, readyFn) {
-    if (typeof el === 'string') {
-        if (el.charAt(0) !== '#') {
-            el = '#' + el;
-        }
-
-        el = Dom.$(el);
-    }
-
-    options = options || {};
-
-    // 默认添加 playsinline 属性
-    if (options.playsinline === undefined) {
-        options.playsinline = true;
-    }
-
-    readyFn = readyFn || function () {};
-
-    return { el: el, options: options, readyFn: readyFn };
-}
 
 function larkplayer(el, options, readyFn) {
     var _normalize = normalize(el, options, readyFn);
@@ -881,7 +866,7 @@ larkplayer.deregisterPlugin = Plugin.deregisterPlugin;
 // @see https://github.com/babel/babel/issues/2724
 module.exports = larkplayer;
 
-},{"./component":1,"./html5":2,"./player":5,"./shim/third_party/shim.min.js":6,"./utils/dom":27,"./utils/events":28,"./utils/log":33,"./utils/plugin":38,"./utils/script-loader":39}],4:[function(require,module,exports){
+},{"./html5":2,"./player":5,"./shim/third_party/shim.min.js":6,"./utils/dom":27,"./utils/events":28,"./utils/log":32,"./utils/plugin":37}],4:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -916,7 +901,6 @@ function evented(target) {
     var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
 
     if (target.isEvented && target.eventBusEl === options.eventBusKey) {
-        console.log(options.eventBusKey, ' returned');
         return;
     } else {
         target.isEvented = true;
@@ -981,10 +965,6 @@ var Dom = _interopRequireWildcard(_dom);
 var _events = require('./utils/events');
 
 var Events = _interopRequireWildcard(_events);
-
-var _fn = require('./utils/fn');
-
-var Fn = _interopRequireWildcard(_fn);
 
 var _toTitleCase = require('./utils/to-title-case');
 
@@ -1054,7 +1034,6 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 // 确保以下代码都执行一次
 
 
-var document = window.document;
 var activeClass = 'lark-user-active';
 
 var Player = function (_Component) {
@@ -1080,6 +1059,7 @@ var Player = function (_Component) {
      * @param {Array=} options.source 视频 source 标签。为 [{src: 'xxx', type: 'xxx'}] 的形式，type 可选
      * @param {Function=} ready 播放器初始化完成后执行的函数，可选
      */
+    /* eslint-disable fecs-max-statements */
     function Player(tag, options, ready) {
         _classCallCheck(this, Player);
 
@@ -1187,6 +1167,7 @@ var Player = function (_Component) {
         _this.triggerReady();
         return _this;
     }
+    /* eslint-enable fecs-max-statements */
 
     _createClass(Player, [{
         key: 'getMediaSourceHanlderOptions',
@@ -1403,6 +1384,8 @@ var Player = function (_Component) {
         /**
          * 创建一个 Html5 实例
          *
+         * @return {Object} tech Html5 实例
+         *
          * @private
          */
 
@@ -1497,7 +1480,7 @@ var Player = function (_Component) {
 
             /**
              * 视频本身的高宽发生改变时触发，注意不是播放器的高度（比如调整播放器的高宽和全屏不会触发 resize 事件）
-             * 
+             *
              * 这里还不是太清楚，有需要的话看看 w3c 文档吧
              *
              * @see https://html.spec.whatwg.org/#dom-video-videowidth
@@ -2003,6 +1986,8 @@ var Player = function (_Component) {
         /**
          * 处理 touchstart 事件，主要用于控制控制条的显隐
          *
+         * @param {Object} event 事件发生时，浏览器给的 event
+         *
          * @private
          */
 
@@ -2015,15 +2000,13 @@ var Player = function (_Component) {
 
                     clearTimeout(this.activeTimeoutHandler);
                 }
-
-                // @todo ios11 click 事件触发问题
-                // Events.on(document, 'touchmove', this.handleTouchMove);
-                // Events.on(document, 'touchend', this.handleTouchEnd);
             }
         }
 
         /**
          * 处理 touchmove 事件
+         *
+         * @param {Object} event 事件发生时，浏览器给的 event
          *
          * @private
          */
@@ -2035,6 +2018,8 @@ var Player = function (_Component) {
         /**
          * 处理 touchend 事件，主要用于控制控制条的显隐
          *
+         * @param {Object} event 事件发生时，浏览器给的 event
+         *
          * @private
          */
 
@@ -2042,15 +2027,6 @@ var Player = function (_Component) {
         key: 'handleTouchEnd',
         value: function handleTouchEnd(event) {
             var _this7 = this;
-
-            // clearTimeout(this.activeTimeoutHandler);
-
-            // this.activeTimeoutHandler = setTimeout(() => {
-            //     this.removeClass(activeClass);
-            // }, this.activeTimeout);
-
-            // Events.off(document, 'touchmove', this.handleTouchMove);
-            // Events.off(document, 'touchend', this.handleTouchEnd);
 
             clearTimeout(this.activeTimeoutHandler);
 
@@ -2143,6 +2119,8 @@ var Player = function (_Component) {
         /**
          * 处理 error 事件
          *
+         * @param {Object} event 事件发生时，浏览器给的 event
+         *
          * @fires Player#error
          * @private
          */
@@ -2175,9 +2153,10 @@ var Player = function (_Component) {
          *
          * pc 上用 click 事件，移动端用 touchend
          *
-         * @deprecate 由于 ios11 video 标签对 click 的支持有问题，目前已弃用，将对应逻辑转移到了 touchend 中
          * @todo 开发 tap 事件来代替 click
          * @private
+         *
+         * @param {Object} event 事件发生时，浏览器给的 event
          */
 
     }, {
@@ -2688,7 +2667,7 @@ var Player = function (_Component) {
         /**
          * 获取或设置当前视频的默认播放速率
          *
-         * @param {number=} playbackRate 要设置的默认播放速率的值，可选
+         * @param {number=} defaultPlaybackRate 要设置的默认播放速率的值，可选
          * @return {number} 不传参数则返回当前视频的默认播放速率
          */
 
@@ -2707,7 +2686,7 @@ var Player = function (_Component) {
         /**
          * 设置或获取 poster（视频封面） 属性的值
          *
-         * @param {string=} poster 可选。要设置的 poster 属性的值
+         * @param {string=} val 可选。要设置的 poster 属性的值
          * @return {string} 不传参数则返回当前 poster 属性的值
          */
 
@@ -2803,7 +2782,7 @@ if (_featureDetector2.default.touch) {
 
 exports.default = Player;
 
-},{"./component":1,"./html5":2,"./mixins/evented":4,"./ui/control-bar":9,"./ui/control-bar-pc":8,"./ui/error":13,"./ui/error-pc":12,"./ui/loading":17,"./ui/loading-pc":16,"./ui/play-button":18,"./ui/progress-bar-simple":20,"./utils/computed-style":25,"./utils/dom":27,"./utils/events":28,"./utils/feature-detector":29,"./utils/fn":30,"./utils/fullscreen":31,"./utils/guid":32,"./utils/log":33,"./utils/normalize-source":36,"./utils/obj":37,"./utils/plugin":38,"./utils/to-title-case":41}],6:[function(require,module,exports){
+},{"./component":1,"./html5":2,"./mixins/evented":4,"./ui/control-bar":9,"./ui/control-bar-pc":8,"./ui/error":13,"./ui/error-pc":12,"./ui/loading":17,"./ui/loading-pc":16,"./ui/play-button":18,"./ui/progress-bar-simple":20,"./utils/computed-style":25,"./utils/dom":27,"./utils/events":28,"./utils/feature-detector":29,"./utils/fullscreen":30,"./utils/guid":31,"./utils/log":32,"./utils/normalize-source":35,"./utils/obj":36,"./utils/plugin":37,"./utils/to-title-case":39}],6:[function(require,module,exports){
 "use strict";
 
 var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
@@ -6359,37 +6338,17 @@ var _component = require('../component');
 
 var _component2 = _interopRequireDefault(_component);
 
-var _dom = require('../utils/dom');
+require('./current-time');
 
-var Dom = _interopRequireWildcard(_dom);
+require('./duration');
 
-var _currentTime = require('./current-time');
+require('./play-button');
 
-var _currentTime2 = _interopRequireDefault(_currentTime);
+require('./fullscreen-button');
 
-var _duration = require('./duration');
-
-var _duration2 = _interopRequireDefault(_duration);
-
-var _playButton = require('./play-button');
-
-var _playButton2 = _interopRequireDefault(_playButton);
-
-var _fullscreenButton = require('./fullscreen-button');
-
-var _fullscreenButton2 = _interopRequireDefault(_fullscreenButton);
-
-var _progressBar = require('./progress-bar');
-
-var _progressBar2 = _interopRequireDefault(_progressBar);
-
-var _gradientBottom = require('./gradient-bottom');
-
-var _gradientBottom2 = _interopRequireDefault(_gradientBottom);
+require('./gradient-bottom');
 
 require('./volume');
-
-function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -6406,10 +6365,10 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 var ControlBarPc = function (_Component) {
     _inherits(ControlBarPc, _Component);
 
-    function ControlBarPc(player, options) {
+    function ControlBarPc() {
         _classCallCheck(this, ControlBarPc);
 
-        return _possibleConstructorReturn(this, (ControlBarPc.__proto__ || Object.getPrototypeOf(ControlBarPc)).call(this, player, options));
+        return _possibleConstructorReturn(this, (ControlBarPc.__proto__ || Object.getPrototypeOf(ControlBarPc)).apply(this, arguments));
     }
 
     _createClass(ControlBarPc, [{
@@ -6460,11 +6419,12 @@ var ControlBarPc = function (_Component) {
     return ControlBarPc;
 }(_component2.default);
 
-_component2.default.registerComponent('ControlBarPc', ControlBarPc);
-
 exports.default = ControlBarPc;
 
-},{"../component":1,"../utils/dom":27,"./current-time":10,"./duration":11,"./fullscreen-button":14,"./gradient-bottom":15,"./play-button":18,"./progress-bar":21,"./volume":24}],9:[function(require,module,exports){
+
+_component2.default.registerComponent('ControlBarPc', ControlBarPc);
+
+},{"../component":1,"./current-time":10,"./duration":11,"./fullscreen-button":14,"./gradient-bottom":15,"./play-button":18,"./volume":24}],9:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -6506,10 +6466,10 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 var ControlBar = function (_Component) {
     _inherits(ControlBar, _Component);
 
-    function ControlBar(player, options) {
+    function ControlBar() {
         _classCallCheck(this, ControlBar);
 
-        return _possibleConstructorReturn(this, (ControlBar.__proto__ || Object.getPrototypeOf(ControlBar)).call(this, player, options));
+        return _possibleConstructorReturn(this, (ControlBar.__proto__ || Object.getPrototypeOf(ControlBar)).apply(this, arguments));
     }
 
     _createClass(ControlBar, [{
@@ -6620,7 +6580,7 @@ exports.default = CurrentTime;
 
 _component2.default.registerComponent('CurrentTime', CurrentTime);
 
-},{"../component":1,"../utils/dom":27,"../utils/time-format":40}],11:[function(require,module,exports){
+},{"../component":1,"../utils/dom":27,"../utils/time-format":38}],11:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -6698,7 +6658,7 @@ exports.default = Duration;
 
 _component2.default.registerComponent('Duration', Duration);
 
-},{"../component":1,"../utils/dom":27,"../utils/time-format":40}],12:[function(require,module,exports){
+},{"../component":1,"../utils/dom":27,"../utils/time-format":38}],12:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -6767,11 +6727,11 @@ var ErrorPc = function (_Component) {
         value: function handleError(event, error) {
             var text = void 0;
             switch (parseInt(error.code, 10)) {
-                // MEDIA_ERR_ABORTED 
+                // MEDIA_ERR_ABORTED
                 case 1:
                     text = '加载失败，点击重试(MEDIA_ERR_ABORTED)';
                     break;
-                // MEDIA_ERR_NETWORK 
+                // MEDIA_ERR_NETWORK
                 case 2:
                     text = '加载失败，请检查您的网络(MEDIA_ERR_NETWORK)';
                     break;
@@ -6779,7 +6739,7 @@ var ErrorPc = function (_Component) {
                 case 3:
                     text = '视频解码失败(MEDIA_ERR_DECODE)';
                     break;
-                // MEDIA_ERR_SRC_NOT_SUPPORTED 
+                // MEDIA_ERR_SRC_NOT_SUPPORTED
                 case 4:
                     text = '加载失败，该资源无法访问或者浏览器不支持该视频类型(MEDIA_ERR_SRC_NOT_SUPPORTED)';
                     break;
@@ -6856,7 +6816,9 @@ var Error = function (_Component) {
     _createClass(Error, [{
         key: 'handleError',
         value: function handleError(event, data) {
+            /* eslint-disable no-console */
             console.log(event, data);
+            /* eslint-enable no-console */
         }
     }, {
         key: 'handleClick',
@@ -7032,12 +6994,6 @@ var _component = require('../component');
 
 var _component2 = _interopRequireDefault(_component);
 
-var _dom = require('../utils/dom');
-
-var Dom = _interopRequireWildcard(_dom);
-
-function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
-
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -7074,7 +7030,7 @@ exports.default = GradientBottom;
 
 _component2.default.registerComponent('GradientBottom', GradientBottom);
 
-},{"../component":1,"../utils/dom":27}],16:[function(require,module,exports){
+},{"../component":1}],16:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -7087,13 +7043,7 @@ var _component = require('../component');
 
 var _component2 = _interopRequireDefault(_component);
 
-var _dom = require('../utils/dom');
-
-var Dom = _interopRequireWildcard(_dom);
-
 require('./loading');
-
-function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -7110,10 +7060,10 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 var LoadingPc = function (_Component) {
     _inherits(LoadingPc, _Component);
 
-    function LoadingPc(player, options) {
+    function LoadingPc() {
         _classCallCheck(this, LoadingPc);
 
-        return _possibleConstructorReturn(this, (LoadingPc.__proto__ || Object.getPrototypeOf(LoadingPc)).call(this, player, options));
+        return _possibleConstructorReturn(this, (LoadingPc.__proto__ || Object.getPrototypeOf(LoadingPc)).apply(this, arguments));
     }
 
     _createClass(LoadingPc, [{
@@ -7133,7 +7083,7 @@ exports.default = LoadingPc;
 
 _component2.default.registerComponent('LoadingPc', LoadingPc);
 
-},{"../component":1,"../utils/dom":27,"./loading":17}],17:[function(require,module,exports){
+},{"../component":1,"./loading":17}],17:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -7167,10 +7117,10 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 var Loading = function (_Component) {
     _inherits(Loading, _Component);
 
-    function Loading(player, options) {
+    function Loading() {
         _classCallCheck(this, Loading);
 
-        return _possibleConstructorReturn(this, (Loading.__proto__ || Object.getPrototypeOf(Loading)).call(this, player, options));
+        return _possibleConstructorReturn(this, (Loading.__proto__ || Object.getPrototypeOf(Loading)).apply(this, arguments));
     }
 
     _createClass(Loading, [{
@@ -7329,14 +7279,6 @@ var _dom = require('../utils/dom');
 
 var Dom = _interopRequireWildcard(_dom);
 
-var _events = require('../utils/events');
-
-var Events = _interopRequireWildcard(_events);
-
-var _computedStyle = require('../utils/computed-style');
-
-var _computedStyle2 = _interopRequireDefault(_computedStyle);
-
 require('./buffer-bar');
 
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
@@ -7363,10 +7305,10 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 var ProgressBarExceptFill = function (_Component) {
     _inherits(ProgressBarExceptFill, _Component);
 
-    function ProgressBarExceptFill(player, options) {
+    function ProgressBarExceptFill() {
         _classCallCheck(this, ProgressBarExceptFill);
 
-        return _possibleConstructorReturn(this, (ProgressBarExceptFill.__proto__ || Object.getPrototypeOf(ProgressBarExceptFill)).call(this, player, options));
+        return _possibleConstructorReturn(this, (ProgressBarExceptFill.__proto__ || Object.getPrototypeOf(ProgressBarExceptFill)).apply(this, arguments));
     }
 
     _createClass(ProgressBarExceptFill, [{
@@ -7404,7 +7346,7 @@ ProgressBarExceptFill.prototype.options = {
 
 _component2.default.registerComponent('ProgressBarExceptFill', ProgressBarExceptFill);
 
-},{"../component":1,"../utils/computed-style":25,"../utils/dom":27,"../utils/events":28,"./buffer-bar":7}],20:[function(require,module,exports){
+},{"../component":1,"../utils/dom":27,"./buffer-bar":7}],20:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -7528,14 +7470,6 @@ var _dom = require('../utils/dom');
 
 var Dom = _interopRequireWildcard(_dom);
 
-var _events = require('../utils/events');
-
-var Events = _interopRequireWildcard(_events);
-
-var _computedStyle = require('../utils/computed-style');
-
-var _computedStyle2 = _interopRequireDefault(_computedStyle);
-
 var _featureDetector = require('../utils/feature-detector');
 
 var _featureDetector2 = _interopRequireDefault(_featureDetector);
@@ -7558,8 +7492,6 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 * @date 2017/11/6
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 * @date 2018/3/15 支持 pc 端拖拽和 tooltip
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 */
-
-var document = window.document;
 
 var ProgressBar = function (_Slider) {
     _inherits(ProgressBar, _Slider);
@@ -7730,11 +7662,12 @@ var ProgressBar = function (_Slider) {
     return ProgressBar;
 }(_slider2.default);
 
-_component2.default.registerComponent('ProgressBar', ProgressBar);
-
 exports.default = ProgressBar;
 
-},{"../component":1,"../utils/computed-style":25,"../utils/dom":27,"../utils/events":28,"../utils/feature-detector":29,"../utils/time-format":40,"./progress-bar-except-fill":19,"./slider":22,"./tooltip":23}],22:[function(require,module,exports){
+
+_component2.default.registerComponent('ProgressBar', ProgressBar);
+
+},{"../component":1,"../utils/dom":27,"../utils/feature-detector":29,"../utils/time-format":38,"./progress-bar-except-fill":19,"./slider":22,"./tooltip":23}],22:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -7844,19 +7777,13 @@ Object.defineProperty(exports, "__esModule", {
     value: true
 });
 
-var _component = require('../component');
-
-var _component2 = _interopRequireDefault(_component);
-
 var _dom = require('../utils/dom');
 
 var Dom = _interopRequireWildcard(_dom);
 
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-var tooltip = {
+exports.default = {
     id: 'lark-tooltip',
     el: null,
     timeoutHandler: null,
@@ -7961,11 +7888,13 @@ var tooltip = {
             _this2.el.style.display = 'none';
         });
     }
-};
+}; /**
+    * @file tooltip.js 用于展示提示性文字
+    * @author yuhui06
+    * @date 2018/3/22
+    */
 
-exports.default = tooltip;
-
-},{"../component":1,"../utils/dom":27}],24:[function(require,module,exports){
+},{"../utils/dom":27}],24:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -7985,10 +7914,6 @@ var Dom = _interopRequireWildcard(_dom);
 var _events = require('../utils/events');
 
 var Events = _interopRequireWildcard(_events);
-
-var _featureDetector = require('../utils/feature-detector');
-
-var _featureDetector2 = _interopRequireDefault(_featureDetector);
 
 var _slider = require('./slider');
 
@@ -8011,8 +7936,6 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 * @author yuhui06
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 * @date 2018/3/9
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 */
-
-var document = window.document;
 
 var Volume = function (_Slider) {
     _inherits(Volume, _Slider);
@@ -8049,7 +7972,6 @@ var Volume = function (_Slider) {
     _createClass(Volume, [{
         key: 'onSlideStart',
         value: function onSlideStart(event) {
-            var pos = Dom.getPointerPosition(this.line, event);
             this.lastVolume = this.player.volume();
         }
     }, {
@@ -8062,7 +7984,6 @@ var Volume = function (_Slider) {
     }, {
         key: 'onSlideEnd',
         value: function onSlideEnd(event) {
-            var pos = Dom.getPointerPosition(this.line, event);
             if (this.player.volume() !== 0) {
                 this.lastVolume = null;
             }
@@ -8100,14 +8021,16 @@ var Volume = function (_Slider) {
                 this.update(this.lastVolume);
                 this.lastVolume = null;
             }
+
+            this.handleIconMouseOver();
         }
     }, {
         key: 'handleIconMouseOver',
-        value: function handleIconMouseOver(event) {
+        value: function handleIconMouseOver() {
             _tooltip2.default.show({
                 hostEl: this.icon,
                 margin: 16,
-                content: '静音'
+                content: this.lastVolume == null ? '静音' : '取消静音'
             });
         }
     }, {
@@ -8160,7 +8083,7 @@ exports.default = Volume;
 
 _component2.default.registerComponent('Volume', Volume);
 
-},{"../component":1,"../utils/dom":27,"../utils/events":28,"../utils/feature-detector":29,"./slider":22,"./tooltip":23}],25:[function(require,module,exports){
+},{"../component":1,"../utils/dom":27,"../utils/events":28,"./slider":22,"./tooltip":23}],25:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -8292,7 +8215,7 @@ function removeData(el) {
     }
 }
 
-},{"./guid":32}],27:[function(require,module,exports){
+},{"./guid":31}],27:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -8480,6 +8403,7 @@ function createEl() {
  *
  * vjs 的 createEl 将 props 和 attrs 分成了两个参数，但是我们的业务没必要这么做
  * 而且每次想要传 child 参数的时候，还得先传 attrs 参数让我觉得很烦
+ *
  * @todo 先写一个这个函数自己用，后面看有没有必要把 createEl 函数换掉
  *
  * @param {string} tagName DOM 元素标签名
@@ -8739,7 +8663,7 @@ function getAttributes(el) {
             var attrValue = attrs[i]['value'];
 
             if (typeof el[attrName] === 'boolean' || knownBooleans.includes(attrName)) {
-                attrValue = attrValue !== null ? true : false;
+                attrValue = attrValue !== null;
             }
 
             collection[attrName] = attrValue;
@@ -8898,7 +8822,6 @@ function findPosition(el) {
  *      3) changedTouches: touch 事件中的相关数据
  */
 function getPointerPosition(el, event) {
-    var position = {};
     var box = findPosition(el);
     var boxW = el.offsetWidth;
     var boxH = el.offsetHeight;
@@ -8913,10 +8836,10 @@ function getPointerPosition(el, event) {
         pageY = event.changedTouches[0].pageY;
     }
 
-    position.x = Math.max(0, Math.min(1, (pageX - boxX) / boxW));
-    position.y = Math.max(0, Math.min(1, (boxY - pageY + boxH) / boxH));
-
-    return position;
+    return {
+        x: Math.max(0, Math.min(1, (pageX - boxX) / boxW)),
+        y: Math.max(0, Math.min(1, (boxY - pageY + boxH) / boxH))
+    };
 }
 
 /**
@@ -8999,7 +8922,7 @@ var $ = exports.$ = createQuerier('querySelector');
  */
 var $$ = exports.$$ = createQuerier('querySelectorAll');
 
-},{"./computed-style":25,"./obj":37}],28:[function(require,module,exports){
+},{"./computed-style":25,"./obj":36}],28:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -9012,10 +8935,6 @@ exports.trigger = trigger;
 exports.off = off;
 exports.one = one;
 
-var _toTitleCase = require('./to-title-case');
-
-var _toTitleCase2 = _interopRequireDefault(_toTitleCase);
-
 var _domData = require('./dom-data');
 
 var DomData = _interopRequireWildcard(_domData);
@@ -9024,12 +8943,16 @@ var _guid = require('./guid');
 
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
 // data.disabled
 // data.dispatcher
 // data.handlers
 // let data = {};
+
+/**
+ * @file 事件系统，借用系统事件能力的同时，能添加自定义事件
+ * @author yuhui06@baidu.com
+ * @date 2017/11/3
+ */
 
 var document = window.document;
 
@@ -9041,12 +8964,6 @@ var document = window.document;
  * @param {Element} elem 待清理的元素
  * @param {string} type 待清理的事件类型
  */
-/**
- * @file 事件系统，借用系统事件能力的同时，能添加自定义事件
- * @author yuhui06@baidu.com
- * @date 2017/11/3
- */
-
 function cleanUpEvents(elem, type) {
     var data = DomData.getData(elem);
 
@@ -9477,8 +9394,8 @@ function one(elem, type, fn) {
     on(elem, type, executeOnlyOnce);
 }
 
-},{"./dom-data":26,"./guid":32,"./to-title-case":41}],29:[function(require,module,exports){
-"use strict";
+},{"./dom-data":26,"./guid":31}],29:[function(require,module,exports){
+'use strict';
 
 Object.defineProperty(exports, "__esModule", {
   value: true
@@ -9491,71 +9408,11 @@ Object.defineProperty(exports, "__esModule", {
 
 var document = window.document;
 
-var featureDetector = {
-  touch: "ontouchend" in document ? true : false
+exports.default = {
+  touch: 'ontouchend' in document
 };
 
-exports.default = featureDetector;
-
 },{}],30:[function(require,module,exports){
-'use strict';
-
-Object.defineProperty(exports, "__esModule", {
-    value: true
-});
-exports.bind = bind;
-exports.throttle = throttle;
-
-var _guid = require('./guid');
-
-/**
- * 绑定函数到指定的上下文
- *
- * @todo videojs 在返回的函数上还加了 guid 做更加个性化的处理，目前暂时用不上就没写
- *
- * @param {Funtion} fn 要绑定上下文的函数
- * @param {Object} thisArg 函数要绑定的上下文
- * @return {Function} 该函数会在指定的上下文中执行
- */
-function bind(fn, thisArg) {
-    if (!fn.guid) {
-        fn.guid = (0, _guid.newGUID)();
-    }
-
-    return function () {
-        for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
-            args[_key] = arguments[_key];
-        }
-
-        return fn.apply(thisArg, args);
-    };
-}
-
-/**
- * 限制函数的执行的频率
- *
- * @param {Function} fn 要控制执行频率的函数
- * @param {number} wait 函数的执行间隔大于等于此数值（单位：ms）
- * @return {Funtion} 限制了执行频率的函数
- */
-/**
- * @file fn.js 函数相关的一些方法
- * @author yuhui06@baidu.com
- * @date 2017/11/3
- */
-
-function throttle(fn, wait) {
-    var lastTimestamp = Date.now();
-    return function () {
-        var now = Date.now();
-        if (now - lastTimestamp >= wait) {
-            fn.apply(undefined, arguments);
-            lastTimestamp = now;
-        }
-    };
-}
-
-},{"./guid":32}],31:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -9638,7 +9495,7 @@ exports.default = {
     }
 };
 
-},{"./events":28}],32:[function(require,module,exports){
+},{"./events":28}],31:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -9663,7 +9520,7 @@ function newGUID() {
   return guid++;
 }
 
-},{}],33:[function(require,module,exports){
+},{}],32:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -9693,7 +9550,9 @@ exports.default = log;
  *           1.2334,
  *           {});
  */
-// const log = console.log;
+
+/* eslint-disable no-console */
+
 function log() {
   var _console;
 
@@ -9708,7 +9567,7 @@ log.error = console.error;
 
 log.clear = console.clear;
 
-},{}],34:[function(require,module,exports){
+},{}],33:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -9763,7 +9622,7 @@ function mergeOptions() {
    * @date 2017/11/3
    */
 
-},{"./obj.js":37}],35:[function(require,module,exports){
+},{"./obj.js":36}],34:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -9776,19 +9635,19 @@ Object.defineProperty(exports, "__esModule", {
  */
 
 exports.default = {
-    flv: 'video/x-flv',
-    mp4: 'video/mp4',
-    webm: 'video/webm',
-    ogg: 'video/ogg',
-    m3u8: 'application/x-mpegURL',
-    ts: 'video/MP2T',
+    'flv': 'video/x-flv',
+    'mp4': 'video/mp4',
+    'webm': 'video/webm',
+    'ogg': 'video/ogg',
+    'm3u8': 'application/x-mpegURL',
+    'ts': 'video/MP2T',
     '3gp': 'video/3gpp',
-    mov: 'video/quicktime',
-    avi: 'video/x-msvideo',
-    wmv: 'video/x-ms-wmv'
+    'mov': 'video/quicktime',
+    'avi': 'video/x-msvideo',
+    'wmv': 'video/x-ms-wmv'
 };
 
-},{}],36:[function(require,module,exports){
+},{}],35:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -9845,17 +9704,14 @@ function getMIMEType(src) {
 function nomalizeSingleSource(singleSource) {
     if (!(0, _obj.isPlain)(singleSource)) {
         throw new TypeError('SingleSource should be an Object');
-        return;
     }
 
     if (typeof singleSource.src !== 'string') {
         throw new TypeError('SingleSource.src should be a string');
-        return;
     }
 
     if (singleSource.hasOwnProperty('type') && typeof singleSource.type !== 'string') {
         throw new TypeError('SingleSource.type should be a string');
-        return;
     }
 
     if (!singleSource.type) {
@@ -9883,7 +9739,7 @@ function nomalizeSource(source) {
     }
 }
 
-},{"./mime-type-map":35,"./obj":37}],37:[function(require,module,exports){
+},{"./mime-type-map":34,"./obj":36}],36:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -9943,7 +9799,7 @@ function each(obj, fn) {
   });
 }
 
-},{}],38:[function(require,module,exports){
+},{}],37:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -10017,37 +9873,7 @@ function deregisterPlugin(name) {
   delete pluginStore[name];
 }
 
-},{}],39:[function(require,module,exports){
-'use strict';
-
-Object.defineProperty(exports, "__esModule", {
-    value: true
-});
-exports.loadCss = loadCss;
-
-var _dom = require('./dom');
-
-var Dom = _interopRequireWildcard(_dom);
-
-function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
-
-var head = window.document.getElementsByTagName('head')[0]; /**
-                                                             * @file script-loader.js 加载脚本
-                                                             * @author yuhui<yuhui06@baidu.com>
-                                                             * @date 2017/11/21
-                                                             */
-
-function loadCss(src) {
-    var link = Dom.createEl('link', {
-        type: 'text/css',
-        rel: 'stylesheet',
-        href: src
-    });
-
-    head.appendChild(link);
-}
-
-},{"./dom":27}],40:[function(require,module,exports){
+},{}],38:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -10108,7 +9934,7 @@ function timeFormat(seconds) {
     }
 }
 
-},{}],41:[function(require,module,exports){
+},{}],39:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {

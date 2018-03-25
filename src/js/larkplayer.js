@@ -6,9 +6,7 @@
 
 import * as Dom from './utils/dom';
 import * as Events from './utils/events';
-import Component from './component';
 import Player from './player';
-import * as scriptLoader from './utils/script-loader';
 import * as Plugin from './utils/plugin';
 import log from './utils/log';
 import Html5 from './html5';
@@ -18,9 +16,8 @@ import Html5 from './html5';
 // @see https://www.zhihu.com/question/49382420/answer/115692473
 import './shim/third_party/shim.min.js';
 
-const document = window.document;
 
-function normalize(el, options, readyFn) {
+function normalize(el, options = {}, readyFn = function () {}) {
     if (typeof el === 'string') {
         if (el.charAt(0) !== '#') {
             el = '#' + el;
@@ -29,14 +26,10 @@ function normalize(el, options, readyFn) {
         el = Dom.$(el);
     }
 
-    options = options || {};
-
     // 默认添加 playsinline 属性
     if (options.playsinline === undefined) {
         options.playsinline = true;
     }
-
-    readyFn = readyFn || function () {};
 
     return {el, options, readyFn};
 }

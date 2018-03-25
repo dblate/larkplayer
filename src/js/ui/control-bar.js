@@ -13,10 +13,6 @@ import './fullscreen-button';
 import './progress-bar';
 
 class ControlBar extends Component {
-    constructor(player, options) {
-        super(player, options);
-    }
-
     reset() {
         this.children.forEach(child => {
             child && child.reset && child.reset();

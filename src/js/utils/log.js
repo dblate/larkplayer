@@ -21,7 +21,9 @@
  *           1.2334,
  *           {});
  */
-// const log = console.log;
+
+/* eslint-disable no-console */
+
 export default function log(...args) {
     console.log(...args);
 }

@@ -43,17 +43,14 @@ function getMIMEType(src) {
 function nomalizeSingleSource(singleSource) {
     if (!isPlain(singleSource)) {
         throw new TypeError('SingleSource should be an Object');
-        return;
     }
 
     if (typeof singleSource.src !== 'string') {
         throw new TypeError('SingleSource.src should be a string');
-        return;
     }
 
     if (singleSource.hasOwnProperty('type') && typeof singleSource.type !== 'string') {
         throw new TypeError('SingleSource.type should be a string');
-        return;
     }
 
 

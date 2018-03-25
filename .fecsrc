@@ -1,0 +1,23 @@
+{
+    "eslint": {
+        "rules": {
+            // 不喜欢在文件最后空一行
+            "fecs-eol-last": "off",
+
+            // 不喜欢在 else catch 等地方换行
+            "brace-style": "off",
+
+            // 有 if else 时，我倾向于写成一对而不是看情况省略 else
+            "no-else-return": "off",
+
+            // 现在暂时不用 Map 和 Set，处理完 pollify 后统一使用
+            "fecs-valid-map-set": "off",
+
+            // o[type]['name'] 第一个 type 是变量时，后面的属性我会统一用 []
+            "dot-notation": "off",
+
+            // 不喜欢变量名不对应时还要使用解构的情形
+            "fecs-prefer-destructure": off
+        }
+    }
+}

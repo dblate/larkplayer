@@ -144,6 +144,7 @@ export function createEl(tagName = 'div', properties = {}, attributes = {}, cont
  *
  * vjs 的 createEl 将 props 和 attrs 分成了两个参数，但是我们的业务没必要这么做
  * 而且每次想要传 child 参数的时候，还得先传 attrs 参数让我觉得很烦
+ *
  * @todo 先写一个这个函数自己用，后面看有没有必要把 createEl 函数换掉
  *
  * @param {string} tagName DOM 元素标签名
@@ -401,7 +402,7 @@ export function getAttributes(el) {
             let attrValue = attrs[i]['value'];
 
             if (typeof el[attrName] === 'boolean' || knownBooleans.includes(attrName)) {
-                attrValue = (attrValue !== null) ? true : false;
+                attrValue = (attrValue !== null);
             }
 
             collection[attrName] = attrValue;
@@ -560,7 +561,6 @@ export function findPosition(el) {
  *      3) changedTouches: touch 事件中的相关数据
  */
 export function getPointerPosition(el, event) {
-    const position = {};
     const box = findPosition(el);
     const boxW = el.offsetWidth;
     const boxH = el.offsetHeight;
@@ -575,10 +575,10 @@ export function getPointerPosition(el, event) {
         pageY = event.changedTouches[0].pageY;
     }
 
-    position.x = Math.max(0, Math.min(1, (pageX - boxX) / boxW));
-    position.y = Math.max(0, Math.min(1, ((boxY - pageY) + boxH) / boxH));
-
-    return position;
+    return {
+        x: Math.max(0, Math.min(1, (pageX - boxX) / boxW)),
+        y: Math.max(0, Math.min(1, ((boxY - pageY) + boxH) / boxH))
+    };
 }
 
 /**

@@ -33,11 +33,11 @@ export default class ErrorPc extends Component {
     handleError(event, error) {
         let text;
         switch (parseInt(error.code, 10)) {
-            // MEDIA_ERR_ABORTED 
+            // MEDIA_ERR_ABORTED
             case 1:
                 text = '加载失败，点击重试(MEDIA_ERR_ABORTED)';
                 break;
-            // MEDIA_ERR_NETWORK 
+            // MEDIA_ERR_NETWORK
             case 2:
                 text = '加载失败，请检查您的网络(MEDIA_ERR_NETWORK)';
                 break;
@@ -45,12 +45,12 @@ export default class ErrorPc extends Component {
             case 3:
                 text = '视频解码失败(MEDIA_ERR_DECODE)';
                 break;
-            // MEDIA_ERR_SRC_NOT_SUPPORTED 
+            // MEDIA_ERR_SRC_NOT_SUPPORTED
             case 4:
                 text = '加载失败，该资源无法访问或者浏览器不支持该视频类型(MEDIA_ERR_SRC_NOT_SUPPORTED)';
                 break;
             default:
-                text = '加载失败，点击重试'
+                text = '加载失败，点击重试';
         }
 
         Dom.replaceContent(this.textEl, text);

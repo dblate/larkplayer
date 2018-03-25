@@ -1,12 +1,16 @@
+/**
+ * @file tooltip.js 用于展示提示性文字
+ * @author yuhui06
+ * @date 2018/3/22
+ */
 
-import Component from '../component';
 import * as Dom from '../utils/dom';
 
-const tooltip = {
+export default {
     id: 'lark-tooltip',
     el: null,
     timeoutHandler: null,
-    initial: function (container) {
+    initial(container) {
         if (this.el) {
             return;
         }
@@ -50,12 +54,15 @@ const tooltip = {
                 let left;
                 if (options.isFollowMouse) {
                     const pointerPos = Dom.getPointerPosition(options.hostEl, options.event);
-                    left = hostElRect.left - containerRect.left + hostElRect.width * pointerPos.x - this.el.offsetWidth / 2;
+                    left = hostElRect.left
+                        - containerRect.left
+                        + hostElRect.width * pointerPos.x
+                        - this.el.offsetWidth / 2;
                 } else {
                     left = hostElRect.left - containerRect.left + (hostElRect.width - this.el.offsetWidth) / 2;
                 }
 
-                const outOfBounds = left + this.el.offsetWidth - this.container.offsetWidth
+                const outOfBounds = left + this.el.offsetWidth - this.container.offsetWidth;
                 if (outOfBounds > 0) {
                     left = left - outOfBounds;
                 }
@@ -104,5 +111,3 @@ const tooltip = {
         });
     }
 };
-
-export default tooltip;

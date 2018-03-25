@@ -10,7 +10,6 @@ import Component from './component';
 import {newGUID} from './utils/guid';
 import * as Dom from './utils/dom';
 import * as Events from './utils/events';
-import * as Fn from './utils/fn';
 import toTitleCase from './utils/to-title-case';
 import fullscreen from './utils/fullscreen';
 import evented from './mixins/evented';
@@ -31,7 +30,6 @@ import './ui/control-bar-pc';
 import './ui/loading-pc';
 import './ui/error-pc';
 
-const document = window.document;
 const activeClass = 'lark-user-active';
 
 class Player extends Component {
@@ -56,6 +54,7 @@ class Player extends Component {
      * @param {Array=} options.source 视频 source 标签。为 [{src: 'xxx', type: 'xxx'}] 的形式，type 可选
      * @param {Function=} ready 播放器初始化完成后执行的函数，可选
      */
+    /* eslint-disable fecs-max-statements */
     constructor(tag, options, ready) {
         tag.id = tag.id || `larkplayer-${newGUID()}`;
 
@@ -160,6 +159,7 @@ class Player extends Component {
 
         this.triggerReady();
     }
+    /* eslint-enable fecs-max-statements */
 
     getMediaSourceHanlderOptions(name = '') {
         if (this.options
@@ -374,6 +374,8 @@ class Player extends Component {
     /**
      * 创建一个 Html5 实例
      *
+     * @return {Object} tech Html5 实例
+     *
      * @private
      */
     loadTech() {
@@ -463,7 +465,7 @@ class Player extends Component {
 
             /**
              * 视频本身的高宽发生改变时触发，注意不是播放器的高度（比如调整播放器的高宽和全屏不会触发 resize 事件）
-             * 
+             *
              * 这里还不是太清楚，有需要的话看看 w3c 文档吧
              *
              * @see https://html.spec.whatwg.org/#dom-video-videowidth
@@ -648,7 +650,7 @@ class Player extends Component {
          *
          * @event Player#loadstart
          * @param {Object} event 事件触发时浏览器自带的 event 对象
-         */ 
+         */
         this.trigger('loadstart');
     }
 
@@ -925,6 +927,8 @@ class Player extends Component {
     /**
      * 处理 touchstart 事件，主要用于控制控制条的显隐
      *
+     * @param {Object} event 事件发生时，浏览器给的 event
+     *
      * @private
      */
     handleTouchStart(event) {
@@ -935,15 +939,13 @@ class Player extends Component {
 
                 clearTimeout(this.activeTimeoutHandler);
             }
-
-            // @todo ios11 click 事件触发问题
-            // Events.on(document, 'touchmove', this.handleTouchMove);
-            // Events.on(document, 'touchend', this.handleTouchEnd);
         }
     }
 
     /**
      * 处理 touchmove 事件
+     *
+     * @param {Object} event 事件发生时，浏览器给的 event
      *
      * @private
      */
@@ -954,18 +956,11 @@ class Player extends Component {
     /**
      * 处理 touchend 事件，主要用于控制控制条的显隐
      *
+     * @param {Object} event 事件发生时，浏览器给的 event
+     *
      * @private
      */
     handleTouchEnd(event) {
-        // clearTimeout(this.activeTimeoutHandler);
-
-        // this.activeTimeoutHandler = setTimeout(() => {
-        //     this.removeClass(activeClass);
-        // }, this.activeTimeout);
-
-        // Events.off(document, 'touchmove', this.handleTouchMove);
-        // Events.off(document, 'touchend', this.handleTouchEnd);
-
         clearTimeout(this.activeTimeoutHandler);
 
         const activeClass = 'lark-user-active';
@@ -1009,7 +1004,7 @@ class Player extends Component {
             this.isFullscreen(extData.isFullscreen);
         } else if (fullscreen.fullscreenEnabled()) {
             // pc 端 fullscreen 事件
-            this.isFullscreen(fullscreen.isFullscreen())
+            this.isFullscreen(fullscreen.isFullscreen());
         }
 
         if (this.isFullscreen()) {
@@ -1050,6 +1045,8 @@ class Player extends Component {
     /**
      * 处理 error 事件
      *
+     * @param {Object} event 事件发生时，浏览器给的 event
+     *
      * @fires Player#error
      * @private
      */
@@ -1079,9 +1076,10 @@ class Player extends Component {
      *
      * pc 上用 click 事件，移动端用 touchend
      *
-     * @deprecate 由于 ios11 video 标签对 click 的支持有问题，目前已弃用，将对应逻辑转移到了 touchend 中
      * @todo 开发 tap 事件来代替 click
      * @private
+     *
+     * @param {Object} event 事件发生时，浏览器给的 event
      */
     handleClick(event) {
         // clearTimeout(this.activeTimeoutHandler);
@@ -1462,7 +1460,7 @@ class Player extends Component {
              *
              * @event Player#srcchange
              * @param {string} src 更换后的视频地址
-             */ 
+             */
             this.trigger('srcchange', src);
         } else {
             return this.techGet('src');
@@ -1484,7 +1482,7 @@ class Player extends Component {
              *
              * @event Player#srcchange
              * @param {string} src 更换后的视频地址
-             */ 
+             */
             this.trigger('srcchange', this.player.src());
         } else {
             return this.techGet('source');
@@ -1510,7 +1508,7 @@ class Player extends Component {
     /**
      * 获取或设置当前视频的默认播放速率
      *
-     * @param {number=} playbackRate 要设置的默认播放速率的值，可选
+     * @param {number=} defaultPlaybackRate 要设置的默认播放速率的值，可选
      * @return {number} 不传参数则返回当前视频的默认播放速率
      */
     defaultPlaybackRate(defaultPlaybackRate) {
@@ -1526,7 +1524,7 @@ class Player extends Component {
     /**
      * 设置或获取 poster（视频封面） 属性的值
      *
-     * @param {string=} poster 可选。要设置的 poster 属性的值
+     * @param {string=} val 可选。要设置的 poster 属性的值
      * @return {string} 不传参数则返回当前 poster 属性的值
      */
     poster(val) {

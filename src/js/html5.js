@@ -33,7 +33,9 @@ class Html5 extends Component {
         try {
             this.el.currentTime = seconds;
         } catch (ex) {
+            /* eslint-disable no-console */
             console.log(ex, 'Video is not ready');
+            /* eslint-enbale no-console */
         }
     }
 
@@ -301,7 +303,9 @@ Html5.disposeMediaElement = function (el) {
             try {
                 el.load();
             } catch (ex) {
+                /* eslint-disable no-console */
                 console.log(ex);
+                /* eslint-enbale no-console */
             }
         }());
     }
@@ -343,13 +347,15 @@ Html5.validateMediaSourceHandler = function (handler) {
     } else {
         return false;
     }
-}
+};
 
 Html5.registerMediaSourceHandler = function (handler) {
     if (Html5.validateMediaSourceHandler(handler)) {
         Html5.mediaSourceHandler.push(handler);
     } else {
+        /* eslint-disable no-console */
         console.error('Invalid mediaSourceHandler');
+        /* eslint-enbale no-console */
     }
 };
 

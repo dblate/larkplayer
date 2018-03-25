@@ -13,15 +13,9 @@
 
 import Component from '../component';
 import * as Dom from '../utils/dom';
-import * as Events from '../utils/events';
-import computedStyle from '../utils/computed-style';
 import './buffer-bar';
 
 export default class ProgressBarExceptFill extends Component {
-    constructor(player, options) {
-        super(player, options);
-    }
-
     createEl() {
         const lineHandle = Dom.createElement('div', {
             className: 'lark-progress-bar__line__handle'

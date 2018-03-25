@@ -4,7 +4,6 @@
  * @date 2017/11/3
  */
 
-import toTitleCase from './to-title-case';
 import * as DomData from './dom-data';
 import {newGUID} from './guid';
 

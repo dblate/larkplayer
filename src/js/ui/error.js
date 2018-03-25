@@ -19,7 +19,9 @@ export default class Error extends Component {
     }
 
     handleError(event, data) {
+        /* eslint-disable no-console */
         console.log(event, data);
+        /* eslint-enable no-console */
     }
 
     handleClick() {

@@ -24,8 +24,16 @@ export default class FullscreenButton extends Component {
             this.fullscreenButton = Dom.$('.lark-request-fullscreen', this.el);
             this.exitFullscreenButton = Dom.$('.lark-exit-fullscreen', this.el);
 
-            Events.on(this.fullscreenButton, 'mouseover', () => this.handleMouseOver(this.fullscreenButton, '全屏'));
-            Events.on(this.exitFullscreenButton, 'mouseover', () => this.handleMouseOver(this.exitFullscreenButton, '退出全屏'));
+            Events.on(
+                this.fullscreenButton,
+                'mouseover',
+                () => this.handleMouseOver(this.fullscreenButton, '全屏')
+            );
+            Events.on(
+                this.exitFullscreenButton,
+                'mouseover',
+                () => this.handleMouseOver(this.exitFullscreenButton, '退出全屏')
+            );
 
             this.on('mouseout', this.handleMouseOut);
         }

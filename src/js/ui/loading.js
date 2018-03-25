@@ -9,10 +9,6 @@ import * as Dom from '../utils/dom';
 
 
 export default class Loading extends Component {
-    constructor(player, options) {
-        super(player, options);
-    }
-
     createEl() {
         const loadingSpinner = Dom.createElement('span', {
             className: 'lark-loading-area__spinner lark-icon-loading'

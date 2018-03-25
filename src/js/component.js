@@ -6,14 +6,11 @@
  */
 
 import * as Dom from './utils/dom';
-import * as DomData from './utils/dom-data';
-import * as Fn from './utils/fn';
 import {newGUID} from './utils/guid';
 import toTitleCase from './utils/to-title-case';
 import mergeOptions from './utils/merge-options';
 import evented from './mixins/evented';
 
-const document = window.document;
 
 export default class Component {
     constructor(player, options, ready) {

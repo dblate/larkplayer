@@ -5,25 +5,14 @@
  */
 
 import Component from '../component';
-import * as Dom from '../utils/dom';
-import CurrentTime from './current-time';
-import Duration from './duration';
-import PlayButton from './play-button';
-import FullscreenButton from './fullscreen-button';
-import ProgressBar from './progress-bar';
-import GradientBottom from './gradient-bottom';
-
 import './current-time';
 import './duration';
-import './fullscreen-button';
 import './play-button';
+import './fullscreen-button';
+import './gradient-bottom';
 import './volume';
 
-class ControlBarPc extends Component {
-    constructor(player, options) {
-        super(player, options);
-    }
-
+export default class ControlBarPc extends Component {
     reset() {
         this.children.forEach(child => {
             child && child.reset && child.reset();
@@ -102,5 +91,3 @@ class ControlBarPc extends Component {
 }
 
 Component.registerComponent('ControlBarPc', ControlBarPc);
-
-export default ControlBarPc;
