@@ -15,9 +15,10 @@ larkplayer 是一款轻量级的 html5 播放器，无其他库的依赖
 
 有如下特性
 
-* 事件机制，可通过 on off one trigger 处理原生及自定义事件
-* 插件机制，支持自定义插件开发
-* 自定义 UI（适应 pc 与移动端）
+* 解决大部分兼容性问题，如全屏、移动端内联播放等
+* 提供事件机制，代理原生的各个事件并允许自定义事件
+* 提供插件机制，丰富的插件类型是支持播放器健康成长的必要条件
+* 提供自定义样式，自适应 pc 与 wap 端
 
 [在线示例](https://s.codepen.io/dblate/debug/qojzZZ/ZoMBajEzGyDk)
 
@@ -121,6 +122,17 @@ const player = larkplayer('video-el');
 * [dom](https://github.com/dblate/larkplayer/blob/master/docs/dom.md)
 * [events](https://github.com/dblate/larkplayer/blob/master/docs/events.md)
 * [plugin](https://github.com/dblate/larkplayer/blob/master/docs/plugin.md)
+
+<h3>如何贡献代码</h3>
+
+* fork 或 clone 代码到本地
+* 修改代码
+* 使用 [fecs](http://fecs.baidu.com/api) 检查 js 代码规范，并修复对应问题
+    * 在项目根目录下执行 fecs src/js （更多选项可参考 [fecs_eslint_wiki](https://github.com/ecomfe/fecs/wiki/ESLint)）
+    * 修复所有级别为 ERROR 的提示
+    * 建议修复所有级别为 WARN 的提示
+* 提交 pull request
+
 
 <h3>后续规划</h3>
 
