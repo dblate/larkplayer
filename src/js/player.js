@@ -5,6 +5,9 @@
  * @todo 对于 Player 构造函数的特殊照顾需要理一下，可能没必要
  */
 
+
+import includes from 'lodash.includes'; 
+
 import Html5 from './html5';
 import Component from './component';
 import {newGUID} from './utils/guid';
@@ -56,16 +59,21 @@ class Player extends Component {
      */
     /* eslint-disable fecs-max-statements */
     constructor(tag, options, ready) {
-        tag.id = tag.id || `larkplayer-${newGUID()}`;
+        // tag.id = tag.id || `larkplayer-${newGUID()}`;
 
         options.initChildren = false;
         options.createEl = false;
         options.reportTouchActivity = false;
-        options.id = options.id || tag.id;
+        // options.id = options.id || tag.id;
 
         super(null, options, ready);
 
         this.isReady = false;
+
+        // if (!Html5.isSupported()) {
+        //     tag.innerHTML = '您的浏览器不支持 html5 视频播放，请升级浏览器版本或更换为 chrome 浏览器';
+        //     return;
+        // }
 
         // @todo check valid options
 
@@ -226,7 +234,7 @@ class Player extends Component {
             'playsinline'
         ];
         each(this.options, (value, key) => {
-            if (html5StandardOptions.includes(key)) {
+            if (includes(html5StandardOptions, key)) {
                 Dom.setAttribute(tag, key, value);
             }
         });
@@ -249,7 +257,7 @@ class Player extends Component {
         Dom.setAttribute(tag, 'tabindex', '-1');
 
         // 子元素原来的 id 加上 -larkplayer 后缀
-        if (tag.id) {
+        if (tag && tag.id) {
             tag.id += '-larkplayer';
         }
 
@@ -264,13 +272,17 @@ class Player extends Component {
 
         // 父元素的 width height 样式继承子元素的值
         // 将 video 标签的 width height 属性移除，确保 width height 为 100%
-        if (tag.hasAttribute('width')) {
+
+        // IE7 不支持 hasAttribute
+        // if (tag.hasAttribute('width')) {
+        if (tag.width) {
             let tagWidth = tag.getAttribute('width');
             el.style.width = tagWidth + 'px';
             tag.removeAttribute('width');
         }
 
-        if (tag.hasAttribute('height')) {
+        // if (tag.hasAttribute('height')) {
+        if (tag.height) {
             let tagHeight = tag.getAttribute('height');
             el.style.height = tagHeight + 'px';
             tag.removeAttribute('height');

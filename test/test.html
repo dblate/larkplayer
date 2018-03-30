@@ -21,8 +21,8 @@
             'https://baikebcs.bdimg.com/baike-other/cool.mp4'
         ];
 
-        player.on('play', function () {
-            console.log('play');
+        player.on('play', function (event) {
+            console.log('play', event);
         });
 
         player.on('firstplay', function () {
@@ -41,6 +41,21 @@
 
         player.on('error', function (event, error) {
             console.log('error occured', event, error);
+        });
+
+
+        player.on('click', function (event) {
+            console.log('player click',event);
+        });
+
+        var body = document.getElementsByTagName('body')[0];
+
+        body.addEventListener('click', function (event) {
+            console.log('body click', event);
+        }, false);
+
+        player.tech.el.addEventListener('play', function (event) {
+            console.log('video play', event);
         });
 
     </script>

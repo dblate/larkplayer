@@ -6,6 +6,8 @@
  * @see https://www.w3.org/TR/html5/embedded-content-0.html#attr-media-src
  */
 
+import find from 'lodash.find';
+
 import Component from './component';
 import * as Dom from './utils/dom';
 import toTitleCase from './utils/to-title-case';
@@ -194,6 +196,13 @@ Html5.canPlaySource = function (srcObj, options) {
     return Html5.canPlayType(srcObj.type);
 };
 
+Html5.canPlaySrc = function (src) {
+    const source = normalizeSource({src})[0];
+    const mediaSourceHandler = Html5.selectMediaSourceHandler(source);
+
+    return !!(mediaSourceHandler || Html5.canPlaySource(source));
+}
+
 
 /**
  * 检查是否可以改变播放器的声音大小（许多移动端的浏览器没法改变声音大小，比如 ios）
@@ -360,7 +369,7 @@ Html5.registerMediaSourceHandler = function (handler) {
 };
 
 Html5.selectMediaSourceHandler = function (source) {
-    return Html5.mediaSourceHandler.find(handler => handler.canHandleSource(source));
+    return find(Html5.mediaSourceHandler, handler => handler.canHandleSource(source));
 };
 
 // HTML5 video attributes proxy

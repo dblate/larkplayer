@@ -5,6 +5,7 @@
  */
 
 import * as Dom from '../utils/dom';
+import assign from 'lodash.assign';
 
 export default {
     id: 'lark-tooltip',
@@ -29,7 +30,7 @@ export default {
         this.container = container;
     },
     normalize(options) {
-        return Object.assign({
+        return assign({
             timeout: 0,
             content: '',
             top: 0,

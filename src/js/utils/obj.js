@@ -32,7 +32,9 @@ export function isObject(value) {
  * @return {boolean} 该变量是否是纯粹的对象
  */
 export function isPlain(value) {
-    return isObject(value) && toString.call(value) === '[object Object]' && value.constructor === Object;
+    return isObject(value)
+        && Object.prototype.toString.call(value) === '[object Object]'
+        && value.constructor === Object;
 }
 
 /**

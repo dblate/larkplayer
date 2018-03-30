@@ -4,6 +4,8 @@
  * @date 2017/11/3
  */
 
+import includes from 'lodash.includes';
+
 import * as DomData from './dom-data';
 import {newGUID} from './guid';
 
@@ -242,8 +244,6 @@ export function on(elem, type, fn) {
     }
 
 
-    // 对于自定义的事件，我们只能自己存起来
-    // 这样在手动触发时，才能拿出来发动一把
     let data = DomData.getData(elem);
     if (!data.handlers) {
         data.handlers = {};
@@ -305,7 +305,7 @@ export function on(elem, type, fn) {
         if (elem.addEventListener) {
             // passive event listener
             let options = false;
-            if (isPassiveSupported && passiveEvents.includes(type)) {
+            if (isPassiveSupported && includes(passiveEvents, type)) {
                 options = {passive: true};
             }
 
@@ -315,6 +315,7 @@ export function on(elem, type, fn) {
         }
     }
 }
+
 
 /**
  * 触发事件

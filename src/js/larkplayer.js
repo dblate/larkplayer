@@ -11,12 +11,6 @@ import * as Plugin from './utils/plugin';
 import log from './utils/log';
 import Html5 from './html5';
 
-// 包含所有兼容 es6 的代码
-// @todo 有没有更好的解决方案，目前看 babel-plugin-transform-runtime 不会解决在原型上的方法
-// @see https://www.zhihu.com/question/49382420/answer/115692473
-import './shim/third_party/shim.min.js';
-
-
 function normalize(el, options = {}, readyFn = function () {}) {
     if (typeof el === 'string') {
         if (el.charAt(0) !== '#') {
@@ -36,6 +30,11 @@ function normalize(el, options = {}, readyFn = function () {}) {
 
 
 function larkplayer(el, options, readyFn) {
+    // @todo 优化不支持 html5 video 标签时的展示
+    if (!Html5.isSupported()) {
+        return false;
+    }
+
     // () 避免 {} 在行首造成语法错误
     ({el, options, readyFn} = normalize(el, options, readyFn));
 

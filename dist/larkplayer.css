@@ -225,6 +225,9 @@
 .lark-error .lark-loading-area {
   display: none;
 }
+.lark-not-support .lark-not-support-notice {
+  display: block;
+}
 .lark-hidden {
   display: none;
 }
@@ -511,6 +514,7 @@
   left: 50%;
   top: 50%;
   transform: translate(-50%, -50%);
+  z-index: 3;
 }
 .lark-loading-pc .lark-loading-area {
   position: relative;
@@ -659,10 +663,15 @@
   }
 }
 .lark-error-pc .lark-error-area {
-  font-size: 14px;
+  position: absolute;
+  width: 100%;
   height: 100%;
+  left: 0;
+  top: 0;
+  font-size: 14px;
   background: rgba(0, 0, 0, 0.8);
   z-index: 2;
+  transform: none;
 }
 .lark-error-pc .lark-error-text {
   position: absolute;
@@ -827,6 +836,25 @@
   padding: 4px 8px;
   font-size: 13px;
   white-space: nowrap;
+}
+.lark-not-support-notice {
+  display: none;
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background: #000;
+  color: #fff;
+  z-index: 4;
+}
+.lark-not-support-notice__text {
+  position: absolute;
+  left: 0;
+  top: 50%;
+  margin-top: -12px;
+  width: 100%;
+  text-align: center;
 }
 .larkplayer {
   position: relative;

@@ -17,7 +17,6 @@ let elData = {};
 // @test
 window.elData = elData;
 
-// 每次当然要存在不一样的地方
 const elIdAttr = 'larkplayer_data_' + Date.now();
 
 /**
