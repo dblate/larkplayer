@@ -11,7 +11,7 @@ html5 播放器，支持 pc 与移动端，支持 m3u8 mp4 等格式。
 
 <h3>简介</h3>
 
-larkplayer 是一款轻量级的 html5 播放器，无其他库的依赖
+larkplayer 是一款轻量级的 html5 播放器
 
 有如下特性
 
