@@ -4595,12 +4595,6 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'd
 
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj['default'] = obj; return newObj; } }
 
-// 包含所有兼容 es6 的代码
-// @todo 有没有更好的解决方案，目前看 babel-plugin-transform-runtime 不会解决在原型上的方法
-// @see https://www.zhihu.com/question/49382420/answer/115692473
-// import './shim/third_party/shim.min.js';
-
-
 /**
  * @file larkplayer.js larkplayer 入口函数
  * @author yuhui<yuhui06@baidu.com>
@@ -5389,6 +5383,32 @@ var Player = function (_Component) {
         } else {
             return (0, _computedStyle2['default'])(this.el, 'height');
         }
+    };
+
+    /**
+     * 显示或隐藏控制条
+     *
+     * @param {boolean=} bool 显示或隐藏控制条，如果不传任何参数，则单纯返回当前控制条状态
+     * @return {boolean} 当前控制条状态（显示或隐藏）
+     */
+
+
+    Player.prototype.controls = function controls(bool) {
+        if (bool === undefined) {
+            return this.getControlsStatus();
+        }
+
+        if (bool) {
+            this.removeClass('lark-controls-hide');
+        } else {
+            this.addClass('lark-controls-hide');
+        }
+
+        return this.getControlsStatus();
+    };
+
+    Player.prototype.getControlsStatus = function getControlsStatus() {
+        return !this.hasClass('lark-controls-hide');
     };
 
     /**

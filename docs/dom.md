@@ -93,7 +93,7 @@
 <p>另外，一些浏览器不支持向 ClientRect/DOMRect 对象中添加属性，所以我们选择创建一个新的对象，
 并且把 ClientReact 中的标准属性浅拷贝过来（ x 和 y 没有拷贝，因为这个属性支持的并不广泛）</p>
 </dd>
-<dt><a href="#findPostion">findPostion(el)</a> ⇒ <code>Object</code></dt>
+<dt><a href="#findPosition">findPosition(el)</a> ⇒ <code>Object</code></dt>
 <dd><p>1) clientLeft/clientTop 获取一个元素的左/上边框的宽度，不包括 padding 和 margin 的值</p>
 </dd>
 <dt><a href="#getPointerPosition">getPointerPosition(el, event)</a> ⇒ <code><a href="#DOM..Coordinates">Coordinates</a></code></dt>
@@ -455,9 +455,9 @@ vjs 的 createEl 将 props 和 attrs 分成了两个参数，但是我们的业�
 | --- | --- | --- |
 | el | <code>Element</code> | 要获取 ClientRect 对象的元素 |
 
-<a name="findPostion"></a>
+<a name="findPosition"></a>
 
-## findPostion(el) ⇒ <code>Object</code>
+## findPosition(el) ⇒ <code>Object</code>
 1) clientLeft/clientTop 获取一个元素的左/上边框的宽度，不包括 padding 和 margin 的值
 
 **Kind**: global function  

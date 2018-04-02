@@ -225,6 +225,10 @@
 .lark-error .lark-loading-area {
   display: none;
 }
+.lark-controls-hide .lark-control-bar,
+.lark-controls-hide .lark-control-bar-pc {
+  display: none;
+}
 .lark-not-support .lark-not-support-notice {
   display: block;
 }

@@ -596,6 +596,30 @@ class Player extends Component {
     }
 
     /**
+     * 显示或隐藏控制条
+     *
+     * @param {boolean=} bool 显示或隐藏控制条，如果不传任何参数，则单纯返回当前控制条状态
+     * @return {boolean} 当前控制条状态（显示或隐藏）
+     */
+    controls(bool) {
+        if (bool === undefined) {
+            return this.getControlsStatus();
+        }
+
+        if (bool) {
+            this.removeClass('lark-controls-hide');
+        } else {
+            this.addClass('lark-controls-hide');
+        }
+
+        return this.getControlsStatus();
+    }
+
+    getControlsStatus() {
+        return !this.hasClass('lark-controls-hide');
+    }
+
+    /**
      * 获取或设置播放器的高宽
      *
      * @private

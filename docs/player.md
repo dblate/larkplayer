@@ -8,6 +8,7 @@
     * [.dispose()](#Player+dispose)
     * [.width([value])](#Player+width) ⇒ <code>number</code>
     * [.height([value])](#Player+height) ⇒ <code>number</code>
+    * [.controls([bool])](#Player+controls) ⇒ <code>boolean</code>
     * [.isFullscreen([isFs])](#Player+isFullscreen) ⇒ <code>boolean</code>
     * [.requestFullscreen()](#Player+requestFullscreen)
     * [.exitFullscreen()](#Player+exitFullscreen)
@@ -32,8 +33,8 @@
     * [.src([src])](#Player+src) ⇒ <code>string</code>
     * [.source([source])](#Player+source) ⇒ <code>Array</code>
     * [.playbackRate([playbackRate])](#Player+playbackRate) ⇒ <code>number</code>
-    * [.defaultPlaybackRate([playbackRate])](#Player+defaultPlaybackRate) ⇒ <code>number</code>
-    * [.poster([poster])](#Player+poster) ⇒ <code>string</code>
+    * [.defaultPlaybackRate([defaultPlaybackRate])](#Player+defaultPlaybackRate) ⇒ <code>number</code>
+    * [.poster([val])](#Player+poster) ⇒ <code>string</code>
     * ["suspend" (event)](#Player+event_suspend)
     * ["abort" (event)](#Player+event_abort)
     * ["emptied" (event)](#Player+event_emptied)
@@ -60,6 +61,8 @@
     * ["fullscreenchange" (data)](#Player+event_fullscreenchange)
     * ["fullscreenerror"](#Player+event_fullscreenerror)
     * ["error" (event, error)](#Player+event_error)
+    * ["srcchange" (src)](#Player+event_srcchange)
+    * ["srcchange" (src)](#Player+event_srcchange)
 
 <a name="new_Player_new"></a>
 
@@ -111,6 +114,18 @@
 | Param | Type | Description |
 | --- | --- | --- |
 | [value] | <code>number</code> | 要设置的播放器高度值，可选 |
+
+<a name="Player+controls"></a>
+
+### player.controls([bool]) ⇒ <code>boolean</code>
+显示或隐藏控制条
+
+**Kind**: instance method of [<code>Player</code>](#Player)  
+**Returns**: <code>boolean</code> - 当前控制条状态（显示或隐藏）  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| [bool] | <code>boolean</code> | 显示或隐藏控制条，如果不传任何参数，则单纯返回当前控制条状态 |
 
 <a name="Player+isFullscreen"></a>
 
@@ -312,7 +327,7 @@
 
 <a name="Player+defaultPlaybackRate"></a>
 
-### player.defaultPlaybackRate([playbackRate]) ⇒ <code>number</code>
+### player.defaultPlaybackRate([defaultPlaybackRate]) ⇒ <code>number</code>
 获取或设置当前视频的默认播放速率
 
 **Kind**: instance method of [<code>Player</code>](#Player)  
@@ -320,11 +335,11 @@
 
 | Param | Type | Description |
 | --- | --- | --- |
-| [playbackRate] | <code>number</code> | 要设置的默认播放速率的值，可选 |
+| [defaultPlaybackRate] | <code>number</code> | 要设置的默认播放速率的值，可选 |
 
 <a name="Player+poster"></a>
 
-### player.poster([poster]) ⇒ <code>string</code>
+### player.poster([val]) ⇒ <code>string</code>
 设置或获取 poster（视频封面） 属性的值
 
 **Kind**: instance method of [<code>Player</code>](#Player)  
@@ -332,7 +347,7 @@
 
 | Param | Type | Description |
 | --- | --- | --- |
-| [poster] | <code>string</code> | 可选。要设置的 poster 属性的值 |
+| [val] | <code>string</code> | 可选。要设置的 poster 属性的值 |
 
 <a name="Player+event_suspend"></a>
 
@@ -621,4 +636,26 @@ Playback is ready to start after having been paused or delayed due to lack of me
 | error | <code>MediaError</code> | MediaError 对象 |
 | error.code | <code>number</code> | 错误编号                         - 1 MEDIA_ERR_ABORTED 视频加载被浏览器（用户）中断                         - 2 MEDIA_ERR_NETWORK 浏览器与视频资源已经建立连接，但是由于网络问题停止下载                         - 3 MEDIA_ERR_DECODE 视频解码失败                         - 4 MEDIA_ERR_SRC_NOT_SUPPORTED 视频资源问题，比如视频不存在 |
 | error.message | <code>string</code> | 错误信息 |
+
+<a name="Player+event_srcchange"></a>
+
+### "srcchange" (src)
+srcchange 时触发
+
+**Kind**: event emitted by [<code>Player</code>](#Player)  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| src | <code>string</code> | 更换后的视频地址 |
+
+<a name="Player+event_srcchange"></a>
+
+### "srcchange" (src)
+srcchange 时触发
+
+**Kind**: event emitted by [<code>Player</code>](#Player)  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| src | <code>string</code> | 更换后的视频地址 |
 
