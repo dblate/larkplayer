@@ -832,6 +832,7 @@ class Player extends Component {
      */
     handleSeeked() {
         this.removeClass('lark-seeking');
+        this.removeClass('lark-waiting');
 
         /**
          * 视频跳转到某一时刻完成后触发

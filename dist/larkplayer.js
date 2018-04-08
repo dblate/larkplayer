@@ -5646,6 +5646,7 @@ var Player = function (_Component) {
 
     Player.prototype.handleSeeked = function handleSeeked() {
         this.removeClass('lark-seeking');
+        this.removeClass('lark-waiting');
 
         /**
          * 视频跳转到某一时刻完成后触发
@@ -7194,6 +7195,8 @@ var FullscreenButton = function (_Component) {
         } else {
             this.player.exitFullscreen();
         }
+
+        _tooltip2['default'].hide();
     };
 
     FullscreenButton.prototype.handleMouseOver = function handleMouseOver(el, content) {

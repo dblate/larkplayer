@@ -45,6 +45,8 @@ export default class FullscreenButton extends Component {
         } else {
             this.player.exitFullscreen();
         }
+
+        tooltip.hide();
     }
 
     handleMouseOver(el, content) {
