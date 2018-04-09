@@ -1,4 +1,4 @@
-(function(f){if(typeof exports==="object"&&typeof module!=="undefined"){module.exports=f()}else if(typeof define==="function"&&define.amd){define([],f)}else{var g;if(typeof window!=="undefined"){g=window}else if(typeof global!=="undefined"){g=global}else if(typeof self!=="undefined"){g=self}else{g=this}g.larkplayer = f()}})(function(){var define,module,exports;return (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
+(function(f){if(typeof exports==="object"&&typeof module!=="undefined"){module.exports=f()}else if(typeof define==="function"&&define.amd){define([],f)}else{var g;if(typeof window!=="undefined"){g=window}else if(typeof global!=="undefined"){g=global}else if(typeof self!=="undefined"){g=self}else{g=this}g.larkplayer = f()}})(function(){var define,module,exports;return (function(){function r(e,n,t){function o(i,f){if(!n[i]){if(!e[i]){var c="function"==typeof require&&require;if(!f&&c)return c(i,!0);if(u)return u(i,!0);var a=new Error("Cannot find module '"+i+"'");throw a.code="MODULE_NOT_FOUND",a}var p=n[i]={exports:{}};e[i][0].call(p.exports,function(r){var n=e[i][1][r];return o(n||r)},p,p.exports,r,e,n,t)}return n[i].exports}for(var u="function"==typeof require&&require,i=0;i<t.length;i++)o(t[i]);return o}return r})()({1:[function(require,module,exports){
 /**
  * lodash (Custom Build) <https://lodash.com/>
  * Build: `lodash modularize exports="npm" -o ./`
@@ -7963,6 +7963,7 @@ function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj;
  * @file tooltip.js 用于展示提示性文字
  * @author yuhui06
  * @date 2018/3/22
+ * @todo 多个播放器实例并存时有点鸡肋
  */
 
 exports['default'] = {
@@ -7970,17 +7971,16 @@ exports['default'] = {
     el: null,
     timeoutHandler: null,
     initial: function initial(container) {
-        if (this.el) {
-            return;
-        }
+        // if (this.el) {
+        //     return;
+        // }
 
         if (!Dom.isEl(container)) {
             return;
         }
 
         var el = Dom.createElement('div', {
-            className: this.id,
-            id: this.id
+            className: this.id
         });
         Dom.appendContent(container, el);
 
@@ -8041,10 +8041,21 @@ exports['default'] = {
             return;
         }
 
-        if (!this.el) {
-            var container = Dom.parent(options.hostEl, 'larkplayer');
+        var container = Dom.parent(options.hostEl, 'larkplayer');
+        var el = Dom.$('.lark-tooltip', container);
+
+        // 多个播放器实例并存时需要不断切换 this.el 和 this.container
+        if (el) {
+            this.el = el;
+            this.container = container;
+        } else {
             this.initial(container);
         }
+
+        // if (!this.el) {
+        //     const container = Dom.parent(options.hostEl, 'larkplayer');
+        //     this.initial(container);
+        // }
 
         Dom.replaceContent(this.el, options.content);
 

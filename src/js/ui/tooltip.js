@@ -2,6 +2,7 @@
  * @file tooltip.js 用于展示提示性文字
  * @author yuhui06
  * @date 2018/3/22
+ * @todo 多个播放器实例并存时有点鸡肋
  */
 
 import * as Dom from '../utils/dom';
@@ -12,17 +13,16 @@ export default {
     el: null,
     timeoutHandler: null,
     initial(container) {
-        if (this.el) {
-            return;
-        }
+        // if (this.el) {
+        //     return;
+        // }
 
         if (!Dom.isEl(container)) {
             return;
         }
 
         const el = Dom.createElement('div', {
-            className: this.id,
-            id: this.id
+            className: this.id
         });
         Dom.appendContent(container, el);
 
@@ -84,10 +84,21 @@ export default {
             return;
         }
 
-        if (!this.el) {
-            const container = Dom.parent(options.hostEl, 'larkplayer');
+        const container = Dom.parent(options.hostEl, 'larkplayer');
+        const el = Dom.$('.lark-tooltip', container);
+
+        // 多个播放器实例并存时需要不断切换 this.el 和 this.container
+        if (el) {
+            this.el = el;
+            this.container = container;
+        } else {
             this.initial(container);
         }
+
+        // if (!this.el) {
+        //     const container = Dom.parent(options.hostEl, 'larkplayer');
+        //     this.initial(container);
+        // }
 
         Dom.replaceContent(this.el, options.content);
 
