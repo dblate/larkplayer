@@ -13,7 +13,7 @@ import * as Plugin from './utils/plugin';
 import log from './utils/log';
 import Html5 from './html5';
 
-function normalize(el, options = {playsinline: true}, readyFn = function () {}) {
+function normalize(el, options = {}, readyFn = function () {}) {
     const defaultOptions = {
         playsinline: true
     };
