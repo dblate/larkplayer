@@ -4,6 +4,8 @@
  * @date 2017/11/7
  */
 
+import assign from 'lodash.assign';
+
 import * as Dom from './utils/dom';
 import * as Events from './utils/events';
 import Player from './player';
@@ -11,7 +13,14 @@ import * as Plugin from './utils/plugin';
 import log from './utils/log';
 import Html5 from './html5';
 
-function normalize(el, options = {}, readyFn = function () {}) {
+function normalize(el, options = {playsinline: true}, readyFn = function () {}) {
+    const defaultOptions = {
+        playsinline: true
+    };
+
+    options = assign({}, defaultOptions, options);
+
+    // 如果传入 id，则根据 id 获取元素
     if (typeof el === 'string') {
         if (el.charAt(0) !== '#') {
             el = '#' + el;
@@ -20,9 +29,19 @@ function normalize(el, options = {}, readyFn = function () {}) {
         el = Dom.$(el);
     }
 
-    // 默认添加 playsinline 属性
-    if (options.playsinline === undefined) {
-        options.playsinline = true;
+    if (!Dom.isEl(el)) {
+        throw new Error('[larkplayer initial error]: el should be an id or DOM element!');
+    }
+
+    // 如果该元素不是 video 标签，则在该元素内创建 video 标签
+    if (el.tagName.toUpperCase() !== 'VIDEO') {
+        let videoEl = Dom.createElement('video', {
+            id: el.id + '-video'
+        });
+
+        el.appendChild(videoEl);
+        el = videoEl;
+        videoEl = null;
     }
 
     return {el, options, readyFn};

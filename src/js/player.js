@@ -246,20 +246,13 @@ class Player extends Component {
             });
         }
 
-        // 为 video 创建一个父元素，并将 video 的属性全部加在父元素上
-        // 将子元素的 id 转移到父元素上
-        let el = Dom.createEl('div', null, Dom.getAttributes(tag));
+        // 创建容器元素
+        const el = Dom.createElement('div', {
+            className: 'larkplayer',
+            id: tag.id + '-larkplayer'
+        });
 
-        // 为父元素添加 larkplayer class
-        Dom.addClass(el, 'larkplayer');
-
-        Dom.setAttribute(el, 'tabindex', '-1');
         Dom.setAttribute(tag, 'tabindex', '-1');
-
-        // 子元素原来的 id 加上 -larkplayer 后缀
-        if (tag && tag.id) {
-            tag.id += '-larkplayer';
-        }
 
         // 将原生控制条移除
         // 目前只支持使用自定义的控制条

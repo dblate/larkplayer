@@ -4567,6 +4567,10 @@ exports['default'] = Html5;
 },{"./component":4,"./utils/dom":29,"./utils/normalize-source":37,"./utils/obj":38,"./utils/to-title-case":41,"lodash.find":2}],6:[function(require,module,exports){
 'use strict';
 
+var _lodash = require('lodash.assign');
+
+var _lodash2 = _interopRequireDefault(_lodash);
+
 var _dom = require('./utils/dom');
 
 var Dom = _interopRequireWildcard(_dom);
@@ -4591,20 +4595,21 @@ var _html = require('./html5');
 
 var _html2 = _interopRequireDefault(_html);
 
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
-
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj['default'] = obj; return newObj; } }
 
-/**
- * @file larkplayer.js larkplayer 入口函数
- * @author yuhui<yuhui06@baidu.com>
- * @date 2017/11/7
- */
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
 
 function normalize(el) {
-    var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+    var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : { playsinline: true };
     var readyFn = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : function () {};
 
+    var defaultOptions = {
+        playsinline: true
+    };
+
+    options = (0, _lodash2['default'])({}, defaultOptions, options);
+
+    // 如果传入 id，则根据 id 获取元素
     if (typeof el === 'string') {
         if (el.charAt(0) !== '#') {
             el = '#' + el;
@@ -4613,13 +4618,27 @@ function normalize(el) {
         el = Dom.$(el);
     }
 
-    // 默认添加 playsinline 属性
-    if (options.playsinline === undefined) {
-        options.playsinline = true;
+    if (!Dom.isEl(el)) {
+        throw new Error('[larkplayer initial error]: el should be an id or DOM element!');
+    }
+
+    // 如果该元素不是 video 标签，则在该元素内创建 video 标签
+    if (el.tagName.toUpperCase() !== 'VIDEO') {
+        var videoEl = Dom.createElement('video', {
+            id: el.id + '-video'
+        });
+
+        el.appendChild(videoEl);
+        el = videoEl;
+        videoEl = null;
     }
 
     return { el: el, options: options, readyFn: readyFn };
-}
+} /**
+   * @file larkplayer.js larkplayer 入口函数
+   * @author yuhui<yuhui06@baidu.com>
+   * @date 2017/11/7
+   */
 
 function larkplayer(el, options, readyFn) {
     // @todo 优化不支持 html5 video 标签时的展示
@@ -4662,7 +4681,7 @@ larkplayer.deregisterPlugin = Plugin.deregisterPlugin;
 // @see https://github.com/babel/babel/issues/2724
 module.exports = larkplayer;
 
-},{"./html5":5,"./player":8,"./utils/dom":29,"./utils/events":30,"./utils/log":34,"./utils/plugin":39}],7:[function(require,module,exports){
+},{"./html5":5,"./player":8,"./utils/dom":29,"./utils/events":30,"./utils/log":34,"./utils/plugin":39,"lodash.assign":1}],7:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -5037,20 +5056,13 @@ var Player = function (_Component) {
             });
         }
 
-        // 为 video 创建一个父元素，并将 video 的属性全部加在父元素上
-        // 将子元素的 id 转移到父元素上
-        var el = Dom.createEl('div', null, Dom.getAttributes(tag));
+        // 创建容器元素
+        var el = Dom.createElement('div', {
+            className: 'larkplayer',
+            id: tag.id + '-larkplayer'
+        });
 
-        // 为父元素添加 larkplayer class
-        Dom.addClass(el, 'larkplayer');
-
-        Dom.setAttribute(el, 'tabindex', '-1');
         Dom.setAttribute(tag, 'tabindex', '-1');
-
-        // 子元素原来的 id 加上 -larkplayer 后缀
-        if (tag && tag.id) {
-            tag.id += '-larkplayer';
-        }
 
         // 将原生控制条移除
         // 目前只支持使用自定义的控制条
