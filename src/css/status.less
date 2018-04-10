@@ -124,6 +124,19 @@
     }
 }
 
+.lark-paused {
+    // pc 端暂停时显示 loading
+    &.lark-seeking,
+    &.lark-waiting,
+    &.lark-loadstart {
+        .lark-loading-pc {
+            .lark-loading-area {
+                display: block;
+            }
+        }
+    }
+}
+
 .lark-error {
     .lark-error-area {
         display: block;
