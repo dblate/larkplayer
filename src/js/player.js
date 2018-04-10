@@ -131,17 +131,16 @@ class Player extends Component {
 
         this.initChildren();
 
-        this.addClass('lark-paused');
         const src = this.src();
         if (src) {
             // 如果视频已经存在，看下是不是错过了 loadstart 事件
             this.handleLateInit(this.tech.el);
 
             const source = normalizeSource({src})[0];
-            this.mediaSourceHandler = Html5.selectMediaSourceHandler(source);
-            if (this.mediaSourceHandler) {
-                const handlerOptions = this.getMediaSourceHanlderOptions(this.mediaSourceHandler.name);
-                this.mediaSourceHandler.handleSource(source, this, handlerOptions);
+            this.MSHandler = Html5.selectMediaSourceHandler(source);
+            if (this.MSHandler) {
+                const handlerOptions = this.getMediaSourceHanlderOptions(this.MSHandler.name);
+                this.MSHandler.handleSource(source, this, handlerOptions);
             }
         }
 
@@ -180,18 +179,28 @@ class Player extends Component {
         }
     }
 
+    disposeMS() {
+        if (this.MSHandler) {
+            this.MSHandler.dispose();
+            this.MSHandler = null;
+        }
+    }
+
     /**
      * 销毁播放器
      *
      */
     dispose() {
+        clearTimeout(this.activeTimeoutHandler);
         this.trigger('dispose');
         // 避免 dispose 被调用两次
         this.off('dispose');
 
-        // if (this.styleEl_ && this.styleEl_.parentNode) {
-        //     this.styleEl_.parentNode.removeChild(this.styleEl_);
-        // }
+        // 注销全屏事件
+        fullscreen.off();
+
+        // 销毁 MS 插件
+        this.disposeMS();
 
         if (this.tag && this.tag.player) {
             this.tag.player = null;
@@ -1463,16 +1472,13 @@ class Player extends Component {
      */
     src(src) {
         if (src !== undefined) {
-            if (this.mediaSourceHandler) {
-                this.mediaSourceHandler.dispose();
-                this.mediaSourceHandler = null;
-            }
+            this.disposeMS();
 
             const source = normalizeSource({src})[0];
-            this.mediaSourceHandler = Html5.selectMediaSourceHandler(source);
-            if (this.mediaSourceHandler) {
-                const handlerOptions = this.getMediaSourceHanlderOptions(this.mediaSourceHandler.name);
-                this.mediaSourceHandler.handleSource(source, this, handlerOptions);
+            this.MSHandler = Html5.selectMediaSourceHandler(source);
+            if (this.MSHandler) {
+                const handlerOptions = this.getMediaSourceHanlderOptions(this.MSHandler.name);
+                this.MSHandler.handleSource(source, this, handlerOptions);
             } else {
                 // 应该先暂停一下比较好
                 // this.techCall('pause');

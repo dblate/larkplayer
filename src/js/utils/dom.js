@@ -217,7 +217,7 @@ export function normalizeContent(content) {
         if (isNonBlankString(value)) {
             return document.createTextNode(value);
         }
-    }).filter(value => value);
+    }).filter(value => !!value);
 }
 
 /**

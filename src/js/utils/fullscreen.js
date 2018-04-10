@@ -101,12 +101,16 @@ export default {
     },
     // @todo 不够优雅，不过好歹是给了事件注销的机会
     off(type, callback) {
-        if (/change/.test(type)) {
-            type = browserApi.fullscreenchange;
+        if (type) {
+            if (callback) {
+                Events.off(document, type, callback);
+            } else {
+                Events.off(document, type);
+            }
         } else {
-            type = browserApi.fullscreenerror;
+            Events.off(document, browserApi.fullscreenchange);
+            Events.off(document, browserApi.fullscreenerror);
         }
-        Events.off(document, type, callback);
     }
 };
 

@@ -25,6 +25,10 @@
             console.log('play', event);
         });
 
+        player.on('pause', function (event) {
+            console.log('pause', event);
+        })
+
         player.on('firstplay', function () {
             console.log('firstplay');
         });

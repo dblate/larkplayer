@@ -216,6 +216,11 @@
 .lark-ended .lark-control-bar-pc {
   opacity: 1;
 }
+.lark-paused.lark-seeking .lark-loading-pc .lark-loading-area,
+.lark-paused.lark-waiting .lark-loading-pc .lark-loading-area,
+.lark-paused.lark-loadstart .lark-loading-pc .lark-loading-area {
+  display: block;
+}
 .lark-error .lark-error-area {
   display: block;
 }

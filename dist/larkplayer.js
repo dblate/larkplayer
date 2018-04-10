@@ -4600,7 +4600,7 @@ function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj;
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
 
 function normalize(el) {
-    var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : { playsinline: true };
+    var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
     var readyFn = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : function () {};
 
     var defaultOptions = {
@@ -4946,17 +4946,16 @@ var Player = function (_Component) {
 
         _this.initChildren();
 
-        _this.addClass('lark-paused');
         var src = _this.src();
         if (src) {
             // 如果视频已经存在，看下是不是错过了 loadstart 事件
             _this.handleLateInit(_this.tech.el);
 
             var source = (0, _normalizeSource2['default'])({ src: src })[0];
-            _this.mediaSourceHandler = _html2['default'].selectMediaSourceHandler(source);
-            if (_this.mediaSourceHandler) {
-                var handlerOptions = _this.getMediaSourceHanlderOptions(_this.mediaSourceHandler.name);
-                _this.mediaSourceHandler.handleSource(source, _this, handlerOptions);
+            _this.MSHandler = _html2['default'].selectMediaSourceHandler(source);
+            if (_this.MSHandler) {
+                var handlerOptions = _this.getMediaSourceHanlderOptions(_this.MSHandler.name);
+                _this.MSHandler.handleSource(source, _this, handlerOptions);
             }
         }
 
@@ -4996,6 +4995,13 @@ var Player = function (_Component) {
         }
     };
 
+    Player.prototype.disposeMS = function disposeMS() {
+        if (this.MSHandler) {
+            this.MSHandler.dispose();
+            this.MSHandler = null;
+        }
+    };
+
     /**
      * 销毁播放器
      *
@@ -5003,13 +5009,16 @@ var Player = function (_Component) {
 
 
     Player.prototype.dispose = function dispose() {
+        clearTimeout(this.activeTimeoutHandler);
         this.trigger('dispose');
         // 避免 dispose 被调用两次
         this.off('dispose');
 
-        // if (this.styleEl_ && this.styleEl_.parentNode) {
-        //     this.styleEl_.parentNode.removeChild(this.styleEl_);
-        // }
+        // 注销全屏事件
+        _fullscreen2['default'].off();
+
+        // 销毁 MS 插件
+        this.disposeMS();
 
         if (this.tag && this.tag.player) {
             this.tag.player = null;
@@ -6364,16 +6373,13 @@ var Player = function (_Component) {
 
     Player.prototype.src = function src(_src) {
         if (_src !== undefined) {
-            if (this.mediaSourceHandler) {
-                this.mediaSourceHandler.dispose();
-                this.mediaSourceHandler = null;
-            }
+            this.disposeMS();
 
             var source = (0, _normalizeSource2['default'])({ src: _src })[0];
-            this.mediaSourceHandler = _html2['default'].selectMediaSourceHandler(source);
-            if (this.mediaSourceHandler) {
-                var handlerOptions = this.getMediaSourceHanlderOptions(this.mediaSourceHandler.name);
-                this.mediaSourceHandler.handleSource(source, this, handlerOptions);
+            this.MSHandler = _html2['default'].selectMediaSourceHandler(source);
+            if (this.MSHandler) {
+                var handlerOptions = this.getMediaSourceHanlderOptions(this.MSHandler.name);
+                this.MSHandler.handleSource(source, this, handlerOptions);
             } else {
                 // 应该先暂停一下比较好
                 // this.techCall('pause');
@@ -8663,7 +8669,7 @@ function normalizeContent(content) {
             return document.createTextNode(value);
         }
     }).filter(function (value) {
-        return value;
+        return !!value;
     });
 }
 
@@ -9708,12 +9714,16 @@ exports['default'] = {
 
     // @todo 不够优雅，不过好歹是给了事件注销的机会
     off: function off(type, callback) {
-        if (/change/.test(type)) {
-            type = browserApi.fullscreenchange;
+        if (type) {
+            if (callback) {
+                Events.off(document, type, callback);
+            } else {
+                Events.off(document, type);
+            }
         } else {
-            type = browserApi.fullscreenerror;
+            Events.off(document, browserApi.fullscreenchange);
+            Events.off(document, browserApi.fullscreenerror);
         }
-        Events.off(document, type, callback);
     }
 };
 
