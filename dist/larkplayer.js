@@ -4966,7 +4966,7 @@ var Player = function (_Component) {
             Object.keys(plugins).forEach(function (name) {
                 var plugin = Plugin.getPlugin(name);
                 if (typeof plugin === 'function') {
-                    plugin.call(_this, plugins[name]);
+                    plugin(_this, plugins[name]);
                     _this.plugins[name] = plugin;
                 } else {
                     throw new Error('Plugin ' + name + ' not exist');
@@ -5053,7 +5053,7 @@ var Player = function (_Component) {
         // 'controls',
         'height', 'loop', 'muted', 'poster', 'preload', 'auto', 'metadata', 'none', 'src', 'width', 'playsinline'];
         (0, _obj.each)(this.options, function (value, key) {
-            if ((0, _lodash2['default'])(html5StandardOptions, key)) {
+            if ((0, _lodash2['default'])(html5StandardOptions, key) && value) {
                 Dom.setAttribute(tag, key, value);
             }
         });

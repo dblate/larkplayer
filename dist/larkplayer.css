@@ -913,8 +913,8 @@
   width: 100% !important;
   height: 100% !important;
   transform: none !important;
-  /* intentionally not !important */
   object-fit: contain;
+  z-index: 999999;
 }
 .lark-fullscreen-adjust {
   top: 0 !important;

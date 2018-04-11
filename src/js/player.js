@@ -151,7 +151,7 @@ class Player extends Component {
             Object.keys(plugins).forEach(name => {
                 let plugin = Plugin.getPlugin(name);
                 if (typeof plugin === 'function') {
-                    plugin.call(this, plugins[name]);
+                    plugin(this, plugins[name]);
                     this.plugins[name] = plugin;
                 } else {
                     throw new Error(`Plugin ${name} not exist`);
@@ -243,7 +243,7 @@ class Player extends Component {
             'playsinline'
         ];
         each(this.options, (value, key) => {
-            if (includes(html5StandardOptions, key)) {
+            if (includes(html5StandardOptions, key) && value) {
                 Dom.setAttribute(tag, key, value);
             }
         });
