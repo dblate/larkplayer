@@ -4,7 +4,10 @@
  * @date 2018/3/9
  */
 
-import Component from '../component';
+
+import classnames from 'classnames';
+
+import Component from '../plugin/component';
 import * as Dom from '../utils/dom';
 import * as Events from '../utils/events';
 import Slider from './slider';
@@ -122,35 +125,20 @@ export default class Volume extends Slider {
     }
 
     createEl() {
-        const volumeIcon = this.createElement(
-            'div',
-            {className: 'lark-volume-icon lark-icon-sound-large'},
-        );
-
-        const volumeLine = this.createElement(
-            'div',
-            {className: 'lark-volume-line'},
-            this.createElement(
-                'div',
-                {className: 'lark-volume-line__line'},
-                this.createElement(
-                    'div',
-                    {className: 'lark-volume-line__line-padding'}
-                )
-            ),
-            this.createElement(
-                'div',
-                {className: 'lark-volume-line__ball'}
-            )
-        );
-
-        return this.createElement(
-            'div',
-            {className: 'lark-volume'},
-            volumeIcon,
-            volumeLine
+        return (
+            <div className={classnames('lark-volume', this.options.className)}>
+                <div className="lark-volume-icon lark-icon-sound-large"></div>
+                <div className="lark-volume-line">
+                    <div className="lark-volume-line__line">
+                        <div className="lark-volume-line__line-padding"></div>
+                    </div>
+                    <div className="lark-volume-line__ball"></div>
+                </div>
+            </div>
         );
     }
 }
 
-Component.registerComponent('Volume', Volume);
+// Component.register(Volume);
+
+

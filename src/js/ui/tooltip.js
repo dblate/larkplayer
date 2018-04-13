@@ -5,8 +5,10 @@
  * @todo 多个播放器实例并存时有点鸡肋
  */
 
-import * as Dom from '../utils/dom';
+
 import assign from 'lodash.assign';
+
+import * as Dom from '../utils/dom';
 
 export default {
     id: 'lark-tooltip',

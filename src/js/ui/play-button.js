@@ -4,7 +4,10 @@
  * @date 2017/11/7
  */
 
-import Component from '../component';
+
+import classnames from 'classnames';
+
+import Component from '../plugin/component';
 import * as Dom from '../utils/dom';
 import * as Events from '../utils/events';
 import featureDetector from '../utils/feature-detector';
@@ -36,28 +39,21 @@ export default class PlayButton extends Component {
     }
 
     createEl() {
-        const playIcon = Dom.createElement('div', {
-            className: 'lark-play-button__play lark-icon-play',
-            title: 'play'
-        });
-
-        const pauseIcon = Dom.createElement('div', {
-            className: 'lark-play-button__pause lark-icon-pause',
-            title: 'pause'
-        });
-
-        const playButton = Dom.createElement('div', {
-            className: 'lark-play-button'
-        }, playIcon, pauseIcon);
-
-        if (!this.options.className) {
-            Dom.addClass(playButton, 'lark-play-button-mobile');
-        } else {
-            Dom.addClass(playButton, this.options.className);
-        }
-
-        return playButton;
+        return (
+            <div className={classnames('lark-play-button', this.options.className, {
+                'lark-play-button-mobile': !this.options.className
+            })}>
+                <div className="lark-play-button__play lark-icon-play" title="play"></div>
+                <div className="lark-play-button__pause lark-icon-pause" title="pause"></div>
+            </div>
+        );
     }
 }
 
-Component.registerComponent('PlayButton', PlayButton);
+if (featureDetector.touch) {
+    Component.register(PlayButton);
+}
+
+
+
+

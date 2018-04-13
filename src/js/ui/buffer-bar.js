@@ -10,7 +10,9 @@
  *           - auto 视浏览器而定，一般 >= metadata
  */
 
-import Component from '../component';
+import classnames from 'classnames';
+
+import Component from '../plugin/component';
 import * as Dom from '../utils/dom';
 
 export default class BufferBar extends Component {
@@ -53,14 +55,14 @@ export default class BufferBar extends Component {
     }
 
     createEl() {
-        const line = Dom.createElement('div', {
-            className: 'lark-buffer-bar__line'
-        });
-
-        return Dom.createElement('div', {
-            className: 'lark-buffer-bar'
-        }, line);
+        return (
+            <div className={classnames('lark-buffer-bar', this.options.className)}>
+                <div className="lark-buffer-bar__line"></div>
+            </div>
+        );
     }
 }
 
-Component.registerComponent('BufferBar', BufferBar);
+// Component.register(BufferBar);
+
+

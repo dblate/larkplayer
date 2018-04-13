@@ -9,7 +9,10 @@
 import includes from 'lodash.includes'; 
 
 import Html5 from './html5';
-import Component from './component';
+import Component from './plugin/component';
+import MediaSourceHandler from './plugin/media-source-handler';
+import Plugin from './plugin/plugin';
+import {MS, UI, OTHERS} from './plugin/plugin-types';
 import {newGUID} from './utils/guid';
 import * as Dom from './utils/dom';
 import * as Events from './utils/events';
@@ -17,7 +20,7 @@ import toTitleCase from './utils/to-title-case';
 import fullscreen from './utils/fullscreen';
 import evented from './mixins/evented';
 import {each} from './utils/obj';
-import * as Plugin from './utils/plugin';
+// import * as Plugin from './utils/plugin';
 import log from './utils/log';
 import computedStyle from './utils/computed-style';
 import featureDetector from './utils/feature-detector';
@@ -25,6 +28,7 @@ import normalizeSource from './utils/normalize-source';
 
 // 确保以下代码都执行一次
 import './ui/play-button';
+import './ui/volume';
 import './ui/control-bar';
 import './ui/loading';
 import './ui/progress-bar-simple';
@@ -35,7 +39,7 @@ import './ui/error-pc';
 
 const activeClass = 'lark-user-active';
 
-class Player extends Component {
+class Player {
 
     /**
      * 初始化一个播放器实例
@@ -59,24 +63,9 @@ class Player extends Component {
      */
     /* eslint-disable fecs-max-statements */
     constructor(tag, options, ready) {
-        // tag.id = tag.id || `larkplayer-${newGUID()}`;
-
-        options.initChildren = false;
-        options.createEl = false;
-        options.reportTouchActivity = false;
-        // options.id = options.id || tag.id;
-
-        super(null, options, ready);
-
         this.isReady = false;
-
-        // if (!Html5.isSupported()) {
-        //     tag.innerHTML = '您的浏览器不支持 html5 视频播放，请升级浏览器版本或更换为 chrome 浏览器';
-        //     return;
-        // }
-
-        // @todo check valid options
-
+        this.player = this;
+        this.options = options;
         this.tag = tag;
 
         this.el = this.createEl();
@@ -113,8 +102,6 @@ class Player extends Component {
         // 3000ms 后自动隐藏播放器控制条
         this.activeTimeout = 3000;
 
-        // @todo ios11 click 事件触发问题
-        // this.on('click', this.handleClick);
         if (featureDetector.touch) {
             this.on('touchstart', this.handleTouchStart);
             this.on('touchend', this.handleTouchEnd);
@@ -129,35 +116,18 @@ class Player extends Component {
             this.tech = this.loadTech();
         }
 
-        this.initChildren();
+        // this.initChildren();
 
         const src = this.src();
         if (src) {
             // 如果视频已经存在，看下是不是错过了 loadstart 事件
             this.handleLateInit(this.tech.el);
 
-            const source = normalizeSource({src})[0];
-            this.MSHandler = Html5.selectMediaSourceHandler(source);
-            if (this.MSHandler) {
-                const handlerOptions = this.getMediaSourceHanlderOptions(this.MSHandler.name);
-                this.MSHandler.handleSource(source, this, handlerOptions);
-            }
+            this.callMS(src);
         }
 
-        // plugins
-        this.plugins = {};
-        const plugins = this.options.plugins;
-        if (plugins) {
-            Object.keys(plugins).forEach(name => {
-                let plugin = Plugin.getPlugin(name);
-                if (typeof plugin === 'function') {
-                    plugin(this, plugins[name]);
-                    this.plugins[name] = plugin;
-                } else {
-                    throw new Error(`Plugin ${name} not exist`);
-                }
-            });
-        }
+        this.initialUIPlugins();
+        this.initialNormalPlugins();
 
         // 如果当前视频已经出错，重新触发一次 error 事件
         if (this.techGet('error')) {
@@ -168,15 +138,63 @@ class Player extends Component {
     }
     /* eslint-enable fecs-max-statements */
 
-    getMediaSourceHanlderOptions(name = '') {
-        if (this.options
-            && this.options.mediaSourceHandler
-            && this.options.mediaSourceHandler[name]) {
+    // internalInitialPlugins(className, namespace) {
+    //     this[namespace] = {};
+    //     const allPlugins = className.getAll();
+    //     allPlugins.forEach(pluginClass => {
+    //         const name = pluginClass._displayName;
+    //         const pluginInstance = new pluginClass(this, this.getPluginOptions(name, namespace));
+    //         this[namespace][name] = pluginInstance;
+    //     });
+    // }
 
-            return this.options.mediaSourceHandler[name];
-        } else {
-            return {};
+    // initialPlugins() {
+    //     // this.internalInitialPlugins(Component, UI);
+    //     this.internalInitialPlugins(Plugin, OTHERS);
+    // }
+
+    initialNormalPlugins() {
+        this.plugin = {};
+        const allPlugins = Plugin.getAll();
+        allPlugins.forEach(pluginClass => {
+            const name = pluginClass._displayName;
+            const pluginInstance = new pluginClass(this, this.getPluginOptions(name, namespace));
+            this.plugin[name] = pluginInstance;
+        });
+    }
+
+    initialUIPlugins() {
+        // @hack 为了让 Component.createElement 能取到 player
+        Component.player = this;
+
+        this.UI = {};
+        const allPlugins = Component.getAll();
+        allPlugins.forEach(pluginClass => {
+            const name = pluginClass._displayName;
+            const pluginInstance = new pluginClass(this, this.getPluginOptions(name, UI));
+            const el = pluginInstance.el;
+            this.el.appendChild(el);
+            this.UI[name] = pluginInstance;
+        }); 
+    }
+
+    // @test
+    getPluginOptions(name, namespace) {
+        return this.options && this.options[namespace] && this.options[namespace][name];
+    }
+
+    callMS(src) {
+        this.disposeMS();
+
+        const handlerClass = MediaSourceHandler.select(src);
+        if (handlerClass) {
+            this.MSHandler = new handlerClass(this, this.getPluginOptions(handlerClass._displayName, MS));
+            this.MSHandler.src(src);
+
+            return true;
         }
+
+        return false;
     }
 
     disposeMS() {
@@ -184,6 +202,51 @@ class Player extends Component {
             this.MSHandler.dispose();
             this.MSHandler = null;
         }
+    }
+
+    ready(fn) {
+        if (fn) {
+            if (this.isReady) {
+                setTimeout(() => {
+                    fn.call(this);
+                }, 1);
+            } else {
+                this.readyQueue = this.readyQueue || [];
+                this.readyQueue.push(fn);
+            }
+        }
+    }
+
+    triggerReady() {
+        this.isReady = true;
+
+        setTimeout(() => {
+            const readyQueue = this.readyQueue;
+            this.readyQueue = [];
+            if (readyQueue && readyQueue.length) {
+                readyQueue.forEach(fn => {
+                    fn.call(this);
+                });
+            }
+
+            this.trigger('ready');
+        }, 1);
+    }
+
+    removeClass(className) {
+        return Dom.removeClass(this.el, className);
+    }
+
+    addClass(className) {
+        return Dom.addClass(this.el, className);
+    }
+
+    hasClass(className) {
+        return Dom.hasClass(this.el, className);
+    }
+
+    toggleClass(className) {
+        return this.hasClass(className) ? this.removeClass(className) : this.addClass(className);
     }
 
     /**
@@ -1472,19 +1535,11 @@ class Player extends Component {
      */
     src(src) {
         if (src !== undefined) {
-            this.disposeMS();
 
-            const source = normalizeSource({src})[0];
-            this.MSHandler = Html5.selectMediaSourceHandler(source);
-            if (this.MSHandler) {
-                const handlerOptions = this.getMediaSourceHanlderOptions(this.MSHandler.name);
-                this.MSHandler.handleSource(source, this, handlerOptions);
-            } else {
-                // 应该先暂停一下比较好
-                // this.techCall('pause');
+            const success = this.callMS(src);
+            if (!success) {
                 this.techCall('setSrc', src);
             }
-
 
             // src 改变后，重新绑定一次 firstplay 方法
             // 先 off 确保只绑定一次

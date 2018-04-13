@@ -4,8 +4,10 @@
  * @date 2018/3/15
  */
 
-import Component from '../component';
+
+import Component from '../plugin/component';
 import * as Events from '../utils/events';
+import * as Dom from '../utils/dom';
 
 export default class Slider extends Component {
     constructor(player, options) {
@@ -44,7 +46,7 @@ export default class Slider extends Component {
     handleSlideStart(event) {
         this.onSlideStart(event);
 
-        this.addClass('lark-sliding');
+        Dom.addClass(this.el, 'lark-sliding');
 
         Events.on(document, 'touchmove', this.handleSlideMove);
         Events.on(document, 'touchend', this.handleSlideEnd);
@@ -59,7 +61,7 @@ export default class Slider extends Component {
     handleSlideEnd(event) {
         this.onSlideEnd(event);
 
-        this.removeClass('lark-sliding');
+        Dom.removeClass(this.el, 'lark-sliding');
 
         Events.off(document, 'touchmove', this.handleSlideMove);
         Events.off(document, 'touchend', this.handleSlideEnd);

@@ -4,12 +4,15 @@
  * @date 2017/11/10
  */
 
-import Component from '../component';
+
+import classnames from 'classnames';
+
+import Component from '../plugin/component';
 import * as Dom from '../utils/dom';
+import BufferBar from './buffer-bar';
+import featureDetector from '../utils/feature-detector';
 
-import './buffer-bar';
-
-class ProgressBarSimple extends Component {
+export default class ProgressBarSimple extends Component {
     constructor(player, options) {
         super(player, options);
 
@@ -41,24 +44,18 @@ class ProgressBarSimple extends Component {
     }
 
     createEl() {
-        const line = Dom.createElement('div', {
-            className: 'lark-progress-bar__line'
-        });
-
-        const background = Dom.createElement('div', {
-            className: 'lark-progress-bar__background'
-        });
-
-        return Dom.createElement('div', {
-            className: 'lark-progress-bar--simple'
-        }, background, line);
+        return (
+            <div className={classnames('lark-progress-bar--simple', this.options.className)}>
+                <div className="lark-progress-bar__background"></div>
+                <div className="lark-progress-bar__line"></div>
+                <BufferBar />
+            </div>
+        );
     }
 }
 
-Component.registerComponent('ProgressBarSimple', ProgressBarSimple);
+if (featureDetector.touch) {
+    Component.register(ProgressBarSimple);
+}
 
-ProgressBarSimple.prototype.options = {
-    children: ['bufferBar']
-};
 
-export default ProgressBarSimple;

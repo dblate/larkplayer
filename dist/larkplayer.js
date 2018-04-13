@@ -1,4 +1,54 @@
 (function(f){if(typeof exports==="object"&&typeof module!=="undefined"){module.exports=f()}else if(typeof define==="function"&&define.amd){define([],f)}else{var g;if(typeof window!=="undefined"){g=window}else if(typeof global!=="undefined"){g=global}else if(typeof self!=="undefined"){g=self}else{g=this}g.larkplayer = f()}})(function(){var define,module,exports;return (function(){function r(e,n,t){function o(i,f){if(!n[i]){if(!e[i]){var c="function"==typeof require&&require;if(!f&&c)return c(i,!0);if(u)return u(i,!0);var a=new Error("Cannot find module '"+i+"'");throw a.code="MODULE_NOT_FOUND",a}var p=n[i]={exports:{}};e[i][0].call(p.exports,function(r){var n=e[i][1][r];return o(n||r)},p,p.exports,r,e,n,t)}return n[i].exports}for(var u="function"==typeof require&&require,i=0;i<t.length;i++)o(t[i]);return o}return r})()({1:[function(require,module,exports){
+/*!
+  Copyright (c) 2016 Jed Watson.
+  Licensed under the MIT License (MIT), see
+  http://jedwatson.github.io/classnames
+*/
+/* global define */
+
+(function () {
+	'use strict';
+
+	var hasOwn = {}.hasOwnProperty;
+
+	function classNames () {
+		var classes = [];
+
+		for (var i = 0; i < arguments.length; i++) {
+			var arg = arguments[i];
+			if (!arg) continue;
+
+			var argType = typeof arg;
+
+			if (argType === 'string' || argType === 'number') {
+				classes.push(arg);
+			} else if (Array.isArray(arg)) {
+				classes.push(classNames.apply(null, arg));
+			} else if (argType === 'object') {
+				for (var key in arg) {
+					if (hasOwn.call(arg, key) && arg[key]) {
+						classes.push(key);
+					}
+				}
+			}
+		}
+
+		return classes.join(' ');
+	}
+
+	if (typeof module !== 'undefined' && module.exports) {
+		module.exports = classNames;
+	} else if (typeof define === 'function' && typeof define.amd === 'object' && define.amd) {
+		// register as 'classnames', consistent with npm package name
+		define('classnames', [], function () {
+			return classNames;
+		});
+	} else {
+		window.classNames = classNames;
+	}
+}());
+
+},{}],2:[function(require,module,exports){
 /**
  * lodash (Custom Build) <https://lodash.com/>
  * Build: `lodash modularize exports="npm" -o ./`
@@ -637,7 +687,7 @@ function keys(object) {
 
 module.exports = assign;
 
-},{}],2:[function(require,module,exports){
+},{}],3:[function(require,module,exports){
 (function (global){
 /**
  * lodash (Custom Build) <https://lodash.com/>
@@ -3094,7 +3144,7 @@ function property(path) {
 module.exports = find;
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{}],3:[function(require,module,exports){
+},{}],4:[function(require,module,exports){
 /**
  * lodash (Custom Build) <https://lodash.com/>
  * Build: `lodash modularize exports="npm" -o ./`
@@ -3841,7 +3891,476 @@ function values(object) {
 
 module.exports = includes;
 
-},{}],4:[function(require,module,exports){
+},{}],5:[function(require,module,exports){
+/**
+ * lodash (Custom Build) <https://lodash.com/>
+ * Build: `lodash modularize exports="npm" -o ./`
+ * Copyright jQuery Foundation and other contributors <https://jquery.org/>
+ * Released under MIT license <https://lodash.com/license>
+ * Based on Underscore.js 1.8.3 <http://underscorejs.org/LICENSE>
+ * Copyright Jeremy Ashkenas, DocumentCloud and Investigative Reporters & Editors
+ */
+
+/** Used as references for various `Number` constants. */
+var MAX_SAFE_INTEGER = 9007199254740991;
+
+/** `Object#toString` result references. */
+var argsTag = '[object Arguments]',
+    funcTag = '[object Function]',
+    genTag = '[object GeneratorFunction]';
+
+/** Used to detect unsigned integer values. */
+var reIsUint = /^(?:0|[1-9]\d*)$/;
+
+/**
+ * A specialized version of `_.map` for arrays without support for iteratee
+ * shorthands.
+ *
+ * @private
+ * @param {Array} [array] The array to iterate over.
+ * @param {Function} iteratee The function invoked per iteration.
+ * @returns {Array} Returns the new mapped array.
+ */
+function arrayMap(array, iteratee) {
+  var index = -1,
+      length = array ? array.length : 0,
+      result = Array(length);
+
+  while (++index < length) {
+    result[index] = iteratee(array[index], index, array);
+  }
+  return result;
+}
+
+/**
+ * The base implementation of `_.times` without support for iteratee shorthands
+ * or max array length checks.
+ *
+ * @private
+ * @param {number} n The number of times to invoke `iteratee`.
+ * @param {Function} iteratee The function invoked per iteration.
+ * @returns {Array} Returns the array of results.
+ */
+function baseTimes(n, iteratee) {
+  var index = -1,
+      result = Array(n);
+
+  while (++index < n) {
+    result[index] = iteratee(index);
+  }
+  return result;
+}
+
+/**
+ * The base implementation of `_.values` and `_.valuesIn` which creates an
+ * array of `object` property values corresponding to the property names
+ * of `props`.
+ *
+ * @private
+ * @param {Object} object The object to query.
+ * @param {Array} props The property names to get values for.
+ * @returns {Object} Returns the array of property values.
+ */
+function baseValues(object, props) {
+  return arrayMap(props, function(key) {
+    return object[key];
+  });
+}
+
+/**
+ * Creates a unary function that invokes `func` with its argument transformed.
+ *
+ * @private
+ * @param {Function} func The function to wrap.
+ * @param {Function} transform The argument transform.
+ * @returns {Function} Returns the new function.
+ */
+function overArg(func, transform) {
+  return function(arg) {
+    return func(transform(arg));
+  };
+}
+
+/** Used for built-in method references. */
+var objectProto = Object.prototype;
+
+/** Used to check objects for own properties. */
+var hasOwnProperty = objectProto.hasOwnProperty;
+
+/**
+ * Used to resolve the
+ * [`toStringTag`](http://ecma-international.org/ecma-262/7.0/#sec-object.prototype.tostring)
+ * of values.
+ */
+var objectToString = objectProto.toString;
+
+/** Built-in value references. */
+var propertyIsEnumerable = objectProto.propertyIsEnumerable;
+
+/* Built-in method references for those with the same name as other `lodash` methods. */
+var nativeKeys = overArg(Object.keys, Object);
+
+/**
+ * Creates an array of the enumerable property names of the array-like `value`.
+ *
+ * @private
+ * @param {*} value The value to query.
+ * @param {boolean} inherited Specify returning inherited property names.
+ * @returns {Array} Returns the array of property names.
+ */
+function arrayLikeKeys(value, inherited) {
+  // Safari 8.1 makes `arguments.callee` enumerable in strict mode.
+  // Safari 9 makes `arguments.length` enumerable in strict mode.
+  var result = (isArray(value) || isArguments(value))
+    ? baseTimes(value.length, String)
+    : [];
+
+  var length = result.length,
+      skipIndexes = !!length;
+
+  for (var key in value) {
+    if ((inherited || hasOwnProperty.call(value, key)) &&
+        !(skipIndexes && (key == 'length' || isIndex(key, length)))) {
+      result.push(key);
+    }
+  }
+  return result;
+}
+
+/**
+ * The base implementation of `_.keys` which doesn't treat sparse arrays as dense.
+ *
+ * @private
+ * @param {Object} object The object to query.
+ * @returns {Array} Returns the array of property names.
+ */
+function baseKeys(object) {
+  if (!isPrototype(object)) {
+    return nativeKeys(object);
+  }
+  var result = [];
+  for (var key in Object(object)) {
+    if (hasOwnProperty.call(object, key) && key != 'constructor') {
+      result.push(key);
+    }
+  }
+  return result;
+}
+
+/**
+ * Checks if `value` is a valid array-like index.
+ *
+ * @private
+ * @param {*} value The value to check.
+ * @param {number} [length=MAX_SAFE_INTEGER] The upper bounds of a valid index.
+ * @returns {boolean} Returns `true` if `value` is a valid index, else `false`.
+ */
+function isIndex(value, length) {
+  length = length == null ? MAX_SAFE_INTEGER : length;
+  return !!length &&
+    (typeof value == 'number' || reIsUint.test(value)) &&
+    (value > -1 && value % 1 == 0 && value < length);
+}
+
+/**
+ * Checks if `value` is likely a prototype object.
+ *
+ * @private
+ * @param {*} value The value to check.
+ * @returns {boolean} Returns `true` if `value` is a prototype, else `false`.
+ */
+function isPrototype(value) {
+  var Ctor = value && value.constructor,
+      proto = (typeof Ctor == 'function' && Ctor.prototype) || objectProto;
+
+  return value === proto;
+}
+
+/**
+ * Checks if `value` is likely an `arguments` object.
+ *
+ * @static
+ * @memberOf _
+ * @since 0.1.0
+ * @category Lang
+ * @param {*} value The value to check.
+ * @returns {boolean} Returns `true` if `value` is an `arguments` object,
+ *  else `false`.
+ * @example
+ *
+ * _.isArguments(function() { return arguments; }());
+ * // => true
+ *
+ * _.isArguments([1, 2, 3]);
+ * // => false
+ */
+function isArguments(value) {
+  // Safari 8.1 makes `arguments.callee` enumerable in strict mode.
+  return isArrayLikeObject(value) && hasOwnProperty.call(value, 'callee') &&
+    (!propertyIsEnumerable.call(value, 'callee') || objectToString.call(value) == argsTag);
+}
+
+/**
+ * Checks if `value` is classified as an `Array` object.
+ *
+ * @static
+ * @memberOf _
+ * @since 0.1.0
+ * @category Lang
+ * @param {*} value The value to check.
+ * @returns {boolean} Returns `true` if `value` is an array, else `false`.
+ * @example
+ *
+ * _.isArray([1, 2, 3]);
+ * // => true
+ *
+ * _.isArray(document.body.children);
+ * // => false
+ *
+ * _.isArray('abc');
+ * // => false
+ *
+ * _.isArray(_.noop);
+ * // => false
+ */
+var isArray = Array.isArray;
+
+/**
+ * Checks if `value` is array-like. A value is considered array-like if it's
+ * not a function and has a `value.length` that's an integer greater than or
+ * equal to `0` and less than or equal to `Number.MAX_SAFE_INTEGER`.
+ *
+ * @static
+ * @memberOf _
+ * @since 4.0.0
+ * @category Lang
+ * @param {*} value The value to check.
+ * @returns {boolean} Returns `true` if `value` is array-like, else `false`.
+ * @example
+ *
+ * _.isArrayLike([1, 2, 3]);
+ * // => true
+ *
+ * _.isArrayLike(document.body.children);
+ * // => true
+ *
+ * _.isArrayLike('abc');
+ * // => true
+ *
+ * _.isArrayLike(_.noop);
+ * // => false
+ */
+function isArrayLike(value) {
+  return value != null && isLength(value.length) && !isFunction(value);
+}
+
+/**
+ * This method is like `_.isArrayLike` except that it also checks if `value`
+ * is an object.
+ *
+ * @static
+ * @memberOf _
+ * @since 4.0.0
+ * @category Lang
+ * @param {*} value The value to check.
+ * @returns {boolean} Returns `true` if `value` is an array-like object,
+ *  else `false`.
+ * @example
+ *
+ * _.isArrayLikeObject([1, 2, 3]);
+ * // => true
+ *
+ * _.isArrayLikeObject(document.body.children);
+ * // => true
+ *
+ * _.isArrayLikeObject('abc');
+ * // => false
+ *
+ * _.isArrayLikeObject(_.noop);
+ * // => false
+ */
+function isArrayLikeObject(value) {
+  return isObjectLike(value) && isArrayLike(value);
+}
+
+/**
+ * Checks if `value` is classified as a `Function` object.
+ *
+ * @static
+ * @memberOf _
+ * @since 0.1.0
+ * @category Lang
+ * @param {*} value The value to check.
+ * @returns {boolean} Returns `true` if `value` is a function, else `false`.
+ * @example
+ *
+ * _.isFunction(_);
+ * // => true
+ *
+ * _.isFunction(/abc/);
+ * // => false
+ */
+function isFunction(value) {
+  // The use of `Object#toString` avoids issues with the `typeof` operator
+  // in Safari 8-9 which returns 'object' for typed array and other constructors.
+  var tag = isObject(value) ? objectToString.call(value) : '';
+  return tag == funcTag || tag == genTag;
+}
+
+/**
+ * Checks if `value` is a valid array-like length.
+ *
+ * **Note:** This method is loosely based on
+ * [`ToLength`](http://ecma-international.org/ecma-262/7.0/#sec-tolength).
+ *
+ * @static
+ * @memberOf _
+ * @since 4.0.0
+ * @category Lang
+ * @param {*} value The value to check.
+ * @returns {boolean} Returns `true` if `value` is a valid length, else `false`.
+ * @example
+ *
+ * _.isLength(3);
+ * // => true
+ *
+ * _.isLength(Number.MIN_VALUE);
+ * // => false
+ *
+ * _.isLength(Infinity);
+ * // => false
+ *
+ * _.isLength('3');
+ * // => false
+ */
+function isLength(value) {
+  return typeof value == 'number' &&
+    value > -1 && value % 1 == 0 && value <= MAX_SAFE_INTEGER;
+}
+
+/**
+ * Checks if `value` is the
+ * [language type](http://www.ecma-international.org/ecma-262/7.0/#sec-ecmascript-language-types)
+ * of `Object`. (e.g. arrays, functions, objects, regexes, `new Number(0)`, and `new String('')`)
+ *
+ * @static
+ * @memberOf _
+ * @since 0.1.0
+ * @category Lang
+ * @param {*} value The value to check.
+ * @returns {boolean} Returns `true` if `value` is an object, else `false`.
+ * @example
+ *
+ * _.isObject({});
+ * // => true
+ *
+ * _.isObject([1, 2, 3]);
+ * // => true
+ *
+ * _.isObject(_.noop);
+ * // => true
+ *
+ * _.isObject(null);
+ * // => false
+ */
+function isObject(value) {
+  var type = typeof value;
+  return !!value && (type == 'object' || type == 'function');
+}
+
+/**
+ * Checks if `value` is object-like. A value is object-like if it's not `null`
+ * and has a `typeof` result of "object".
+ *
+ * @static
+ * @memberOf _
+ * @since 4.0.0
+ * @category Lang
+ * @param {*} value The value to check.
+ * @returns {boolean} Returns `true` if `value` is object-like, else `false`.
+ * @example
+ *
+ * _.isObjectLike({});
+ * // => true
+ *
+ * _.isObjectLike([1, 2, 3]);
+ * // => true
+ *
+ * _.isObjectLike(_.noop);
+ * // => false
+ *
+ * _.isObjectLike(null);
+ * // => false
+ */
+function isObjectLike(value) {
+  return !!value && typeof value == 'object';
+}
+
+/**
+ * Creates an array of the own enumerable property names of `object`.
+ *
+ * **Note:** Non-object values are coerced to objects. See the
+ * [ES spec](http://ecma-international.org/ecma-262/7.0/#sec-object.keys)
+ * for more details.
+ *
+ * @static
+ * @since 0.1.0
+ * @memberOf _
+ * @category Object
+ * @param {Object} object The object to query.
+ * @returns {Array} Returns the array of property names.
+ * @example
+ *
+ * function Foo() {
+ *   this.a = 1;
+ *   this.b = 2;
+ * }
+ *
+ * Foo.prototype.c = 3;
+ *
+ * _.keys(new Foo);
+ * // => ['a', 'b'] (iteration order is not guaranteed)
+ *
+ * _.keys('hi');
+ * // => ['0', '1']
+ */
+function keys(object) {
+  return isArrayLike(object) ? arrayLikeKeys(object) : baseKeys(object);
+}
+
+/**
+ * Creates an array of the own enumerable string keyed property values of `object`.
+ *
+ * **Note:** Non-object values are coerced to objects.
+ *
+ * @static
+ * @since 0.1.0
+ * @memberOf _
+ * @category Object
+ * @param {Object} object The object to query.
+ * @returns {Array} Returns the array of property values.
+ * @example
+ *
+ * function Foo() {
+ *   this.a = 1;
+ *   this.b = 2;
+ * }
+ *
+ * Foo.prototype.c = 3;
+ *
+ * _.values(new Foo);
+ * // => [1, 2] (iteration order is not guaranteed)
+ *
+ * _.values('hi');
+ * // => ['h', 'i']
+ */
+function values(object) {
+  return object ? baseValues(object, keys(object)) : [];
+}
+
+module.exports = values;
+
+},{}],6:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -4127,7 +4646,7 @@ var Component = function () {
 
 exports['default'] = Component;
 
-},{"./mixins/evented":7,"./utils/dom":29,"./utils/guid":33,"./utils/merge-options":35,"./utils/to-title-case":41}],5:[function(require,module,exports){
+},{"./mixins/evented":9,"./utils/dom":36,"./utils/guid":40,"./utils/merge-options":42,"./utils/to-title-case":48}],7:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -4564,7 +5083,7 @@ Html5.selectMediaSourceHandler = function (source) {
 
 exports['default'] = Html5;
 
-},{"./component":4,"./utils/dom":29,"./utils/normalize-source":37,"./utils/obj":38,"./utils/to-title-case":41,"lodash.find":2}],6:[function(require,module,exports){
+},{"./component":6,"./utils/dom":36,"./utils/normalize-source":44,"./utils/obj":45,"./utils/to-title-case":48,"lodash.find":3}],8:[function(require,module,exports){
 'use strict';
 
 var _lodash = require('lodash.assign');
@@ -4681,7 +5200,7 @@ larkplayer.deregisterPlugin = Plugin.deregisterPlugin;
 // @see https://github.com/babel/babel/issues/2724
 module.exports = larkplayer;
 
-},{"./html5":5,"./player":8,"./utils/dom":29,"./utils/events":30,"./utils/log":34,"./utils/plugin":39,"lodash.assign":1}],7:[function(require,module,exports){
+},{"./html5":7,"./player":10,"./utils/dom":36,"./utils/events":37,"./utils/log":41,"./utils/plugin":46,"lodash.assign":2}],9:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -4750,7 +5269,7 @@ function evented(target) {
     };
 }
 
-},{"../utils/dom":29,"../utils/events":30}],8:[function(require,module,exports){
+},{"../utils/dom":36,"../utils/events":37}],10:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -4763,9 +5282,19 @@ var _html = require('./html5');
 
 var _html2 = _interopRequireDefault(_html);
 
-var _component = require('./component');
+var _component = require('./plugin/component');
 
 var _component2 = _interopRequireDefault(_component);
+
+var _mediaSourceHandler = require('./plugin/media-source-handler');
+
+var _mediaSourceHandler2 = _interopRequireDefault(_mediaSourceHandler);
+
+var _plugin = require('./plugin/plugin');
+
+var _plugin2 = _interopRequireDefault(_plugin);
+
+var _pluginTypes = require('./plugin/plugin-types');
 
 var _guid = require('./utils/guid');
 
@@ -4791,10 +5320,6 @@ var _evented2 = _interopRequireDefault(_evented);
 
 var _obj = require('./utils/obj');
 
-var _plugin = require('./utils/plugin');
-
-var Plugin = _interopRequireWildcard(_plugin);
-
 var _log = require('./utils/log');
 
 var _log2 = _interopRequireDefault(_log);
@@ -4812,6 +5337,8 @@ var _normalizeSource = require('./utils/normalize-source');
 var _normalizeSource2 = _interopRequireDefault(_normalizeSource);
 
 require('./ui/play-button');
+
+require('./ui/volume');
 
 require('./ui/control-bar');
 
@@ -4831,24 +5358,22 @@ function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj;
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
 
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } } /**
+                                                                                                                                                           * @file Player.js. player initial && api
+                                                                                                                                                           * @author yuhui06(yuhui06@baidu.com)
+                                                                                                                                                           * @date 2017/11/6
+                                                                                                                                                           * @todo 对于 Player 构造函数的特殊照顾需要理一下，可能没必要
+                                                                                                                                                           */
 
-function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+// import * as Plugin from './utils/plugin';
 
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; } /**
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                * @file Player.js. player initial && api
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                * @author yuhui06(yuhui06@baidu.com)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                * @date 2017/11/6
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                * @todo 对于 Player 构造函数的特殊照顾需要理一下，可能没必要
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                */
 
 // 确保以下代码都执行一次
 
 
 var activeClass = 'lark-user-active';
 
-var Player = function (_Component) {
-    _inherits(Player, _Component);
+var Player = function () {
 
     /**
      * 初始化一个播放器实例
@@ -4874,125 +5399,144 @@ var Player = function (_Component) {
     function Player(tag, options, ready) {
         _classCallCheck(this, Player);
 
-        // tag.id = tag.id || `larkplayer-${newGUID()}`;
+        this.isReady = false;
+        this.player = this;
+        this.options = options;
+        this.tag = tag;
 
-        options.initChildren = false;
-        options.createEl = false;
-        options.reportTouchActivity = false;
-        // options.id = options.id || tag.id;
-
-        var _this = _possibleConstructorReturn(this, _Component.call(this, null, options, ready));
-
-        _this.isReady = false;
-
-        // if (!Html5.isSupported()) {
-        //     tag.innerHTML = '您的浏览器不支持 html5 视频播放，请升级浏览器版本或更换为 chrome 浏览器';
-        //     return;
-        // }
-
-        // @todo check valid options
-
-        _this.tag = tag;
-
-        _this.el = _this.createEl();
+        this.el = this.createEl();
 
         // 使得 this 具有事件能力(on off one trigger)
-        (0, _evented2['default'])(_this, { eventBusKey: _this.el });
+        (0, _evented2['default'])(this, { eventBusKey: this.el });
 
         // 需放在 this.loadTech 方法前面
-        _this.handleLoadstart = _this.handleLoadstart.bind(_this);
-        _this.handlePlay = _this.handlePlay.bind(_this);
-        _this.handleWaiting = _this.handleWaiting.bind(_this);
-        _this.handleCanplay = _this.handleCanplay.bind(_this);
-        _this.handleCanplaythrough = _this.handleCanplaythrough.bind(_this);
-        _this.handlePlaying = _this.handlePlaying.bind(_this);
-        _this.handleSeeking = _this.handleSeeking.bind(_this);
-        _this.handleSeeked = _this.handleSeeked.bind(_this);
-        _this.handleFirstplay = _this.handleFirstplay.bind(_this);
-        _this.handlePause = _this.handlePause.bind(_this);
-        _this.handleEnded = _this.handleEnded.bind(_this);
-        _this.handleDurationchange = _this.handleDurationchange.bind(_this);
-        _this.handleTimeupdate = _this.handleTimeupdate.bind(_this);
-        _this.handleTap = _this.handleTap.bind(_this);
-        _this.handleTouchStart = _this.handleTouchStart.bind(_this);
-        _this.handleTouchMove = _this.handleTouchMove.bind(_this);
-        _this.handleTouchEnd = _this.handleTouchEnd.bind(_this);
-        _this.handleFullscreenChange = _this.handleFullscreenChange.bind(_this);
-        _this.handleFullscreenError = _this.handleFullscreenError.bind(_this);
-        _this.handleError = _this.handleError.bind(_this);
-        _this.handleClick = _this.handleClick.bind(_this);
-        _this.handleMouseEnter = _this.handleMouseEnter.bind(_this);
-        _this.handleMouseMove = _this.handleMouseMove.bind(_this);
-        _this.handleMouseLeave = _this.handleMouseLeave.bind(_this);
+        this.handleLoadstart = this.handleLoadstart.bind(this);
+        this.handlePlay = this.handlePlay.bind(this);
+        this.handleWaiting = this.handleWaiting.bind(this);
+        this.handleCanplay = this.handleCanplay.bind(this);
+        this.handleCanplaythrough = this.handleCanplaythrough.bind(this);
+        this.handlePlaying = this.handlePlaying.bind(this);
+        this.handleSeeking = this.handleSeeking.bind(this);
+        this.handleSeeked = this.handleSeeked.bind(this);
+        this.handleFirstplay = this.handleFirstplay.bind(this);
+        this.handlePause = this.handlePause.bind(this);
+        this.handleEnded = this.handleEnded.bind(this);
+        this.handleDurationchange = this.handleDurationchange.bind(this);
+        this.handleTimeupdate = this.handleTimeupdate.bind(this);
+        this.handleTap = this.handleTap.bind(this);
+        this.handleTouchStart = this.handleTouchStart.bind(this);
+        this.handleTouchMove = this.handleTouchMove.bind(this);
+        this.handleTouchEnd = this.handleTouchEnd.bind(this);
+        this.handleFullscreenChange = this.handleFullscreenChange.bind(this);
+        this.handleFullscreenError = this.handleFullscreenError.bind(this);
+        this.handleError = this.handleError.bind(this);
+        this.handleClick = this.handleClick.bind(this);
+        this.handleMouseEnter = this.handleMouseEnter.bind(this);
+        this.handleMouseMove = this.handleMouseMove.bind(this);
+        this.handleMouseLeave = this.handleMouseLeave.bind(this);
 
         // 3000ms 后自动隐藏播放器控制条
-        _this.activeTimeout = 3000;
+        this.activeTimeout = 3000;
 
-        // @todo ios11 click 事件触发问题
-        // this.on('click', this.handleClick);
         if (_featureDetector2['default'].touch) {
-            _this.on('touchstart', _this.handleTouchStart);
-            _this.on('touchend', _this.handleTouchEnd);
+            this.on('touchstart', this.handleTouchStart);
+            this.on('touchend', this.handleTouchEnd);
         } else {
-            _this.on('click', _this.handleClick);
-            _this.on('mouseenter', _this.handleMouseEnter);
-            _this.on('mousemove', _this.handleMouseMove);
-            _this.on('mouseleave', _this.handleMouseLeave);
+            this.on('click', this.handleClick);
+            this.on('mouseenter', this.handleMouseEnter);
+            this.on('mousemove', this.handleMouseMove);
+            this.on('mouseleave', this.handleMouseLeave);
         }
 
-        if (!_this.tech) {
-            _this.tech = _this.loadTech();
+        if (!this.tech) {
+            this.tech = this.loadTech();
         }
 
-        _this.initChildren();
+        // this.initChildren();
 
-        var src = _this.src();
+        var src = this.src();
         if (src) {
             // 如果视频已经存在，看下是不是错过了 loadstart 事件
-            _this.handleLateInit(_this.tech.el);
+            this.handleLateInit(this.tech.el);
 
-            var source = (0, _normalizeSource2['default'])({ src: src })[0];
-            _this.MSHandler = _html2['default'].selectMediaSourceHandler(source);
-            if (_this.MSHandler) {
-                var handlerOptions = _this.getMediaSourceHanlderOptions(_this.MSHandler.name);
-                _this.MSHandler.handleSource(source, _this, handlerOptions);
-            }
+            this.callMS(src);
         }
 
-        // plugins
-        _this.plugins = {};
-        var plugins = _this.options.plugins;
-        if (plugins) {
-            Object.keys(plugins).forEach(function (name) {
-                var plugin = Plugin.getPlugin(name);
-                if (typeof plugin === 'function') {
-                    plugin(_this, plugins[name]);
-                    _this.plugins[name] = plugin;
-                } else {
-                    throw new Error('Plugin ' + name + ' not exist');
-                }
-            });
-        }
+        this.initialUIPlugins();
+        this.initialNormalPlugins();
 
         // 如果当前视频已经出错，重新触发一次 error 事件
-        if (_this.techGet('error')) {
-            Events.trigger(_this.tech.el, 'error');
+        if (this.techGet('error')) {
+            Events.trigger(this.tech.el, 'error');
         }
 
-        _this.triggerReady();
-        return _this;
+        this.triggerReady();
     }
     /* eslint-enable fecs-max-statements */
 
-    Player.prototype.getMediaSourceHanlderOptions = function getMediaSourceHanlderOptions() {
-        var name = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : '';
+    // internalInitialPlugins(className, namespace) {
+    //     this[namespace] = {};
+    //     const allPlugins = className.getAll();
+    //     allPlugins.forEach(pluginClass => {
+    //         const name = pluginClass._displayName;
+    //         const pluginInstance = new pluginClass(this, this.getPluginOptions(name, namespace));
+    //         this[namespace][name] = pluginInstance;
+    //     });
+    // }
 
-        if (this.options && this.options.mediaSourceHandler && this.options.mediaSourceHandler[name]) {
+    // initialPlugins() {
+    //     // this.internalInitialPlugins(Component, UI);
+    //     this.internalInitialPlugins(Plugin, OTHERS);
+    // }
 
-            return this.options.mediaSourceHandler[name];
-        } else {
-            return {};
+    Player.prototype.initialNormalPlugins = function initialNormalPlugins() {
+        var _this = this;
+
+        this.plugin = {};
+        var allPlugins = _plugin2['default'].getAll();
+        allPlugins.forEach(function (pluginClass) {
+            var name = pluginClass._displayName;
+            var pluginInstance = new pluginClass(_this, _this.getPluginOptions(name, namespace));
+            _this.plugin[name] = pluginInstance;
+        });
+    };
+
+    Player.prototype.initialUIPlugins = function initialUIPlugins() {
+        var _this2 = this;
+
+        // @hack 为了让 Component.createElement 能取到 player
+        _component2['default'].player = this;
+
+        this.UI = {};
+        var allPlugins = _component2['default'].getAll();
+        allPlugins.forEach(function (pluginClass) {
+            var name = pluginClass._displayName;
+            var pluginInstance = new pluginClass(_this2, _this2.getPluginOptions(name, _pluginTypes.UI));
+            var el = pluginInstance.el;
+            _this2.el.appendChild(el);
+            _this2.UI[name] = pluginInstance;
+        });
+    };
+
+    // @test
+
+
+    Player.prototype.getPluginOptions = function getPluginOptions(name, namespace) {
+        return this.options && this.options[namespace] && this.options[namespace][name];
+    };
+
+    Player.prototype.callMS = function callMS(src) {
+        this.disposeMS();
+
+        var handlerClass = _mediaSourceHandler2['default'].select(src);
+        if (handlerClass) {
+            this.MSHandler = new handlerClass(this, this.getPluginOptions(handlerClass._displayName, _pluginTypes.MS));
+            this.MSHandler.src(src);
+
+            return true;
         }
+
+        return false;
     };
 
     Player.prototype.disposeMS = function disposeMS() {
@@ -5000,6 +5544,55 @@ var Player = function (_Component) {
             this.MSHandler.dispose();
             this.MSHandler = null;
         }
+    };
+
+    Player.prototype.ready = function ready(fn) {
+        var _this3 = this;
+
+        if (fn) {
+            if (this.isReady) {
+                setTimeout(function () {
+                    fn.call(_this3);
+                }, 1);
+            } else {
+                this.readyQueue = this.readyQueue || [];
+                this.readyQueue.push(fn);
+            }
+        }
+    };
+
+    Player.prototype.triggerReady = function triggerReady() {
+        var _this4 = this;
+
+        this.isReady = true;
+
+        setTimeout(function () {
+            var readyQueue = _this4.readyQueue;
+            _this4.readyQueue = [];
+            if (readyQueue && readyQueue.length) {
+                readyQueue.forEach(function (fn) {
+                    fn.call(_this4);
+                });
+            }
+
+            _this4.trigger('ready');
+        }, 1);
+    };
+
+    Player.prototype.removeClass = function removeClass(className) {
+        return Dom.removeClass(this.el, className);
+    };
+
+    Player.prototype.addClass = function addClass(className) {
+        return Dom.addClass(this.el, className);
+    };
+
+    Player.prototype.hasClass = function hasClass(className) {
+        return Dom.hasClass(this.el, className);
+    };
+
+    Player.prototype.toggleClass = function toggleClass(className) {
+        return this.hasClass(className) ? this.removeClass(className) : this.addClass(className);
     };
 
     /**
@@ -5032,7 +5625,7 @@ var Player = function (_Component) {
             this.tech.dispose();
         }
 
-        _Component.prototype.dispose.call(this);
+        Function.prototype.dispose.call(this);
     };
 
     /**
@@ -5044,7 +5637,7 @@ var Player = function (_Component) {
 
 
     Player.prototype.createEl = function createEl() {
-        var _this2 = this;
+        var _this5 = this;
 
         var tag = this.tag;
 
@@ -5061,7 +5654,7 @@ var Player = function (_Component) {
         if (this.options.source) {
             // 等到 this.tech 初始化完成后再添加
             this.ready(function () {
-                _this2.source(_this2.options.source);
+                _this5.source(_this5.options.source);
             });
         }
 
@@ -5116,7 +5709,7 @@ var Player = function (_Component) {
 
 
     Player.prototype.handleLateInit = function handleLateInit(el) {
-        var _this3 = this;
+        var _this6 = this;
 
         // readyState
         // 0 - HAVE_NOTHING
@@ -5166,11 +5759,11 @@ var Player = function (_Component) {
 
             // 我们的目标是，错过了 loadstart 的话，在 ready 后再手动 trigger 一次
             this.ready(function () {
-                _this3.off('loadstart', setLoadstartFired);
-                _this3.off('loadedmetadata', triggerLoadstart);
+                _this6.off('loadstart', setLoadstartFired);
+                _this6.off('loadedmetadata', triggerLoadstart);
 
                 if (!loadstartFired) {
-                    _this3.trigger('loadstart');
+                    _this6.trigger('loadstart');
                 }
             });
 
@@ -5193,7 +5786,7 @@ var Player = function (_Component) {
 
         this.ready(function () {
             eventsToTrigger.forEach(function (event) {
-                _this3.trigger(event);
+                _this6.trigger(event);
             });
         });
     };
@@ -5208,7 +5801,7 @@ var Player = function (_Component) {
 
 
     Player.prototype.loadTech = function loadTech() {
-        var _this4 = this;
+        var _this7 = this;
 
         this.options.el = this.tag;
         var tech = new _html2['default'](this.player, this.options);
@@ -5314,13 +5907,13 @@ var Player = function (_Component) {
         'volumechange'].forEach(function (event) {
             // 对于我们不做任何处理的事件，直接 trigger 出去，提供给用户就行了
             Events.on(tech.el, event, function () {
-                _this4.trigger(event);
+                _this7.trigger(event);
             });
         });
 
         // 如果我们要先对事件做处理，那先走我们自己的 handlexxx 函数
         ['loadstart', 'canplay', 'canplaythrough', 'error', 'playing', 'timeupdate', 'waiting', 'seeking', 'seeked', 'ended', 'durationchange', 'play', 'pause'].forEach(function (event) {
-            Events.on(tech.el, event, _this4['handle' + (0, _toTitleCase2['default'])(event)]);
+            Events.on(tech.el, event, _this7['handle' + (0, _toTitleCase2['default'])(event)]);
         });
 
         // 绑定 firstPlay 事件
@@ -5519,7 +6112,7 @@ var Player = function (_Component) {
 
 
     Player.prototype.handlePlay = function handlePlay() {
-        var _this5 = this;
+        var _this8 = this;
 
         // @todo removeClass 支持一次 remove 多个 class
         this.removeClass('lark-loadstart');
@@ -5533,7 +6126,7 @@ var Player = function (_Component) {
         clearTimeout(this.activeTimeoutHandler);
         this.addClass(activeClass);
         this.activeTimeoutHandler = setTimeout(function () {
-            _this5.removeClass(activeClass);
+            _this8.removeClass(activeClass);
         }, this.activeTimeout);
 
         /**
@@ -5688,7 +6281,7 @@ var Player = function (_Component) {
 
 
     Player.prototype.handleFirstplay = function handleFirstplay() {
-        var _this6 = this;
+        var _this9 = this;
 
         // @todo 不清楚有什么用
         this.addClass('lark-has-started');
@@ -5696,7 +6289,7 @@ var Player = function (_Component) {
         clearTimeout(this.activeTimeoutHandler);
         this.addClass(activeClass);
         this.activeTimeoutHandler = setTimeout(function () {
-            _this6.removeClass(activeClass);
+            _this9.removeClass(activeClass);
         }, this.activeTimeout);
 
         /**
@@ -5846,7 +6439,7 @@ var Player = function (_Component) {
 
 
     Player.prototype.handleTouchEnd = function handleTouchEnd(event) {
-        var _this7 = this;
+        var _this10 = this;
 
         clearTimeout(this.activeTimeoutHandler);
 
@@ -5870,7 +6463,7 @@ var Player = function (_Component) {
 
         if (this.hasClass(activeClass)) {
             this.activeTimeoutHandler = setTimeout(function () {
-                _this7.removeClass(activeClass);
+                _this10.removeClass(activeClass);
             }, this.activeTimeout);
         }
     };
@@ -6001,7 +6594,7 @@ var Player = function (_Component) {
     };
 
     Player.prototype.handleMouseEnter = function handleMouseEnter(event) {
-        var _this8 = this;
+        var _this11 = this;
 
         clearTimeout(this.activeTimeoutHandler);
 
@@ -6010,7 +6603,7 @@ var Player = function (_Component) {
         }
 
         this.activeTimeoutHandler = setTimeout(function () {
-            _this8.removeClass(activeClass);
+            _this11.removeClass(activeClass);
         }, this.activeTimeout);
     };
 
@@ -6115,7 +6708,7 @@ var Player = function (_Component) {
 
 
     Player.prototype.play = function play() {
-        var _this9 = this;
+        var _this12 = this;
 
         if (!this.src()) {
             _log2['default'].warn('No video src applied');
@@ -6135,7 +6728,7 @@ var Player = function (_Component) {
             }
         } else {
             this.ready(function () {
-                var playReturn = _this9.techGet('play');
+                var playReturn = _this12.techGet('play');
                 if (playReturn && playReturn.then) {
                     playReturn.then(null, function (err) {
                         // @todo 这里返回的 err 可以利用下？
@@ -6373,16 +6966,9 @@ var Player = function (_Component) {
 
     Player.prototype.src = function src(_src) {
         if (_src !== undefined) {
-            this.disposeMS();
 
-            var source = (0, _normalizeSource2['default'])({ src: _src })[0];
-            this.MSHandler = _html2['default'].selectMediaSourceHandler(source);
-            if (this.MSHandler) {
-                var handlerOptions = this.getMediaSourceHanlderOptions(this.MSHandler.name);
-                this.MSHandler.handleSource(source, this, handlerOptions);
-            } else {
-                // 应该先暂停一下比较好
-                // this.techCall('pause');
+            var success = this.callMS(_src);
+            if (!success) {
                 this.techCall('setSrc', _src);
             }
 
@@ -6480,7 +7066,7 @@ var Player = function (_Component) {
     };
 
     return Player;
-}(_component2['default']);
+}();
 
 [
 /**
@@ -6560,12 +7146,563 @@ if (_featureDetector2['default'].touch) {
 
 exports['default'] = Player;
 
-},{"./component":4,"./html5":5,"./mixins/evented":7,"./ui/control-bar":11,"./ui/control-bar-pc":10,"./ui/error":15,"./ui/error-pc":14,"./ui/loading":19,"./ui/loading-pc":18,"./ui/play-button":20,"./ui/progress-bar-simple":22,"./utils/computed-style":27,"./utils/dom":29,"./utils/events":30,"./utils/feature-detector":31,"./utils/fullscreen":32,"./utils/guid":33,"./utils/log":34,"./utils/normalize-source":37,"./utils/obj":38,"./utils/plugin":39,"./utils/to-title-case":41,"lodash.includes":3}],9:[function(require,module,exports){
+},{"./html5":7,"./mixins/evented":9,"./plugin/component":11,"./plugin/media-source-handler":12,"./plugin/plugin":15,"./plugin/plugin-types":14,"./ui/control-bar":18,"./ui/control-bar-pc":17,"./ui/error":22,"./ui/error-pc":21,"./ui/loading":26,"./ui/loading-pc":25,"./ui/play-button":27,"./ui/progress-bar-simple":29,"./ui/volume":33,"./utils/computed-style":34,"./utils/dom":36,"./utils/events":37,"./utils/feature-detector":38,"./utils/fullscreen":39,"./utils/guid":40,"./utils/log":41,"./utils/normalize-source":44,"./utils/obj":45,"./utils/to-title-case":48,"lodash.includes":4}],11:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
 
-var _component = require('../component');
+var _pluginStore = require('./plugin-store');
+
+var _pluginStore2 = _interopRequireDefault(_pluginStore);
+
+var _pluginTypes = require('./plugin-types');
+
+var _dom = require('../utils/dom');
+
+var DOM = _interopRequireWildcard(_dom);
+
+var _events = require('../utils/events');
+
+var Events = _interopRequireWildcard(_events);
+
+var _evented = require('../mixins/evented');
+
+var _evented2 = _interopRequireDefault(_evented);
+
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj['default'] = obj; return newObj; } }
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } } /**
+                                                                                                                                                           * @file component.js UI 插件基类
+                                                                                                                                                           * @author yuhui06
+                                                                                                                                                           * @date 2018/4/8
+                                                                                                                                                           * @desc
+                                                                                                                                                           *    1) UI 插件需继承此类实现
+                                                                                                                                                           *    2) UI 插件通过 Component.register(class, options) 绑定
+                                                                                                                                                           *    3) 编写插件时建议引入 DOM 和 Events 模块，食用效果更佳
+                                                                                                                                                           */
+
+var Component = function () {
+    function Component(player) {
+        var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+
+        _classCallCheck(this, Component);
+
+        this.player = player;
+        this.options = options;
+        this.el = this.createEl(this.options);
+
+        (0, _evented2['default'])(this, { eventBusKey: this.el });
+    }
+
+    Component.prototype.createEl = function createEl() {
+        return DOM.createElement('div', this.options);
+    };
+
+    Component.prototype.dispose = function dispose() {
+        if (DOM.isEl(this.el) && this.el.parentNode) {
+            Events.off(this.el);
+            this.el.parentNode.removeChild(this.el);
+            this.el = null;
+        }
+    };
+
+    Component.createElement = function createElement(name) {
+        var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+
+        // babel 编译后的默认值遇到 null 时会取 null，因为判断的是 !== undefined
+        options = options || {};
+
+        var component = void 0;
+        if (typeof name === 'string') {
+            component = Component.get(name.toLowerCase());
+        } else if (Component.isPrototypeOf(name)) {
+            component = name;
+        }
+
+        for (var _len = arguments.length, child = Array(_len > 2 ? _len - 2 : 0), _key = 2; _key < _len; _key++) {
+            child[_key - 2] = arguments[_key];
+        }
+
+        if (component) {
+            // 这里的 this.player 不是什么黑魔法，它确实无法取到实例中的 this.player
+            // 只不过是在调用 Component.createElement 之前，先给 Component.player 赋了值而已
+            // 如果你看不懂我在说什么，当我没说
+            var instance = new component(this.player, options);
+            var el = instance.el;
+
+            if (child) {
+                DOM.appendContent(el, child);
+            }
+
+            return el;
+        } else {
+            return DOM.createElement.apply(DOM, [name, options].concat(child));
+        }
+    };
+
+    Component.register = function register(component, options) {
+        return _pluginStore2['default'].add(component, options, _pluginTypes.UI);
+    };
+
+    Component.get = function get(name) {
+        return _pluginStore2['default'].get(name, _pluginTypes.UI);
+    };
+
+    Component.getAll = function getAll() {
+        return _pluginStore2['default'].getAll(_pluginTypes.UI);
+    };
+
+    return Component;
+}();
+
+// @example
+// class Dialog extends Component {
+//     constructor(player, options) {
+//         super(player, options);
+
+//         this.handleClose = this.handleClose.bind(this);
+
+//         this.closeEl = DOM.$('.dialog__close', this.el);
+//         Events.on(this.closeEl, 'click', this.handleClose);
+//     }
+
+//     handleClose() {
+//         this.el.style.display = 'none';
+//     }
+
+//     createEl() {
+//         this.options = Object.assign({
+//             className: '',
+//             title: '',
+//             cnt: ''
+//         }, this.options);
+
+//         const tpl = `
+//             <div class="dialog ${this.options.className}">
+//                 <i className="dialog__close">close</i>
+//                 <h1 class="dialog__title">${this.options.title}</h1>
+//                 <p class="dialog__cnt">${this.options.cnt}</p>
+//             </div>
+//         `;
+
+//         const el = Component.createElement('div', {className: 'dialog-container'});
+//         el.innerHTML = tpl;
+
+//         return el;
+//     }
+// }
+
+// class ErrorDialog extends Component {
+//     constructor(player, options) {
+//         super(player, options);
+
+//         this.handleError = this.handleError.bind(this);
+//         this.player.on('error', this.handleError);
+//     }
+
+//     handleError(event) {
+//         this.el.style.display = 'block';
+//     }
+
+//     createEl() {
+//         return Component.createElement(Dialog, {
+//             className: 'error-dialog',
+//             title: 'Error',
+//             cnt: 'Video play error, plz try again later.'
+//         });
+//     }
+// }
+
+// Component.register(ErrorDialog, {name: 'error_dialog'});
+
+
+exports['default'] = Component;
+
+},{"../mixins/evented":9,"../utils/dom":36,"../utils/events":37,"./plugin-store":13,"./plugin-types":14}],12:[function(require,module,exports){
+'use strict';
+
+exports.__esModule = true;
+
+var _lodash = require('lodash.find');
+
+var _lodash2 = _interopRequireDefault(_lodash);
+
+var _pluginStore = require('./plugin-store');
+
+var _pluginStore2 = _interopRequireDefault(_pluginStore);
+
+var _pluginTypes = require('./plugin-types');
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } } /**
+                                                                                                                                                           * @file MediaSourceHandler 插件基类，指基于 Media Source Extension 处理视频解码的一类插件
+                                                                                                                                                           * @author yuhui06
+                                                                                                                                                           * @date 2018/4/2
+                                                                                                                                                           * @desc
+                                                                                                                                                           *     1) MS 插件通过继承 MediaSourceHandler 实现
+                                                                                                                                                           *     2) MS 插件通过 MediaSourceHandler.register(handler, options) 绑定
+                                                                                                                                                           *     3) MS 插件需实现 canPlay 静态方法，用于判断插件是否支持特定类型
+                                                                                                                                                           */
+
+// import Hls from 'hls.js';
+
+
+var MediaSourceHandler = function () {
+    function MediaSourceHandler(player, options) {
+        _classCallCheck(this, MediaSourceHandler);
+
+        this.player = player;
+        this.options = options;
+    }
+
+    MediaSourceHandler.prototype.src = function src(_src) {
+        this.player.techCall('setSrc', _src);
+    };
+
+    MediaSourceHandler.prototype.play = function play() {
+        this.player.techCall('play');
+    };
+
+    MediaSourceHandler.prototype.dispose = function dispose() {
+        this.player = null;
+        this.options = null;
+    };
+
+    MediaSourceHandler.canPlay = function canPlay(src, type) {
+        return false;
+    };
+
+    MediaSourceHandler.register = function register(handler, options) {
+        return _pluginStore2['default'].add(handler, options, _pluginTypes.MS);
+    };
+
+    MediaSourceHandler.getAll = function getAll() {
+        return _pluginStore2['default'].getAll(_pluginTypes.MS);
+    };
+
+    MediaSourceHandler.getName = function getName(handler) {};
+
+    MediaSourceHandler.select = function select(src, type) {
+        var allMSHandlers = MediaSourceHandler.getAll();
+        return (0, _lodash2['default'])(allMSHandlers, function (value) {
+            return value.canPlay(src, type);
+        });
+    };
+
+    return MediaSourceHandler;
+}();
+
+// @example
+// class HlsMediaSourceHandler extends MediaSourceHandler {
+//     constructor(player, options) {
+//         super(player, options);
+
+//         this.player.isReady = false;
+
+//         this.hls = new Hls(options);
+
+//         this.hls.on(Hls.Events.MANIFEST_PARSED, (event, data) => {
+//             this.player.triggerReady();
+//         });
+
+//         this.hls.on(Hls.Events.ERROR, (event, data) => {
+//             if (data.fatal) {
+//                 switch (data.type) {
+//                     case Hls.ErrorTypes.MEDIA_ERROR:
+//                         this.handleMediaError();
+//                         break;
+//                     case Hls.ErrorTypes.NETWORK_ERROR:
+//                     default:
+//                         this.hls.destroy();
+//                         break;
+//                 }
+//             }
+//         });
+//     }
+
+//     src(src) {
+//         this.player.isReady = false;
+//         this.hls.attachMedia(this.player.tech.el);
+//         this.hls.loadSource(src);
+//     }
+
+//     internalPlay() {
+//         const playReturn = this.player.techGet('play');
+//         if (playReturn && playReturn.then) {
+//             playReturn.then(null, err => {
+//                 console.error(err);
+//             });
+//         }
+//     }
+
+//     play() {
+//         if (this.player.isReady) {
+//             this.internalPlay();
+//         } else {
+//             this.player.ready(() => {
+//                 this.internalPlay();
+//             });
+//         }
+//     }
+
+//     handleMediaError() {
+//         const now = Date.now();
+//         const minRecoverInterval = 3000;
+
+//         if (!this.recoverDecodingErrorDate || (now - this.recoverDecodingErrorDate) > minRecoverInterval) {
+//             this.recoverDecodingErrorDate = now;
+//             this.hls.recoverMediaError();
+//         } else if (!this.recoverSwapAudioCodecDate || (now - this.recoverSwapAudioCodecDate) > minRecoverInterval) {
+//             this.recoverSwapAudioCodecDate = now;
+//             this.hls.swapAudioCodec();
+//             this.hls.recoverMediaError();
+//         } else {
+//             this.hls.destroy();
+//         }
+//     }
+
+//     dispose() {
+//         if (this.hls instanceof Hls) {
+//             this.hls.destroy();
+//             if (this.hls.bufferTimer) {
+//                 clearInterval(this.hls.bufferTimer);
+//                 this.hls.bufferTimer = undefined;
+//             }
+//         }
+//         this.hls = null;
+//     }
+
+
+//     static canPlay(src, type) {
+//         const fileExtReg = /\.m3u8?/i;
+//         const typeReg = /application\/((x-mpegURL)|(vnd\.apple\.mpegurl))/i;
+
+//         return Hls.isSupported() && (typeReg.test(type) || fileExtReg.test(src));
+//     }
+// }
+
+// MediaSourceHandler.register(HlsMediaSourceHandler, {name: 'hls'});
+
+
+exports['default'] = MediaSourceHandler;
+
+},{"./plugin-store":13,"./plugin-types":14,"lodash.find":3}],13:[function(require,module,exports){
+'use strict';
+
+exports.__esModule = true;
+
+var _initialStore; /**
+                    * @file plugin-store.js 用于存取插件
+                    * @author yuhui06
+                    * @date 2018/4/8
+                    */
+
+var _lodash = require('lodash.values');
+
+var _lodash2 = _interopRequireDefault(_lodash);
+
+var _component = require('./component');
+
+var _component2 = _interopRequireDefault(_component);
+
+var _mediaSourceHandler = require('./media-source-handler');
+
+var _mediaSourceHandler2 = _interopRequireDefault(_mediaSourceHandler);
+
+var _plugin = require('./plugin');
+
+var _plugin2 = _interopRequireDefault(_plugin);
+
+var _pluginTypes = require('./plugin-types');
+
+var _guid = require('../utils/guid');
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
+
+var initialStore = (_initialStore = {}, _initialStore[_pluginTypes.UI] = {}, _initialStore[_pluginTypes.MS] = {}, _initialStore[_pluginTypes.OTHERS] = {}, _initialStore);
+
+var pluginStore = {
+    store: initialStore,
+    validate: function validate(plugin, type) {
+        switch (type) {
+            case _pluginTypes.UI:
+                return _component2['default'].isPrototypeOf(plugin);
+                break;
+            case _pluginTypes.MS:
+                return _mediaSourceHandler2['default'].isPrototypeOf(plugin);
+                break;
+            case _pluginTypes.OTHERS:
+                return _plugin2['default'].isPrototypeOf(plugin);
+                break;
+            default:
+                return false;
+        }
+    },
+    has: function has(name, type) {
+        return this.store[type] && this.store[type][name];
+    },
+    add: function add(plugin) {
+        var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+        var type = arguments[2];
+
+        if (this.validate(plugin, type)) {
+            var name = options.name || (plugin.name || 'plugin_' + (0, _guid.newGUID)()).toLowerCase();
+            plugin._displayName = name;
+
+            if (!this.has(name, type)) {
+                this.store[type][name] = plugin;
+            }
+
+            return true;
+        } else {
+            return false;
+        }
+    },
+    'delete': function _delete(name, type) {
+        if (this.has(name, type)) {
+            delete this.store[type][name];
+        }
+    },
+    clear: function clear() {
+        this.store = initialStore;
+    },
+    get: function get(name, type) {
+        if (this.has(name, type)) {
+            return this.store[type][name];
+        }
+    },
+    getAll: function getAll(type) {
+        switch (type) {
+            case _pluginTypes.UI:
+                return (0, _lodash2['default'])(this.store[_pluginTypes.UI]);
+                break;
+            case _pluginTypes.MS:
+                return (0, _lodash2['default'])(this.store[_pluginTypes.MS]);
+                break;
+            case _pluginTypes.OTHERS:
+                return (0, _lodash2['default'])(this.store[_pluginTypes.OTHERS]);
+                break;
+            default:
+                var allPlugins = [];
+                for (var _type in this.store) {
+                    if (this.store.hasOwnProperty(_type)) {
+                        allPlugins.concat((0, _lodash2['default'])(this.store[_type]));
+                    }
+                }
+                return allPlugins;
+        }
+    }
+};
+
+exports['default'] = pluginStore;
+
+},{"../utils/guid":40,"./component":11,"./media-source-handler":12,"./plugin":15,"./plugin-types":14,"lodash.values":5}],14:[function(require,module,exports){
+'use strict';
+
+exports.__esModule = true;
+/**
+ * @file plugin-types 定义插件类型
+ * @author yuhui06
+ * @date 2018/4/8
+ */
+
+var UI = exports.UI = 'UI';
+var MS = exports.MS = 'MS';
+var OTHERS = exports.OTHERS = 'otherPlugin';
+
+exports['default'] = { UI: UI, MS: MS, OTHERS: OTHERS };
+
+},{}],15:[function(require,module,exports){
+'use strict';
+
+exports.__esModule = true;
+
+var _pluginStore = require('./plugin-store');
+
+var _pluginStore2 = _interopRequireDefault(_pluginStore);
+
+var _pluginTypes = require('./plugin-types');
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } } /**
+                                                                                                                                                           * @file 普通插件基类
+                                                                                                                                                           * @author yuhui06
+                                                                                                                                                           * @date 2018/4/8
+                                                                                                                                                           * @desc
+                                                                                                                                                           *    1) 插件需继承此类实现
+                                                                                                                                                           *    2) 插件通过 Plugin.register(class, options) 绑定
+                                                                                                                                                           */
+
+var Plugin = function () {
+    function Plugin(player) {
+        var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+
+        _classCallCheck(this, Plugin);
+
+        this.player = player;
+        this.options = options;
+    }
+
+    Plugin.prototype.dispose = function dispose() {
+        this.player = null;
+        this.options = null;
+    };
+
+    Plugin.register = function register(plugin, options) {
+        _pluginStore2['default'].add(plugin, options, _pluginTypes.OTHERS);
+    };
+
+    Plugin.get = function get(name) {
+        _pluginStore2['default'].get(name, _pluginTypes.OTHERS);
+    };
+
+    Plugin.getAll = function getAll() {
+        return _pluginStore2['default'].getAll(_pluginTypes.OTHERS);
+    };
+
+    return Plugin;
+}();
+
+// @example
+// class PlayContinue extends Plugin {
+//     constructor(player, options) {
+//         super(player, options);
+
+//         this.handleFirstPlay = this.handleFirstPlay.bind(this);
+
+//         this.player.on('firstplay', this.handleFirstPlay);
+//     }
+
+//     handleFirstPlay() {
+//         console.log('firstplay in PlayContinue');
+//     }
+
+//     dispose() {
+//         this.player.off(this.handleFirstPlay);
+//         super.dispose();
+//     }
+// }
+
+
+// Plugin.register(PlayContinue, {name: 'playContinue'});
+
+
+exports['default'] = Plugin;
+
+},{"./plugin-store":13,"./plugin-types":14}],16:[function(require,module,exports){
+'use strict';
+
+exports.__esModule = true;
+
+var _classnames = require('classnames');
+
+var _classnames2 = _interopRequireDefault(_classnames);
+
+var _component = require('../plugin/component');
 
 var _component2 = _interopRequireDefault(_component);
 
@@ -6638,43 +7775,65 @@ var BufferBar = function (_Component) {
     };
 
     BufferBar.prototype.createEl = function createEl() {
-        var line = Dom.createElement('div', {
-            className: 'lark-buffer-bar__line'
-        });
-
-        return Dom.createElement('div', {
-            className: 'lark-buffer-bar'
-        }, line);
+        return _component2['default'].createElement(
+            'div',
+            { className: (0, _classnames2['default'])('lark-buffer-bar', this.options.className) },
+            _component2['default'].createElement('div', { className: 'lark-buffer-bar__line' })
+        );
     };
 
     return BufferBar;
 }(_component2['default']);
 
+// Component.register(BufferBar);
+
+
 exports['default'] = BufferBar;
 
-
-_component2['default'].registerComponent('BufferBar', BufferBar);
-
-},{"../component":4,"../utils/dom":29}],10:[function(require,module,exports){
+},{"../plugin/component":11,"../utils/dom":36,"classnames":1}],17:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
 
-var _component = require('../component');
+var _classnames = require('classnames');
+
+var _classnames2 = _interopRequireDefault(_classnames);
+
+var _component = require('../plugin/component');
 
 var _component2 = _interopRequireDefault(_component);
 
-require('./current-time');
+var _progressBar = require('./progress-bar');
 
-require('./duration');
+var _progressBar2 = _interopRequireDefault(_progressBar);
 
-require('./play-button');
+var _currentTime = require('./current-time');
 
-require('./fullscreen-button');
+var _currentTime2 = _interopRequireDefault(_currentTime);
 
-require('./gradient-bottom');
+var _duration = require('./duration');
 
-require('./volume');
+var _duration2 = _interopRequireDefault(_duration);
+
+var _playButton = require('./play-button');
+
+var _playButton2 = _interopRequireDefault(_playButton);
+
+var _fullscreenButton = require('./fullscreen-button');
+
+var _fullscreenButton2 = _interopRequireDefault(_fullscreenButton);
+
+var _gradientBottom = require('./gradient-bottom');
+
+var _gradientBottom2 = _interopRequireDefault(_gradientBottom);
+
+var _volume = require('./volume');
+
+var _volume2 = _interopRequireDefault(_volume);
+
+var _featureDetector = require('../utils/feature-detector');
+
+var _featureDetector2 = _interopRequireDefault(_featureDetector);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
 
@@ -6704,38 +7863,34 @@ var ControlBarPc = function (_Component) {
     };
 
     ControlBarPc.prototype.createEl = function createEl() {
-        var time = this.createElement('div', { className: 'lark-time' }, this.createElement('CurrentTime'), this.createElement('span', { className: 'lark-time-separator' }, '/'), this.createElement('Duration'));
-
-        var playButton = this.createElement('playButton', { className: 'lark-play-button-pc' });
-
-        var fullscreenButton = this.createElement('FullscreenButton');
-        var gradientBottom = this.createElement('GradientBottom');
-
-        // jsxParser(`
-        //     <div className="lark-control-bar-pc">
-        //         <ProgressBar className="lark-progress-bar-pc" />
-        //         <div className="lark-control__left">
-        //             <PlayButton className="lark-play-button-pc" />
-        //             <div className="lark-time">
-        //                 <CurrentTime />
-        //                 <span className="lark-time-separator">/<span>
-        //                 <Duration />
-        //             </div>
-        //         </div>
-        //         <div className="lark-control__right">
-        //             <FullscreenButton />
-        //         </div>
-        //     </div>
-        // `);
-
-        var volume = this.createElement('Volume');
-
-        var controlLeft = this.createElement('div', { className: 'lark-control__left' }, playButton, volume, time);
-        var controlRight = this.createElement('div', { className: 'lark-control__right' }, fullscreenButton);
-
-        var progressBarPc = this.createElement('progressBar', { className: 'lark-progress-bar-pc' });
-
-        return this.createElement('div', { className: 'lark-control-bar-pc' }, gradientBottom, progressBarPc, controlLeft, controlRight);
+        return _component2['default'].createElement(
+            'div',
+            { className: (0, _classnames2['default'])('lark-control-bar-pc', this.options.className) },
+            _component2['default'].createElement(_gradientBottom2['default'], null),
+            _component2['default'].createElement(_progressBar2['default'], { className: 'lark-progress-bar-pc' }),
+            _component2['default'].createElement(
+                'div',
+                { className: 'lark-control__left' },
+                _component2['default'].createElement(_playButton2['default'], { className: 'lark-play-button-pc' }),
+                _component2['default'].createElement(_volume2['default'], null),
+                _component2['default'].createElement(
+                    'div',
+                    { className: 'lark-time' },
+                    _component2['default'].createElement(_currentTime2['default'], null),
+                    _component2['default'].createElement(
+                        'span',
+                        { className: 'lark-time-separator' },
+                        '|'
+                    ),
+                    _component2['default'].createElement(_duration2['default'], null)
+                )
+            ),
+            _component2['default'].createElement(
+                'div',
+                { className: 'lark-control__right' },
+                _component2['default'].createElement(_fullscreenButton2['default'], null)
+            )
+        );
     };
 
     return ControlBarPc;
@@ -6744,14 +7899,20 @@ var ControlBarPc = function (_Component) {
 exports['default'] = ControlBarPc;
 
 
-_component2['default'].registerComponent('ControlBarPc', ControlBarPc);
+if (!_featureDetector2['default'].touch) {
+    _component2['default'].register(ControlBarPc);
+}
 
-},{"../component":4,"./current-time":12,"./duration":13,"./fullscreen-button":16,"./gradient-bottom":17,"./play-button":20,"./volume":26}],11:[function(require,module,exports){
+},{"../plugin/component":11,"../utils/feature-detector":38,"./current-time":19,"./duration":20,"./fullscreen-button":23,"./gradient-bottom":24,"./play-button":27,"./progress-bar":30,"./volume":33,"classnames":1}],18:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
 
-var _component = require('../component');
+var _classnames = require('classnames');
+
+var _classnames2 = _interopRequireDefault(_classnames);
+
+var _component = require('../plugin/component');
 
 var _component2 = _interopRequireDefault(_component);
 
@@ -6759,13 +7920,25 @@ var _dom = require('../utils/dom');
 
 var Dom = _interopRequireWildcard(_dom);
 
-require('./current-time');
+var _currentTime = require('./current-time');
 
-require('./duration');
+var _currentTime2 = _interopRequireDefault(_currentTime);
 
-require('./fullscreen-button');
+var _duration = require('./duration');
 
-require('./progress-bar');
+var _duration2 = _interopRequireDefault(_duration);
+
+var _fullscreenButton = require('./fullscreen-button');
+
+var _fullscreenButton2 = _interopRequireDefault(_fullscreenButton);
+
+var _progressBar = require('./progress-bar');
+
+var _progressBar2 = _interopRequireDefault(_progressBar);
+
+var _featureDetector = require('../utils/feature-detector');
+
+var _featureDetector2 = _interopRequireDefault(_featureDetector);
 
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj['default'] = obj; return newObj; } }
 
@@ -6797,28 +7970,36 @@ var ControlBar = function (_Component) {
     };
 
     ControlBar.prototype.createEl = function createEl() {
-        return Dom.createElement('div', {
-            className: 'lark-control-bar'
-        });
+        return _component2['default'].createElement(
+            'div',
+            { className: (0, _classnames2['default'])('lark-control-bar', this.options.className) },
+            _component2['default'].createElement(_currentTime2['default'], null),
+            _component2['default'].createElement(_progressBar2['default'], null),
+            _component2['default'].createElement(_duration2['default'], null),
+            _component2['default'].createElement(_fullscreenButton2['default'], null)
+        );
     };
 
     return ControlBar;
 }(_component2['default']);
 
-ControlBar.prototype.options = {
-    children: ['currentTime', 'progressBar', 'duration', 'fullscreenButton']
-};
-
-_component2['default'].registerComponent('ControlBar', ControlBar);
-
 exports['default'] = ControlBar;
 
-},{"../component":4,"../utils/dom":29,"./current-time":12,"./duration":13,"./fullscreen-button":16,"./progress-bar":23}],12:[function(require,module,exports){
+
+if (_featureDetector2['default'].touch) {
+    _component2['default'].register(ControlBar);
+}
+
+},{"../plugin/component":11,"../utils/dom":36,"../utils/feature-detector":38,"./current-time":19,"./duration":20,"./fullscreen-button":23,"./progress-bar":30,"classnames":1}],19:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
 
-var _component = require('../component');
+var _classnames = require('classnames');
+
+var _classnames2 = _interopRequireDefault(_classnames);
+
+var _component = require('../plugin/component');
 
 var _component2 = _interopRequireDefault(_component);
 
@@ -6871,25 +8052,31 @@ var CurrentTime = function (_Component) {
     CurrentTime.prototype.createEl = function createEl() {
         var currentTime = this.player.currentTime();
 
-        return Dom.createElement('div', {
-            className: 'lark-current-time'
-        }, (0, _timeFormat.timeFormat)(Math.floor(currentTime)));
+        return _component2['default'].createElement(
+            'div',
+            { className: (0, _classnames2['default'])('lark-current-time', this.options.className) },
+            (0, _timeFormat.timeFormat)(Math.floor(currentTime))
+        );
     };
 
     return CurrentTime;
 }(_component2['default']);
 
+// Component.register(CurrentTime);
+
+
 exports['default'] = CurrentTime;
 
-
-_component2['default'].registerComponent('CurrentTime', CurrentTime);
-
-},{"../component":4,"../utils/dom":29,"../utils/time-format":40}],13:[function(require,module,exports){
+},{"../plugin/component":11,"../utils/dom":36,"../utils/time-format":47,"classnames":1}],20:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
 
-var _component = require('../component');
+var _classnames = require('classnames');
+
+var _classnames2 = _interopRequireDefault(_classnames);
+
+var _component = require('../plugin/component');
 
 var _component2 = _interopRequireDefault(_component);
 
@@ -6912,7 +8099,6 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 * @author yuhui<yuhui06@baidu.com>
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 * @date 2017/11/10
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 */
-
 
 var Duration = function (_Component) {
     _inherits(Duration, _Component);
@@ -6940,31 +8126,42 @@ var Duration = function (_Component) {
     Duration.prototype.createEl = function createEl() {
         // @todo 暂时将 duration 的值写在这，后面需要处理下对于已经发生的事件怎么办
         var durationContent = (0, _timeFormat.timeFormat)(Math.floor(this.player.duration()));
-        return Dom.createEl('div', {
-            className: 'lark-duration'
-        }, null, durationContent);
+
+        return _component2['default'].createElement(
+            'div',
+            { className: (0, _classnames2['default'])('lark-duration', this.options.className) },
+            durationContent
+        );
     };
 
     return Duration;
 }(_component2['default']);
 
+// Component.register(Duration);
+
+
 exports['default'] = Duration;
 
-
-_component2['default'].registerComponent('Duration', Duration);
-
-},{"../component":4,"../utils/dom":29,"../utils/time-format":40}],14:[function(require,module,exports){
+},{"../plugin/component":11,"../utils/dom":36,"../utils/time-format":47,"classnames":1}],21:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
 
-var _component = require('../component');
+var _classnames = require('classnames');
+
+var _classnames2 = _interopRequireDefault(_classnames);
+
+var _component = require('../plugin/component');
 
 var _component2 = _interopRequireDefault(_component);
 
 var _dom = require('../utils/dom');
 
 var Dom = _interopRequireWildcard(_dom);
+
+var _featureDetector = require('../utils/feature-detector');
+
+var _featureDetector2 = _interopRequireDefault(_featureDetector);
 
 require('./error');
 
@@ -6981,7 +8178,6 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 * @author yuhuiyuhui06
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 * @date 2018/3/8
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 */
-
 
 var ErrorPc = function (_Component) {
     _inherits(ErrorPc, _Component);
@@ -7039,7 +8235,19 @@ var ErrorPc = function (_Component) {
     };
 
     ErrorPc.prototype.createEl = function createEl() {
-        return this.createElement('div', { className: 'lark-error-pc' }, this.createElement('div', { className: 'lark-error-area' }, this.createElement('div', { className: 'lark-error-text' }, '加载失败，请稍后重试')));
+        return _component2['default'].createElement(
+            'div',
+            { className: (0, _classnames2['default'])('lark-error-pc', this.options.className) },
+            _component2['default'].createElement(
+                'div',
+                { className: 'lark-error-area' },
+                _component2['default'].createElement(
+                    'div',
+                    { className: 'lark-error-text' },
+                    '\u52A0\u8F7D\u5931\u8D25\uFF0C\u8BF7\u7A0D\u540E\u91CD\u8BD5'
+                )
+            )
+        );
     };
 
     return ErrorPc;
@@ -7048,20 +8256,30 @@ var ErrorPc = function (_Component) {
 exports['default'] = ErrorPc;
 
 
-_component2['default'].registerComponent('ErrorPc', ErrorPc);
+if (!_featureDetector2['default'].touch) {
+    _component2['default'].register(ErrorPc);
+}
 
-},{"../component":4,"../utils/dom":29,"./error":15}],15:[function(require,module,exports){
+},{"../plugin/component":11,"../utils/dom":36,"../utils/feature-detector":38,"./error":22,"classnames":1}],22:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
 
-var _component = require('../component');
+var _classnames = require('classnames');
+
+var _classnames2 = _interopRequireDefault(_classnames);
+
+var _component = require('../plugin/component');
 
 var _component2 = _interopRequireDefault(_component);
 
 var _dom = require('../utils/dom');
 
 var Dom = _interopRequireWildcard(_dom);
+
+var _featureDetector = require('../utils/feature-detector');
+
+var _featureDetector2 = _interopRequireDefault(_featureDetector);
 
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj['default'] = obj; return newObj; } }
 
@@ -7076,7 +8294,6 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 * @author yuhui<yuhui06@baidu.com>
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 * @date 2017/11/16
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 */
-
 
 var Error = function (_Component) {
     _inherits(Error, _Component);
@@ -7113,21 +8330,20 @@ var Error = function (_Component) {
     };
 
     Error.prototype.createEl = function createEl() {
-        var errorSpinner = Dom.createElement('span', {
-            className: 'lark-error-area__spinner lark-icon-loading'
-        });
-
-        var errorText = Dom.createElement('span', {
-            className: 'lark-error-area__text'
-        }, '加载失败，点击重试');
-
-        var errorCnt = Dom.createElement('div', {
-            className: 'lark-error-cnt'
-        }, errorSpinner, errorText);
-
-        return Dom.createElement('div', {
-            className: 'lark-error-area'
-        }, errorCnt);
+        return _component2['default'].createElement(
+            'div',
+            { className: (0, _classnames2['default'])('lark-error-area', this.options.className) },
+            _component2['default'].createElement(
+                'div',
+                { className: 'lark-error-cnt' },
+                _component2['default'].createElement('span', { className: 'lark-error-area__spinner lark-icon-loading' }),
+                _component2['default'].createElement(
+                    'span',
+                    { className: 'lark-error-area__text' },
+                    '\u52A0\u8F7D\u5931\u8D25\uFF0C\u70B9\u51FB\u91CD\u8BD5'
+                )
+            )
+        );
     };
 
     return Error;
@@ -7136,14 +8352,20 @@ var Error = function (_Component) {
 exports['default'] = Error;
 
 
-_component2['default'].registerComponent('Error', Error);
+if (_featureDetector2['default'].touch) {
+    _component2['default'].register(Error);
+}
 
-},{"../component":4,"../utils/dom":29}],16:[function(require,module,exports){
+},{"../plugin/component":11,"../utils/dom":36,"../utils/feature-detector":38,"classnames":1}],23:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
 
-var _component = require('../component');
+var _classnames = require('classnames');
+
+var _classnames2 = _interopRequireDefault(_classnames);
+
+var _component = require('../plugin/component');
 
 var _component2 = _interopRequireDefault(_component);
 
@@ -7232,30 +8454,33 @@ var FullscreenButton = function (_Component) {
 
     FullscreenButton.prototype.createEl = function createEl() {
         // @todo 将两个 icon 分别放到两个类中，这样可以确定他们每个的 click 的事件一定跟自己的名称是相符的
-        return Dom.createElement('div', {
-            className: 'lark-fullscreen-button'
-        }, Dom.createElement('div', {
-            className: 'lark-request-fullscreen lark-icon-request-fullscreen'
-        }), Dom.createElement('div', {
-            // @todo 需要一个非全屏的按钮 sueb
-            className: 'lark-exit-fullscreen'
-        }));
+        // @todo 需要一个非全屏的按钮 sueb
+        return _component2['default'].createElement(
+            'div',
+            { className: (0, _classnames2['default'])('lark-fullscreen-button', this.options.className) },
+            _component2['default'].createElement('div', { className: 'lark-request-fullscreen lark-icon-request-fullscreen' }),
+            _component2['default'].createElement('div', { className: 'lark-exit-fullscreen' })
+        );
     };
 
     return FullscreenButton;
 }(_component2['default']);
 
+// Component.register(FullscreenButton);
+
+
 exports['default'] = FullscreenButton;
 
-
-_component2['default'].registerComponent('FullscreenButton', FullscreenButton);
-
-},{"../component":4,"../utils/dom":29,"../utils/events":30,"../utils/feature-detector":31,"./tooltip":25}],17:[function(require,module,exports){
+},{"../plugin/component":11,"../utils/dom":36,"../utils/events":37,"../utils/feature-detector":38,"./tooltip":32,"classnames":1}],24:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
 
-var _component = require('../component');
+var _classnames = require('classnames');
+
+var _classnames2 = _interopRequireDefault(_classnames);
+
+var _component = require('../plugin/component');
 
 var _component2 = _interopRequireDefault(_component);
 
@@ -7281,27 +8506,33 @@ var GradientBottom = function (_Component) {
     }
 
     GradientBottom.prototype.createEl = function createEl() {
-        return this.createElement('div', { className: 'lark-gradient-bottom' });
+        return _component2['default'].createElement('div', { className: (0, _classnames2['default'])('lark-gradient-bottom', this.options.className) });
     };
 
     return GradientBottom;
 }(_component2['default']);
 
+// Component.register(GradientBottom);
+
+
 exports['default'] = GradientBottom;
 
-
-_component2['default'].registerComponent('GradientBottom', GradientBottom);
-
-},{"../component":4}],18:[function(require,module,exports){
+},{"../plugin/component":11,"classnames":1}],25:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
 
-var _component = require('../component');
+var _classnames = require('classnames');
+
+var _classnames2 = _interopRequireDefault(_classnames);
+
+var _component = require('../plugin/component');
 
 var _component2 = _interopRequireDefault(_component);
 
-require('./loading');
+var _featureDetector = require('../utils/feature-detector');
+
+var _featureDetector2 = _interopRequireDefault(_featureDetector);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
 
@@ -7325,9 +8556,15 @@ var LoadingPc = function (_Component) {
     }
 
     LoadingPc.prototype.createEl = function createEl() {
-        var el = this.createElement('div', { className: 'lark-loading-pc' }, this.createElement('div', { className: 'lark-loading-area' }, this.createElement('div', { className: 'lark-loading-spinner' })));
-
-        return el;
+        return _component2['default'].createElement(
+            'div',
+            { className: (0, _classnames2['default'])('lark-loading-pc', this.options.className) },
+            _component2['default'].createElement(
+                'div',
+                { className: 'lark-loading-area' },
+                _component2['default'].createElement('div', { className: 'lark-loading-spinner' })
+            )
+        );
     };
 
     return LoadingPc;
@@ -7336,20 +8573,30 @@ var LoadingPc = function (_Component) {
 exports['default'] = LoadingPc;
 
 
-_component2['default'].registerComponent('LoadingPc', LoadingPc);
+if (!_featureDetector2['default'].touch) {
+    _component2['default'].register(LoadingPc);
+}
 
-},{"../component":4,"./loading":19}],19:[function(require,module,exports){
+},{"../plugin/component":11,"../utils/feature-detector":38,"classnames":1}],26:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
 
-var _component = require('../component');
+var _classnames = require('classnames');
+
+var _classnames2 = _interopRequireDefault(_classnames);
+
+var _component = require('../plugin/component');
 
 var _component2 = _interopRequireDefault(_component);
 
 var _dom = require('../utils/dom');
 
 var Dom = _interopRequireWildcard(_dom);
+
+var _featureDetector = require('../utils/feature-detector');
+
+var _featureDetector2 = _interopRequireDefault(_featureDetector);
 
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj['default'] = obj; return newObj; } }
 
@@ -7375,21 +8622,20 @@ var Loading = function (_Component) {
     }
 
     Loading.prototype.createEl = function createEl() {
-        var loadingSpinner = Dom.createElement('span', {
-            className: 'lark-loading-area__spinner lark-icon-loading'
-        });
-
-        var loadingText = Dom.createElement('span', {
-            className: 'lark-loading-area__text'
-        }, '正在加载');
-
-        var loadingCnt = Dom.createElement('div', {
-            className: 'lark-loading-cnt'
-        }, loadingSpinner, loadingText);
-
-        return Dom.createElement('div', {
-            className: 'lark-loading-area'
-        }, loadingCnt);
+        return _component2['default'].createElement(
+            'div',
+            { className: (0, _classnames2['default'])('lark-loading-area', this.options.className) },
+            _component2['default'].createElement(
+                'div',
+                { className: 'lark-loading-cnt' },
+                _component2['default'].createElement('span', { className: 'lark-loading-area__spinner lark-icon-loading' }),
+                _component2['default'].createElement(
+                    'span',
+                    { className: 'lark-loading-area__text' },
+                    '\u6B63\u5728\u52A0\u8F7D'
+                )
+            )
+        );
     };
 
     return Loading;
@@ -7398,14 +8644,20 @@ var Loading = function (_Component) {
 exports['default'] = Loading;
 
 
-_component2['default'].registerComponent('Loading', Loading);
+if (_featureDetector2['default'].touch) {
+    _component2['default'].register(Loading);
+}
 
-},{"../component":4,"../utils/dom":29}],20:[function(require,module,exports){
+},{"../plugin/component":11,"../utils/dom":36,"../utils/feature-detector":38,"classnames":1}],27:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
 
-var _component = require('../component');
+var _classnames = require('classnames');
+
+var _classnames2 = _interopRequireDefault(_classnames);
+
+var _component = require('../plugin/component');
 
 var _component2 = _interopRequireDefault(_component);
 
@@ -7471,27 +8723,14 @@ var PlayButton = function (_Component) {
     };
 
     PlayButton.prototype.createEl = function createEl() {
-        var playIcon = Dom.createElement('div', {
-            className: 'lark-play-button__play lark-icon-play',
-            title: 'play'
-        });
-
-        var pauseIcon = Dom.createElement('div', {
-            className: 'lark-play-button__pause lark-icon-pause',
-            title: 'pause'
-        });
-
-        var playButton = Dom.createElement('div', {
-            className: 'lark-play-button'
-        }, playIcon, pauseIcon);
-
-        if (!this.options.className) {
-            Dom.addClass(playButton, 'lark-play-button-mobile');
-        } else {
-            Dom.addClass(playButton, this.options.className);
-        }
-
-        return playButton;
+        return _component2['default'].createElement(
+            'div',
+            { className: (0, _classnames2['default'])('lark-play-button', this.options.className, {
+                    'lark-play-button-mobile': !this.options.className
+                }) },
+            _component2['default'].createElement('div', { className: 'lark-play-button__play lark-icon-play', title: 'play' }),
+            _component2['default'].createElement('div', { className: 'lark-play-button__pause lark-icon-pause', title: 'pause' })
+        );
     };
 
     return PlayButton;
@@ -7500,14 +8739,20 @@ var PlayButton = function (_Component) {
 exports['default'] = PlayButton;
 
 
-_component2['default'].registerComponent('PlayButton', PlayButton);
+if (_featureDetector2['default'].touch) {
+    _component2['default'].register(PlayButton);
+}
 
-},{"../component":4,"../utils/dom":29,"../utils/events":30,"../utils/feature-detector":31}],21:[function(require,module,exports){
+},{"../plugin/component":11,"../utils/dom":36,"../utils/events":37,"../utils/feature-detector":38,"classnames":1}],28:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
 
-var _component = require('../component');
+var _classnames = require('classnames');
+
+var _classnames2 = _interopRequireDefault(_classnames);
+
+var _component = require('../plugin/component');
 
 var _component2 = _interopRequireDefault(_component);
 
@@ -7515,7 +8760,9 @@ var _dom = require('../utils/dom');
 
 var Dom = _interopRequireWildcard(_dom);
 
-require('./buffer-bar');
+var _bufferBar = require('./buffer-bar');
+
+var _bufferBar2 = _interopRequireDefault(_bufferBar);
 
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj['default'] = obj; return newObj; } }
 
@@ -7548,43 +8795,41 @@ var ProgressBarExceptFill = function (_Component) {
     }
 
     ProgressBarExceptFill.prototype.createEl = function createEl() {
-        var lineHandle = Dom.createElement('div', {
-            className: 'lark-progress-bar__line__handle'
-        }, Dom.createElement('div', {
-            className: 'lark-progress-bar__line__handle-except-fill'
-        }));
-
-        var line = Dom.createElement('div', {
-            className: 'lark-progress-bar__line'
-        }, lineHandle);
-
-        var progressBarBackground = Dom.createElement('div', {
-            className: 'lark-progress-bar__background'
-        });
-
-        return Dom.createElement('div', {
-            className: 'lark-progress-bar-except-fill'
-        }, progressBarBackground, line);
+        return _component2['default'].createElement(
+            'div',
+            { className: (0, _classnames2['default'])('lark-progress-bar-except-fill', this.options.className) },
+            _component2['default'].createElement('div', { className: 'lark-progress-bar__background' }),
+            _component2['default'].createElement(
+                'div',
+                { className: 'lark-progress-bar__line' },
+                _component2['default'].createElement(
+                    'div',
+                    { className: 'lark-progress-bar__line__handle' },
+                    _component2['default'].createElement('div', { className: 'lark-progress-bar__line__handle-except-fill' })
+                )
+            ),
+            _component2['default'].createElement(_bufferBar2['default'], null)
+        );
     };
 
     return ProgressBarExceptFill;
 }(_component2['default']);
 
+// Component.register(ProgressBarExceptFill);
+
+
 exports['default'] = ProgressBarExceptFill;
 
-
-ProgressBarExceptFill.prototype.options = {
-    children: ['bufferBar']
-};
-
-_component2['default'].registerComponent('ProgressBarExceptFill', ProgressBarExceptFill);
-
-},{"../component":4,"../utils/dom":29,"./buffer-bar":9}],22:[function(require,module,exports){
+},{"../plugin/component":11,"../utils/dom":36,"./buffer-bar":16,"classnames":1}],29:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
 
-var _component = require('../component');
+var _classnames = require('classnames');
+
+var _classnames2 = _interopRequireDefault(_classnames);
+
+var _component = require('../plugin/component');
 
 var _component2 = _interopRequireDefault(_component);
 
@@ -7592,7 +8837,13 @@ var _dom = require('../utils/dom');
 
 var Dom = _interopRequireWildcard(_dom);
 
-require('./buffer-bar');
+var _bufferBar = require('./buffer-bar');
+
+var _bufferBar2 = _interopRequireDefault(_bufferBar);
+
+var _featureDetector = require('../utils/feature-detector');
+
+var _featureDetector2 = _interopRequireDefault(_featureDetector);
 
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj['default'] = obj; return newObj; } }
 
@@ -7645,36 +8896,35 @@ var ProgressBarSimple = function (_Component) {
     };
 
     ProgressBarSimple.prototype.createEl = function createEl() {
-        var line = Dom.createElement('div', {
-            className: 'lark-progress-bar__line'
-        });
-
-        var background = Dom.createElement('div', {
-            className: 'lark-progress-bar__background'
-        });
-
-        return Dom.createElement('div', {
-            className: 'lark-progress-bar--simple'
-        }, background, line);
+        return _component2['default'].createElement(
+            'div',
+            { className: (0, _classnames2['default'])('lark-progress-bar--simple', this.options.className) },
+            _component2['default'].createElement('div', { className: 'lark-progress-bar__background' }),
+            _component2['default'].createElement('div', { className: 'lark-progress-bar__line' }),
+            _component2['default'].createElement(_bufferBar2['default'], null)
+        );
     };
 
     return ProgressBarSimple;
 }(_component2['default']);
 
-_component2['default'].registerComponent('ProgressBarSimple', ProgressBarSimple);
-
-ProgressBarSimple.prototype.options = {
-    children: ['bufferBar']
-};
-
 exports['default'] = ProgressBarSimple;
 
-},{"../component":4,"../utils/dom":29,"./buffer-bar":9}],23:[function(require,module,exports){
+
+if (_featureDetector2['default'].touch) {
+    _component2['default'].register(ProgressBarSimple);
+}
+
+},{"../plugin/component":11,"../utils/dom":36,"../utils/feature-detector":38,"./buffer-bar":16,"classnames":1}],30:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
 
-var _component = require('../component');
+var _classnames = require('classnames');
+
+var _classnames2 = _interopRequireDefault(_classnames);
+
+var _component = require('../plugin/component');
 
 var _component2 = _interopRequireDefault(_component);
 
@@ -7696,7 +8946,9 @@ var _featureDetector2 = _interopRequireDefault(_featureDetector);
 
 var _timeFormat = require('../utils/time-format');
 
-require('./progress-bar-except-fill');
+var _progressBarExceptFill = require('./progress-bar-except-fill');
+
+var _progressBarExceptFill2 = _interopRequireDefault(_progressBarExceptFill);
 
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj['default'] = obj; return newObj; } }
 
@@ -7855,34 +9107,39 @@ var ProgressBar = function (_Slider) {
     };
 
     ProgressBar.prototype.createEl = function createEl() {
-        var className = 'lark-progress-bar';
-        if (this.options.className) {
-            className = className + ' ' + this.options.className;
-        }
-
-        return this.createElement('div', { className: className }, this.createElement('div', { className: 'lark-progress-bar-padding' }), this.createElement('div', { className: 'lark-progress-bar-hover-light' }), this.createElement('progressBarExceptFill'));
+        return _component2['default'].createElement(
+            'div',
+            { className: (0, _classnames2['default'])('lark-progress-bar', this.options.className) },
+            _component2['default'].createElement('div', { className: 'lark-progress-bar-padding' }),
+            _component2['default'].createElement('div', { className: 'lark-progress-bar-hover-light' }),
+            _component2['default'].createElement(_progressBarExceptFill2['default'], null)
+        );
     };
 
     return ProgressBar;
 }(_slider2['default']);
 
+// Component.register(ProgressBar);
+
+
 exports['default'] = ProgressBar;
 
-
-_component2['default'].registerComponent('ProgressBar', ProgressBar);
-
-},{"../component":4,"../utils/dom":29,"../utils/feature-detector":31,"../utils/time-format":40,"./progress-bar-except-fill":21,"./slider":24,"./tooltip":25}],24:[function(require,module,exports){
+},{"../plugin/component":11,"../utils/dom":36,"../utils/feature-detector":38,"../utils/time-format":47,"./progress-bar-except-fill":28,"./slider":31,"./tooltip":32,"classnames":1}],31:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
 
-var _component = require('../component');
+var _component = require('../plugin/component');
 
 var _component2 = _interopRequireDefault(_component);
 
 var _events = require('../utils/events');
 
 var Events = _interopRequireWildcard(_events);
+
+var _dom = require('../utils/dom');
+
+var Dom = _interopRequireWildcard(_dom);
 
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj['default'] = obj; return newObj; } }
 
@@ -7932,7 +9189,7 @@ var Slider = function (_Component) {
     Slider.prototype.handleSlideStart = function handleSlideStart(event) {
         this.onSlideStart(event);
 
-        this.addClass('lark-sliding');
+        Dom.addClass(this.el, 'lark-sliding');
 
         Events.on(document, 'touchmove', this.handleSlideMove);
         Events.on(document, 'touchend', this.handleSlideEnd);
@@ -7947,7 +9204,7 @@ var Slider = function (_Component) {
     Slider.prototype.handleSlideEnd = function handleSlideEnd(event) {
         this.onSlideEnd(event);
 
-        this.removeClass('lark-sliding');
+        Dom.removeClass(this.el, 'lark-sliding');
 
         Events.off(document, 'touchmove', this.handleSlideMove);
         Events.off(document, 'touchend', this.handleSlideEnd);
@@ -7960,22 +9217,22 @@ var Slider = function (_Component) {
 
 exports['default'] = Slider;
 
-},{"../component":4,"../utils/events":30}],25:[function(require,module,exports){
+},{"../plugin/component":11,"../utils/dom":36,"../utils/events":37}],32:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
-
-var _dom = require('../utils/dom');
-
-var Dom = _interopRequireWildcard(_dom);
 
 var _lodash = require('lodash.assign');
 
 var _lodash2 = _interopRequireDefault(_lodash);
 
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
+var _dom = require('../utils/dom');
+
+var Dom = _interopRequireWildcard(_dom);
 
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj['default'] = obj; return newObj; } }
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
 
 /**
  * @file tooltip.js 用于展示提示性文字
@@ -8101,12 +9358,16 @@ exports['default'] = {
     }
 };
 
-},{"../utils/dom":29,"lodash.assign":1}],26:[function(require,module,exports){
+},{"../utils/dom":36,"lodash.assign":2}],33:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
 
-var _component = require('../component');
+var _classnames = require('classnames');
+
+var _classnames2 = _interopRequireDefault(_classnames);
+
+var _component = require('../plugin/component');
 
 var _component2 = _interopRequireDefault(_component);
 
@@ -8258,22 +9519,32 @@ var Volume = function (_Slider) {
     };
 
     Volume.prototype.createEl = function createEl() {
-        var volumeIcon = this.createElement('div', { className: 'lark-volume-icon lark-icon-sound-large' });
-
-        var volumeLine = this.createElement('div', { className: 'lark-volume-line' }, this.createElement('div', { className: 'lark-volume-line__line' }, this.createElement('div', { className: 'lark-volume-line__line-padding' })), this.createElement('div', { className: 'lark-volume-line__ball' }));
-
-        return this.createElement('div', { className: 'lark-volume' }, volumeIcon, volumeLine);
+        return _component2['default'].createElement(
+            'div',
+            { className: (0, _classnames2['default'])('lark-volume', this.options.className) },
+            _component2['default'].createElement('div', { className: 'lark-volume-icon lark-icon-sound-large' }),
+            _component2['default'].createElement(
+                'div',
+                { className: 'lark-volume-line' },
+                _component2['default'].createElement(
+                    'div',
+                    { className: 'lark-volume-line__line' },
+                    _component2['default'].createElement('div', { className: 'lark-volume-line__line-padding' })
+                ),
+                _component2['default'].createElement('div', { className: 'lark-volume-line__ball' })
+            )
+        );
     };
 
     return Volume;
 }(_slider2['default']);
 
+// Component.register(Volume);
+
+
 exports['default'] = Volume;
 
-
-_component2['default'].registerComponent('Volume', Volume);
-
-},{"../component":4,"../utils/dom":29,"../utils/events":30,"./slider":24,"./tooltip":25}],27:[function(require,module,exports){
+},{"../plugin/component":11,"../utils/dom":36,"../utils/events":37,"./slider":31,"./tooltip":32,"classnames":1}],34:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -8307,7 +9578,7 @@ function computedStyle(el, prop) {
     return el.currentStyle && el.currentStyle[prop] || '';
 }
 
-},{}],28:[function(require,module,exports){
+},{}],35:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -8400,7 +9671,7 @@ function removeData(el) {
     }
 }
 
-},{"./guid":33}],29:[function(require,module,exports){
+},{"./guid":40}],36:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -9152,7 +10423,7 @@ var $$ = exports.$$ = createQuerier('querySelectorAll');
 //     }
 // })();
 
-},{"./computed-style":27,"./obj":38,"lodash.includes":3}],30:[function(require,module,exports){
+},{"./computed-style":34,"./obj":45,"lodash.includes":4}],37:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -9626,7 +10897,7 @@ function one(elem, type, fn) {
     on(elem, type, executeOnlyOnce);
 }
 
-},{"./dom-data":28,"./guid":33,"lodash.includes":3}],31:[function(require,module,exports){
+},{"./dom-data":35,"./guid":40,"lodash.includes":4}],38:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -9642,7 +10913,7 @@ exports['default'] = {
   touch: 'ontouchend' in document
 };
 
-},{}],32:[function(require,module,exports){
+},{}],39:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -9727,7 +10998,7 @@ exports['default'] = {
     }
 };
 
-},{"./events":30}],33:[function(require,module,exports){
+},{"./events":37}],40:[function(require,module,exports){
 "use strict";
 
 exports.__esModule = true;
@@ -9750,7 +11021,7 @@ function newGUID() {
   return guid++;
 }
 
-},{}],34:[function(require,module,exports){
+},{}],41:[function(require,module,exports){
 "use strict";
 
 exports.__esModule = true;
@@ -9795,7 +11066,7 @@ log.error = console.error;
 
 log.clear = console.clear;
 
-},{}],35:[function(require,module,exports){
+},{}],42:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -9848,7 +11119,7 @@ function mergeOptions() {
    * @date 2017/11/3
    */
 
-},{"./obj.js":38}],36:[function(require,module,exports){
+},{"./obj.js":45}],43:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -9871,7 +11142,7 @@ exports['default'] = {
     'wmv': 'video/x-ms-wmv'
 };
 
-},{}],37:[function(require,module,exports){
+},{}],44:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -9961,7 +11232,7 @@ function nomalizeSource(source) {
     }
 }
 
-},{"./mime-type-map":36,"./obj":38}],38:[function(require,module,exports){
+},{"./mime-type-map":43,"./obj":45}],45:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -10019,7 +11290,7 @@ function each(obj, fn) {
   });
 }
 
-},{}],39:[function(require,module,exports){
+},{}],46:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -10091,7 +11362,7 @@ function deregisterPlugin(name) {
   delete pluginStore[name];
 }
 
-},{}],40:[function(require,module,exports){
+},{}],47:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -10150,7 +11421,7 @@ function timeFormat(seconds) {
     }
 }
 
-},{}],41:[function(require,module,exports){
+},{}],48:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -10191,5 +11462,5 @@ function titleCaseEquals(str1, str2) {
   return toTitleCase(str1) === toTitleCase(str2);
 }
 
-},{}]},{},[6])(6)
+},{}]},{},[8])(8)
 });

@@ -4,15 +4,18 @@
  * @date 2017/11/9
  */
 
-import Component from '../component';
+import classnames from 'classnames';
+
+import Component from '../plugin/component';
 import * as Dom from '../utils/dom';
 
-import './current-time';
-import './duration';
-import './fullscreen-button';
-import './progress-bar';
+import CurrentTime from './current-time';
+import Duration from './duration';
+import FullscreenButton from './fullscreen-button';
+import ProgressBar from './progress-bar';
+import featureDetector from '../utils/feature-detector';
 
-class ControlBar extends Component {
+export default class ControlBar extends Component {
     reset() {
         this.children.forEach(child => {
             child && child.reset && child.reset();
@@ -20,21 +23,17 @@ class ControlBar extends Component {
     }
 
     createEl() {
-        return Dom.createElement('div', {
-            className: 'lark-control-bar'
-        });
+        return (
+            <div className={classnames('lark-control-bar', this.options.className)}>
+                <CurrentTime />
+                <ProgressBar />
+                <Duration />
+                <FullscreenButton />
+            </div>
+        );
     }
 }
 
-ControlBar.prototype.options = {
-    children: [
-        'currentTime',
-        'progressBar',
-        'duration',
-        'fullscreenButton'
-    ]
-};
-
-Component.registerComponent('ControlBar', ControlBar);
-
-export default ControlBar;
+if (featureDetector.touch) {
+    Component.register(ControlBar);
+}

@@ -4,7 +4,9 @@
  * @date 2017/11/4
  */
 
-import Component from '../component';
+import classnames from 'classnames';
+
+import Component from '../plugin/component';
 import * as Dom from '../utils/dom';
 import {timeFormat} from '../utils/time-format';
 
@@ -32,10 +34,12 @@ export default class CurrentTime extends Component {
     createEl() {
         const currentTime = this.player.currentTime();
 
-        return Dom.createElement('div', {
-            className: 'lark-current-time'
-        }, timeFormat(Math.floor(currentTime)));
+        return (
+            <div className={classnames('lark-current-time', this.options.className)}>
+                {timeFormat(Math.floor(currentTime))}
+            </div>
+        );
     }
 }
 
-Component.registerComponent('CurrentTime', CurrentTime);
+// Component.register(CurrentTime);

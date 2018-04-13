@@ -4,7 +4,10 @@
  * @date 2017/11/5
  */
 
-import Component from '../component';
+
+import classnames from 'classnames';
+
+import Component from '../plugin/component';
 import * as Dom from '../utils/dom';
 import * as Events from '../utils/events';
 import tooltip from './tooltip';
@@ -64,15 +67,16 @@ export default class FullscreenButton extends Component {
 
     createEl() {
         // @todo 将两个 icon 分别放到两个类中，这样可以确定他们每个的 click 的事件一定跟自己的名称是相符的
-        return Dom.createElement('div', {
-            className: 'lark-fullscreen-button'
-        }, Dom.createElement('div', {
-            className: 'lark-request-fullscreen lark-icon-request-fullscreen'
-        }), Dom.createElement('div', {
-            // @todo 需要一个非全屏的按钮 sueb
-            className: 'lark-exit-fullscreen'
-        }));
+        // @todo 需要一个非全屏的按钮 sueb
+        return (
+            <div className={classnames('lark-fullscreen-button', this.options.className)}>
+                <div className="lark-request-fullscreen lark-icon-request-fullscreen"></div>
+                <div className="lark-exit-fullscreen"></div>
+            </div>
+        );
     }
 }
 
-Component.registerComponent('FullscreenButton', FullscreenButton);
+// Component.register(FullscreenButton);
+
+

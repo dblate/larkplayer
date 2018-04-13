@@ -5,14 +5,17 @@
  * @date 2018/3/15 支持 pc 端拖拽和 tooltip
  */
 
-import Component from '../component';
+
+import classnames from 'classnames';
+
+import Component from '../plugin/component';
 import Slider from './slider';
 import tooltip from './tooltip';
 import * as Dom from '../utils/dom';
 import featureDetector from '../utils/feature-detector';
 import {timeFormat} from '../utils/time-format';
 
-import './progress-bar-except-fill';
+import ProgressBarExceptFill from './progress-bar-except-fill';
 
 
 export default class ProgressBar extends Slider {
@@ -152,26 +155,17 @@ export default class ProgressBar extends Slider {
     }
 
     createEl() {
-        let className = 'lark-progress-bar';
-        if (this.options.className) {
-            className = className + ' ' + this.options.className;
-        }
-
-        return this.createElement(
-            'div',
-            {className},
-            this.createElement(
-                'div',
-                {className: 'lark-progress-bar-padding'}
-            ),
-            this.createElement(
-                'div',
-                {className: 'lark-progress-bar-hover-light'}
-            ),
-            this.createElement('progressBarExceptFill')
+        return (
+            <div className={classnames('lark-progress-bar', this.options.className)}>
+                <div className="lark-progress-bar-padding"></div>
+                <div className="lark-progress-bar-hover-light"></div>
+                <ProgressBarExceptFill />
+            </div>
         );
     }
 }
 
 
-Component.registerComponent('ProgressBar', ProgressBar);
+// Component.register(ProgressBar);
+
+
