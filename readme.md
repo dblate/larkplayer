@@ -17,7 +17,7 @@ larkplayer 是一款轻量级的 html5 播放器
 
 * 解决大部分兼容性问题，如全屏、移动端内联播放等
 * 提供事件机制，代理原生的各个事件并允许自定义事件
-* 提供插件机制，丰富的插件类型是支持播放器健康成长的必要条件
+* 提供插件机制，支持 UI MediaSource 和普通插件 3 种类型，其中 UI 插件支持 jsx 语法
 * 提供自定义样式，自适应 pc 与 wap 端
 
 [在线示例](https://s.codepen.io/dblate/debug/qojzZZ/ZoMBajEzGyDk)
@@ -117,11 +117,16 @@ const player = larkplayer('video-el');
 
 [GitBook](https://dblate.gitbooks.io/larkplayer/content/gai-lan.html)上的文档正在建设中 ;)
 
-[docs](https://github.com/dblate/larkplayer/tree/master/docs)目录下有各个模块的 api 文档
-* [player](https://github.com/dblate/larkplayer/blob/master/docs/player.md)
-* [dom](https://github.com/dblate/larkplayer/blob/master/docs/dom.md)
-* [events](https://github.com/dblate/larkplayer/blob/master/docs/events.md)
-* [plugin](https://github.com/dblate/larkplayer/blob/master/docs/plugin.md)
+* [设计文档](https://github.com/dblate/larkplayer/blob/master/docs/design.md)
+* api
+    * [Player](https://github.com/dblate/larkplayer/blob/master/docs/api/player.md)
+    * [Events](https://github.com/dblate/larkplayer/blob/master/docs/api/events.md)
+    * [DOM](https://github.com/dblate/larkplayer/blob/master/docs/api/dom.md)
+* plugin example
+    * [UI Plugin](https://github.com/dblate/larkplayer/blob/master/docs/plugin/ui-plugin-example.md)
+    * [MS Plugin](https://github.com/dblate/larkplayer/blob/master/docs/plugin/media-source-plugin-example.md)
+    * [Normal Plugin](https://github.com/dblate/larkplayer/blob/master/docs/plugin/normal-plugin-example.md)
+
 
 <h3>如何贡献代码</h3>
 
