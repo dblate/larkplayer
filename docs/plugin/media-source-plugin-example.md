@@ -1,6 +1,6 @@
 ## MediaSource 插件编写
     
-    MediaSource 插件基于 MSE 为播放器提供更多视频格式支持
+MediaSource 插件基于 MSE 为播放器提供更多视频格式支持
 
 ### 如何编写
 

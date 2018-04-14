@@ -39,15 +39,20 @@ Component:
         constructor(player, options) {
             super(player, options);
 
-            // 绑定下 this，否则 handleClose 方法中的 this 就指向该方法绑定的 DOM 元素上了
-            this.handleClose = this.handleClose.bind(this);
+            // 绑定下 this，否则该方法执行时，this 会指向对应的 DOM 元素
+            this.hide = this.hide.bind(this);
 
+            // 将上下文设置为 this.el，否则无法选择到对应元素，因为此时该组件的 DOM 元素还未被插入到 html 中
             this.closeEl = DOM.$('.dialog__close', this.el);
-            Events.on(this.closeEl, 'click', this.handleClose);
+            Events.on(this.closeEl, 'click', this.hide);
         }
 
-        handleClose() {
+        hide() {
             this.el.style.display = 'none';
+        }
+
+        show() {
+            this.el.style.display = 'block';
         }
 
         createEl() {
@@ -58,6 +63,7 @@ Component:
             }, this.options);
 
             return (
+                // 可以使用 jsx 语法
                 <div className={classnames('dialog', this.options.className)}>
                     <i className="dialog__close">close</i>
                     <h1 class="dialog__title">{this.options.title}</h1>
@@ -73,10 +79,6 @@ Component:
 
             this.show = this.show.bind(this);
             this.player.on('error', this.show);
-        }
-
-        show(event) {
-            this.el.style.display = 'block';
         }
 
         createEl() {
