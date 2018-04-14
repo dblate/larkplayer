@@ -4365,299 +4365,9 @@ module.exports = values;
 
 exports.__esModule = true;
 
-var _dom = require('./utils/dom');
-
-var Dom = _interopRequireWildcard(_dom);
-
-var _guid = require('./utils/guid');
-
-var _toTitleCase = require('./utils/to-title-case');
-
-var _toTitleCase2 = _interopRequireDefault(_toTitleCase);
-
-var _mergeOptions = require('./utils/merge-options');
-
-var _mergeOptions2 = _interopRequireDefault(_mergeOptions);
-
-var _evented = require('./mixins/evented');
-
-var _evented2 = _interopRequireDefault(_evented);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
-
-function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj['default'] = obj; return newObj; } }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } } /**
-                                                                                                                                                           * @file class Componet 所有 UI 的基类
-                                                                                                                                                           * @author yuhui06@baidu.com
-                                                                                                                                                           * @date 2017/11/4
-                                                                                                                                                           * @todo 支持 tap 事件
-                                                                                                                                                           */
-
-var Component = function () {
-    function Component(player, options, ready) {
-        _classCallCheck(this, Component);
-
-        if (!player && this.play) {
-            this.player = player = this;
-        } else {
-            this.player = player;
-        }
-
-        // 避免覆盖 prototype.options
-        this.options = (0, _mergeOptions2['default'])({}, this.options);
-        options = this.options = (0, _mergeOptions2['default'])(this.options, options);
-        this.id = options.id || options.el && options.el.id;
-        if (!this.id) {
-            var id = player && player.id || 'no_player';
-            this.id = id + '_component_' + (0, _guid.newGUID)();
-        }
-
-        this.name = options.name || null;
-
-        // Html5 中 options.el 为 video 标签
-        if (options.el) {
-            this.el = options.el;
-            // 有时侯我们不希望在这里执行 createEl
-        } else if (options.createEl !== false) {
-            // 往往是执行子类的 createEl 方法
-            this.el = this.createEl();
-        }
-
-        (0, _evented2['default'])(this, { eventBusKey: this.el });
-
-        // 子元素相关信息
-        this.children = [];
-        this.childNameIndex = {};
-
-        if (options.initChildren !== false) {
-            this.initChildren();
-        }
-
-        this.ready(ready);
-    }
-
-    // dispose 应该做到以下几方面
-    // 1. remove Elements for memory
-    // 2. remove Events for memory
-    // 3. remove reference for GC
-
-
-    Component.prototype.dispose = function dispose() {
-        this.trigger({ type: 'dispose', bubbles: false });
-
-        if (this.el) {
-            if (this.el.parentNode) {
-                this.el.parentNode.removeChild(this.el);
-            }
-            this.off();
-            this.el = null;
-        }
-
-        if (this.children) {
-            this.children.forEach(function (child) {
-                if (typeof child.dispose === 'function') {
-                    child.dispose();
-                }
-            });
-            this.children = null;
-            this.childNameIndex = null;
-        }
-    };
-
-    Component.prototype.createEl = function createEl(tagName, properties, attributes) {
-        return Dom.createEl(tagName, properties, attributes);
-    };
-
-    Component.prototype.createElement = function createElement(tagName, props) {
-        var ComponentClass = Component.getComponent((0, _toTitleCase2['default'])(tagName));
-
-        for (var _len = arguments.length, child = Array(_len > 2 ? _len - 2 : 0), _key = 2; _key < _len; _key++) {
-            child[_key - 2] = arguments[_key];
-        }
-
-        if (ComponentClass) {
-            var instance = new ComponentClass(this.player, props);
-            var instanceEl = instance.el;
-
-            if (child) {
-                Dom.appendContent(instanceEl, child);
-            }
-
-            return instanceEl;
-        } else {
-            return Dom.createElement.apply(Dom, [tagName, props].concat(child));
-        }
-    };
-
-    Component.prototype.appendChild = function appendChild(el, child) {};
-
-    Component.prototype.contentEl = function contentEl() {
-        return this.contentEl || this.el;
-    };
-
-    Component.prototype.getChild = function getChild(name) {
-
-        if (!name) {
-            return;
-        }
-
-        return this.childNameIndex[(0, _toTitleCase2['default'])(name)];
-    };
-
-    Component.prototype.addChild = function addChild() {};
-
-    Component.prototype.removeChild = function removeChild() {};
-
-    Component.prototype.initChildren = function initChildren() {
-        var _this = this;
-
-        if (this.options.children && this.options.children.length) {
-            // 目前只支持平行的就够了
-            this.options.children.forEach(function (componentName) {
-                var ComponentClass = Component.getComponent((0, _toTitleCase2['default'])(componentName));
-                // @todo 判断 ComponentClass 是否合法
-                if (ComponentClass) {
-                    // @todo this.options 传到子元素里有什么用？
-                    // this.options 里的 el 会跟子元素的 el 冲突
-                    var _child = new ComponentClass(_this.player);
-
-                    _this.children.push(_child);
-                    _this.childNameIndex[componentName] = _child;
-
-                    _this.el.appendChild(_child.el);
-                }
-            });
-        }
-    };
-
-    Component.prototype.ready = function ready(fn) {
-        var _this2 = this;
-
-        if (fn) {
-            if (this.isReady) {
-                setTimeout(function () {
-                    fn.call(_this2);
-                }, 1);
-            } else {
-                this.readyQueue = this.readyQueue || [];
-                this.readyQueue.push(fn);
-            }
-        }
-    };
-
-    Component.prototype.triggerReady = function triggerReady() {
-        var _this3 = this;
-
-        this.isReady = true;
-
-        setTimeout(function () {
-            var readyQueue = _this3.readyQueue;
-            _this3.readyQueue = [];
-            if (readyQueue && readyQueue.length) {
-                readyQueue.forEach(function (fn) {
-                    fn.call(_this3);
-                });
-            }
-
-            _this3.trigger('ready');
-        }, 1);
-    };
-
-    Component.prototype.$ = function $(selector, context) {
-        return Dom.$(selector, context || this.contentEl());
-    };
-
-    Component.prototype.$$ = function $$(selector, context) {
-        return Dom.$$(selector, context || this.contentEl());
-    };
-
-    Component.prototype.hasClass = function hasClass(classToCheck) {
-        return Dom.hasClass(this.el, classToCheck);
-    };
-
-    Component.prototype.addClass = function addClass(classToAdd) {
-        return Dom.addClass(this.el, classToAdd);
-    };
-
-    Component.prototype.removeClass = function removeClass(classToRemove) {
-        return Dom.removeClass(this.el, classToRemove);
-    };
-
-    Component.prototype.toggleClass = function toggleClass(classToToggle) {
-        return Dom.toggleClass(this.el, classToToggle);
-    };
-
-    Component.prototype.show = function show() {
-        this.removeClass('lark-hidden');
-    };
-
-    Component.prototype.hide = function hide() {
-        this.addClass('lark-hidden');
-    };
-
-    Component.prototype.lockShowing = function lockShowing() {
-        this.addClass('lark-lock-showing');
-    };
-
-    Component.prototype.unlockShowing = function unlockShowing() {
-        this.removeClass('lark-lock-showing');
-    };
-
-    Component.prototype.getAttribute = function getAttribute(attribute) {
-        return Dom.getAttribute(this.el, attribute);
-    };
-
-    Component.prototype.setAttribute = function setAttribute(attribute, value) {
-        return Dom.setAttribute(attribute, value);
-    };
-
-    Component.prototype.removeAttribute = function removeAttribute(attribute) {
-        return Dom.removeAttribute(this.el, attribute);
-    };
-
-    Component.prototype.width = function width() {};
-
-    Component.prototype.height = function height() {};
-
-    Component.prototype.focus = function focus() {
-        this.el.focus();
-    };
-
-    Component.prototype.blur = function blur() {
-        this.el.blur();
-    };
-
-    Component.registerComponent = function registerComponent(name, component) {
-        // 静态方法，this 是指 Component 这个类而不是他的实例
-        if (!this.components) {
-            this.components = {};
-        }
-
-        this.components[name] = component;
-    };
-
-    Component.getComponent = function getComponent(name) {
-        return this.components[name];
-    };
-
-    return Component;
-}();
-
-exports['default'] = Component;
-
-},{"./mixins/evented":9,"./utils/dom":36,"./utils/guid":40,"./utils/merge-options":42,"./utils/to-title-case":48}],7:[function(require,module,exports){
-'use strict';
-
-exports.__esModule = true;
-
 var _lodash = require('lodash.find');
 
 var _lodash2 = _interopRequireDefault(_lodash);
-
-var _component = require('./component');
-
-var _component2 = _interopRequireDefault(_component);
 
 var _dom = require('./utils/dom');
 
@@ -4673,41 +4383,41 @@ var _normalizeSource2 = _interopRequireDefault(_normalizeSource);
 
 var _obj = require('./utils/obj');
 
+var _evented = require('./mixins/evented');
+
+var _evented2 = _interopRequireDefault(_evented);
+
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj['default'] = obj; return newObj; } }
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
 
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; } /**
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                * @file html5 video api proxy
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                * @author yuhui06(yuhui06@baidu.com)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                * @date 2017/11/6
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                * @see https://html.spec.whatwg.org/#event-media-emptied
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                * @see https://www.w3.org/TR/html5/embedded-content-0.html#attr-media-src
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                */
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } } /**
+                                                                                                                                                           * @file html5 video api proxy
+                                                                                                                                                           * @author yuhui06(yuhui06@baidu.com)
+                                                                                                                                                           * @date 2017/11/6
+                                                                                                                                                           * @see https://html.spec.whatwg.org/#event-media-emptied
+                                                                                                                                                           * @see https://www.w3.org/TR/html5/embedded-content-0.html#attr-media-src
+                                                                                                                                                           */
 
 var document = window.document;
 
-var Html5 = function (_Component) {
-    _inherits(Html5, _Component);
-
-    function Html5(player, options, ready) {
+var Html5 = function () {
+    function Html5(player, options) {
         _classCallCheck(this, Html5);
+
+        this.options = options;
+        this.el = this.options.el;
+
+        (0, _evented2['default'])(this, { eventBusKey: this.el });
 
         // @todo 处理有 source 的情况
 
-        var _this = _possibleConstructorReturn(this, _Component.call(this, player, options, ready));
-
-        _this.proxyWebkitFullscreen();
-        return _this;
+        this.proxyWebkitFullscreen();
     }
 
     Html5.prototype.dispose = function dispose() {
         Html5.disposeMediaElement(this.el);
-        _Component.prototype.dispose.call(this);
+        // super.dispose();
     };
 
     Html5.prototype.setCurrentTime = function setCurrentTime(seconds) {
@@ -4729,7 +4439,7 @@ var Html5 = function (_Component) {
     };
 
     Html5.prototype.proxyWebkitFullscreen = function proxyWebkitFullscreen() {
-        var _this2 = this;
+        var _this = this;
 
         if (!('webkitDisplayingFullscreen' in this.el)) {
             return;
@@ -4753,8 +4463,8 @@ var Html5 = function (_Component) {
 
         this.on('webkitbeginfullscreen', beginFn);
         this.on('dispose', function () {
-            _this2.off('webkitbeginfullscreen', beginFn);
-            _this2.off('webkitendfullscreen', endFn);
+            _this.off('webkitbeginfullscreen', beginFn);
+            _this.off('webkitendfullscreen', endFn);
         });
     };
 
@@ -4840,7 +4550,7 @@ var Html5 = function (_Component) {
     Html5.prototype.getVideoPlaybackQuality = function getVideoPlaybackQuality() {};
 
     return Html5;
-}(_component2['default']);
+}();
 
 // HTML5 Support Testing
 
@@ -5083,7 +4793,7 @@ Html5.selectMediaSourceHandler = function (source) {
 
 exports['default'] = Html5;
 
-},{"./component":6,"./utils/dom":36,"./utils/normalize-source":44,"./utils/obj":45,"./utils/to-title-case":48,"lodash.find":3}],8:[function(require,module,exports){
+},{"./mixins/evented":8,"./utils/dom":35,"./utils/normalize-source":42,"./utils/obj":43,"./utils/to-title-case":46,"lodash.find":3}],7:[function(require,module,exports){
 'use strict';
 
 var _lodash = require('lodash.assign');
@@ -5200,7 +4910,7 @@ larkplayer.deregisterPlugin = Plugin.deregisterPlugin;
 // @see https://github.com/babel/babel/issues/2724
 module.exports = larkplayer;
 
-},{"./html5":7,"./player":10,"./utils/dom":36,"./utils/events":37,"./utils/log":41,"./utils/plugin":46,"lodash.assign":2}],9:[function(require,module,exports){
+},{"./html5":6,"./player":9,"./utils/dom":35,"./utils/events":36,"./utils/log":40,"./utils/plugin":44,"lodash.assign":2}],8:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -5269,7 +4979,7 @@ function evented(target) {
     };
 }
 
-},{"../utils/dom":36,"../utils/events":37}],10:[function(require,module,exports){
+},{"../utils/dom":35,"../utils/events":36}],9:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -7146,7 +6856,7 @@ if (_featureDetector2['default'].touch) {
 
 exports['default'] = Player;
 
-},{"./html5":7,"./mixins/evented":9,"./plugin/component":11,"./plugin/media-source-handler":12,"./plugin/plugin":15,"./plugin/plugin-types":14,"./ui/control-bar":18,"./ui/control-bar-pc":17,"./ui/error":22,"./ui/error-pc":21,"./ui/loading":26,"./ui/loading-pc":25,"./ui/play-button":27,"./ui/progress-bar-simple":29,"./ui/volume":33,"./utils/computed-style":34,"./utils/dom":36,"./utils/events":37,"./utils/feature-detector":38,"./utils/fullscreen":39,"./utils/guid":40,"./utils/log":41,"./utils/normalize-source":44,"./utils/obj":45,"./utils/to-title-case":48,"lodash.includes":4}],11:[function(require,module,exports){
+},{"./html5":6,"./mixins/evented":8,"./plugin/component":10,"./plugin/media-source-handler":11,"./plugin/plugin":14,"./plugin/plugin-types":13,"./ui/control-bar":17,"./ui/control-bar-pc":16,"./ui/error":21,"./ui/error-pc":20,"./ui/loading":25,"./ui/loading-pc":24,"./ui/play-button":26,"./ui/progress-bar-simple":28,"./ui/volume":32,"./utils/computed-style":33,"./utils/dom":35,"./utils/events":36,"./utils/feature-detector":37,"./utils/fullscreen":38,"./utils/guid":39,"./utils/log":40,"./utils/normalize-source":42,"./utils/obj":43,"./utils/to-title-case":46,"lodash.includes":4}],10:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -7200,12 +6910,19 @@ var Component = function () {
         return DOM.createElement('div', this.options);
     };
 
+    // 1. remove Elements for memory
+    // 2. remove Events for memory
+    // 3. remove reference for GC
+
+
     Component.prototype.dispose = function dispose() {
         if (DOM.isEl(this.el) && this.el.parentNode) {
             Events.off(this.el);
             this.el.parentNode.removeChild(this.el);
-            this.el = null;
         }
+        this.player = null;
+        this.options = null;
+        this.el = null;
     };
 
     Component.createElement = function createElement(name) {
@@ -7320,7 +7037,7 @@ var Component = function () {
 
 exports['default'] = Component;
 
-},{"../mixins/evented":9,"../utils/dom":36,"../utils/events":37,"./plugin-store":13,"./plugin-types":14}],12:[function(require,module,exports){
+},{"../mixins/evented":8,"../utils/dom":35,"../utils/events":36,"./plugin-store":12,"./plugin-types":13}],11:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -7489,7 +7206,7 @@ var MediaSourceHandler = function () {
 
 exports['default'] = MediaSourceHandler;
 
-},{"./plugin-store":13,"./plugin-types":14,"lodash.find":3}],13:[function(require,module,exports){
+},{"./plugin-store":12,"./plugin-types":13,"lodash.find":3}],12:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -7599,7 +7316,7 @@ var pluginStore = {
 
 exports['default'] = pluginStore;
 
-},{"../utils/guid":40,"./component":11,"./media-source-handler":12,"./plugin":15,"./plugin-types":14,"lodash.values":5}],14:[function(require,module,exports){
+},{"../utils/guid":39,"./component":10,"./media-source-handler":11,"./plugin":14,"./plugin-types":13,"lodash.values":5}],13:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -7615,7 +7332,7 @@ var OTHERS = exports.OTHERS = 'otherPlugin';
 
 exports['default'] = { UI: UI, MS: MS, OTHERS: OTHERS };
 
-},{}],15:[function(require,module,exports){
+},{}],14:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -7693,7 +7410,7 @@ var Plugin = function () {
 
 exports['default'] = Plugin;
 
-},{"./plugin-store":13,"./plugin-types":14}],16:[function(require,module,exports){
+},{"./plugin-store":12,"./plugin-types":13}],15:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -7790,7 +7507,7 @@ var BufferBar = function (_Component) {
 
 exports['default'] = BufferBar;
 
-},{"../plugin/component":11,"../utils/dom":36,"classnames":1}],17:[function(require,module,exports){
+},{"../plugin/component":10,"../utils/dom":35,"classnames":1}],16:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -7903,7 +7620,7 @@ if (!_featureDetector2['default'].touch) {
     _component2['default'].register(ControlBarPc);
 }
 
-},{"../plugin/component":11,"../utils/feature-detector":38,"./current-time":19,"./duration":20,"./fullscreen-button":23,"./gradient-bottom":24,"./play-button":27,"./progress-bar":30,"./volume":33,"classnames":1}],18:[function(require,module,exports){
+},{"../plugin/component":10,"../utils/feature-detector":37,"./current-time":18,"./duration":19,"./fullscreen-button":22,"./gradient-bottom":23,"./play-button":26,"./progress-bar":29,"./volume":32,"classnames":1}],17:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -7915,10 +7632,6 @@ var _classnames2 = _interopRequireDefault(_classnames);
 var _component = require('../plugin/component');
 
 var _component2 = _interopRequireDefault(_component);
-
-var _dom = require('../utils/dom');
-
-var Dom = _interopRequireWildcard(_dom);
 
 var _currentTime = require('./current-time');
 
@@ -7939,8 +7652,6 @@ var _progressBar2 = _interopRequireDefault(_progressBar);
 var _featureDetector = require('../utils/feature-detector');
 
 var _featureDetector2 = _interopRequireDefault(_featureDetector);
-
-function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj['default'] = obj; return newObj; } }
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
 
@@ -7990,7 +7701,7 @@ if (_featureDetector2['default'].touch) {
     _component2['default'].register(ControlBar);
 }
 
-},{"../plugin/component":11,"../utils/dom":36,"../utils/feature-detector":38,"./current-time":19,"./duration":20,"./fullscreen-button":23,"./progress-bar":30,"classnames":1}],19:[function(require,module,exports){
+},{"../plugin/component":10,"../utils/feature-detector":37,"./current-time":18,"./duration":19,"./fullscreen-button":22,"./progress-bar":29,"classnames":1}],18:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -8067,7 +7778,7 @@ var CurrentTime = function (_Component) {
 
 exports['default'] = CurrentTime;
 
-},{"../plugin/component":11,"../utils/dom":36,"../utils/time-format":47,"classnames":1}],20:[function(require,module,exports){
+},{"../plugin/component":10,"../utils/dom":35,"../utils/time-format":45,"classnames":1}],19:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -8142,7 +7853,7 @@ var Duration = function (_Component) {
 
 exports['default'] = Duration;
 
-},{"../plugin/component":11,"../utils/dom":36,"../utils/time-format":47,"classnames":1}],21:[function(require,module,exports){
+},{"../plugin/component":10,"../utils/dom":35,"../utils/time-format":45,"classnames":1}],20:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -8260,7 +7971,7 @@ if (!_featureDetector2['default'].touch) {
     _component2['default'].register(ErrorPc);
 }
 
-},{"../plugin/component":11,"../utils/dom":36,"../utils/feature-detector":38,"./error":22,"classnames":1}],22:[function(require,module,exports){
+},{"../plugin/component":10,"../utils/dom":35,"../utils/feature-detector":37,"./error":21,"classnames":1}],21:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -8273,15 +7984,9 @@ var _component = require('../plugin/component');
 
 var _component2 = _interopRequireDefault(_component);
 
-var _dom = require('../utils/dom');
-
-var Dom = _interopRequireWildcard(_dom);
-
 var _featureDetector = require('../utils/feature-detector');
 
 var _featureDetector2 = _interopRequireDefault(_featureDetector);
-
-function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj['default'] = obj; return newObj; } }
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
 
@@ -8356,7 +8061,7 @@ if (_featureDetector2['default'].touch) {
     _component2['default'].register(Error);
 }
 
-},{"../plugin/component":11,"../utils/dom":36,"../utils/feature-detector":38,"classnames":1}],23:[function(require,module,exports){
+},{"../plugin/component":10,"../utils/feature-detector":37,"classnames":1}],22:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -8471,7 +8176,7 @@ var FullscreenButton = function (_Component) {
 
 exports['default'] = FullscreenButton;
 
-},{"../plugin/component":11,"../utils/dom":36,"../utils/events":37,"../utils/feature-detector":38,"./tooltip":32,"classnames":1}],24:[function(require,module,exports){
+},{"../plugin/component":10,"../utils/dom":35,"../utils/events":36,"../utils/feature-detector":37,"./tooltip":31,"classnames":1}],23:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -8517,7 +8222,7 @@ var GradientBottom = function (_Component) {
 
 exports['default'] = GradientBottom;
 
-},{"../plugin/component":11,"classnames":1}],25:[function(require,module,exports){
+},{"../plugin/component":10,"classnames":1}],24:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -8577,7 +8282,7 @@ if (!_featureDetector2['default'].touch) {
     _component2['default'].register(LoadingPc);
 }
 
-},{"../plugin/component":11,"../utils/feature-detector":38,"classnames":1}],26:[function(require,module,exports){
+},{"../plugin/component":10,"../utils/feature-detector":37,"classnames":1}],25:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -8590,15 +8295,9 @@ var _component = require('../plugin/component');
 
 var _component2 = _interopRequireDefault(_component);
 
-var _dom = require('../utils/dom');
-
-var Dom = _interopRequireWildcard(_dom);
-
 var _featureDetector = require('../utils/feature-detector');
 
 var _featureDetector2 = _interopRequireDefault(_featureDetector);
-
-function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj['default'] = obj; return newObj; } }
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
 
@@ -8648,7 +8347,7 @@ if (_featureDetector2['default'].touch) {
     _component2['default'].register(Loading);
 }
 
-},{"../plugin/component":11,"../utils/dom":36,"../utils/feature-detector":38,"classnames":1}],27:[function(require,module,exports){
+},{"../plugin/component":10,"../utils/feature-detector":37,"classnames":1}],26:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -8743,7 +8442,7 @@ if (_featureDetector2['default'].touch) {
     _component2['default'].register(PlayButton);
 }
 
-},{"../plugin/component":11,"../utils/dom":36,"../utils/events":37,"../utils/feature-detector":38,"classnames":1}],28:[function(require,module,exports){
+},{"../plugin/component":10,"../utils/dom":35,"../utils/events":36,"../utils/feature-detector":37,"classnames":1}],27:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -8756,15 +8455,9 @@ var _component = require('../plugin/component');
 
 var _component2 = _interopRequireDefault(_component);
 
-var _dom = require('../utils/dom');
-
-var Dom = _interopRequireWildcard(_dom);
-
 var _bufferBar = require('./buffer-bar');
 
 var _bufferBar2 = _interopRequireDefault(_bufferBar);
-
-function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj['default'] = obj; return newObj; } }
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
 
@@ -8820,7 +8513,7 @@ var ProgressBarExceptFill = function (_Component) {
 
 exports['default'] = ProgressBarExceptFill;
 
-},{"../plugin/component":11,"../utils/dom":36,"./buffer-bar":16,"classnames":1}],29:[function(require,module,exports){
+},{"../plugin/component":10,"./buffer-bar":15,"classnames":1}],28:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -8915,7 +8608,7 @@ if (_featureDetector2['default'].touch) {
     _component2['default'].register(ProgressBarSimple);
 }
 
-},{"../plugin/component":11,"../utils/dom":36,"../utils/feature-detector":38,"./buffer-bar":16,"classnames":1}],30:[function(require,module,exports){
+},{"../plugin/component":10,"../utils/dom":35,"../utils/feature-detector":37,"./buffer-bar":15,"classnames":1}],29:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -9124,7 +8817,7 @@ var ProgressBar = function (_Slider) {
 
 exports['default'] = ProgressBar;
 
-},{"../plugin/component":11,"../utils/dom":36,"../utils/feature-detector":38,"../utils/time-format":47,"./progress-bar-except-fill":28,"./slider":31,"./tooltip":32,"classnames":1}],31:[function(require,module,exports){
+},{"../plugin/component":10,"../utils/dom":35,"../utils/feature-detector":37,"../utils/time-format":45,"./progress-bar-except-fill":27,"./slider":30,"./tooltip":31,"classnames":1}],30:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -9217,7 +8910,7 @@ var Slider = function (_Component) {
 
 exports['default'] = Slider;
 
-},{"../plugin/component":11,"../utils/dom":36,"../utils/events":37}],32:[function(require,module,exports){
+},{"../plugin/component":10,"../utils/dom":35,"../utils/events":36}],31:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -9358,7 +9051,7 @@ exports['default'] = {
     }
 };
 
-},{"../utils/dom":36,"lodash.assign":2}],33:[function(require,module,exports){
+},{"../utils/dom":35,"lodash.assign":2}],32:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -9544,7 +9237,7 @@ var Volume = function (_Slider) {
 
 exports['default'] = Volume;
 
-},{"../plugin/component":11,"../utils/dom":36,"../utils/events":37,"./slider":31,"./tooltip":32,"classnames":1}],34:[function(require,module,exports){
+},{"../plugin/component":10,"../utils/dom":35,"../utils/events":36,"./slider":30,"./tooltip":31,"classnames":1}],33:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -9578,7 +9271,7 @@ function computedStyle(el, prop) {
     return el.currentStyle && el.currentStyle[prop] || '';
 }
 
-},{}],35:[function(require,module,exports){
+},{}],34:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -9671,7 +9364,7 @@ function removeData(el) {
     }
 }
 
-},{"./guid":40}],36:[function(require,module,exports){
+},{"./guid":39}],35:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -10423,7 +10116,7 @@ var $$ = exports.$$ = createQuerier('querySelectorAll');
 //     }
 // })();
 
-},{"./computed-style":34,"./obj":45,"lodash.includes":4}],37:[function(require,module,exports){
+},{"./computed-style":33,"./obj":43,"lodash.includes":4}],36:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -10897,7 +10590,7 @@ function one(elem, type, fn) {
     on(elem, type, executeOnlyOnce);
 }
 
-},{"./dom-data":35,"./guid":40,"lodash.includes":4}],38:[function(require,module,exports){
+},{"./dom-data":34,"./guid":39,"lodash.includes":4}],37:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -10913,7 +10606,7 @@ exports['default'] = {
   touch: 'ontouchend' in document
 };
 
-},{}],39:[function(require,module,exports){
+},{}],38:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -10998,7 +10691,7 @@ exports['default'] = {
     }
 };
 
-},{"./events":37}],40:[function(require,module,exports){
+},{"./events":36}],39:[function(require,module,exports){
 "use strict";
 
 exports.__esModule = true;
@@ -11021,7 +10714,7 @@ function newGUID() {
   return guid++;
 }
 
-},{}],41:[function(require,module,exports){
+},{}],40:[function(require,module,exports){
 "use strict";
 
 exports.__esModule = true;
@@ -11066,60 +10759,7 @@ log.error = console.error;
 
 log.clear = console.clear;
 
-},{}],42:[function(require,module,exports){
-'use strict';
-
-exports.__esModule = true;
-exports['default'] = mergeOptions;
-
-var _obj = require('./obj.js');
-
-/**
- * 深拷贝和合并对象，为 options 定制
- *
- * @param {...Object} args 要合并的对象
- * @return {Object} 合并后的对象
- * @desc
- *      1) 这里其实我们还有一个隐形的约定：options 不要乱传，options 本身是个对象，options 的值要么是对象，要么是普通类型（非引用）
- */
-function mergeOptions() {
-    var result = {};
-
-    for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
-        args[_key] = arguments[_key];
-    }
-
-    args.forEach(function (opt) {
-        // 对空数组 forEach 时，回调函数传入的参数会是 undefined
-        // 这个判断，就是这个函数的鲁棒性所在
-        if (!opt) {
-            return;
-        }
-
-        (0, _obj.each)(opt, function (value, key) {
-            // 不是对象时，我们认为他只是普通类型（非引用）时，直接赋值就行了
-            if (!(0, _obj.isPlain)(value)) {
-                result[key] = value;
-            } else {
-                // 如果 value 是对象，先保证 result[key] 是对象，再进行后面的赋值
-                if (!(0, _obj.isPlain)(result[key])) {
-                    result[key] = {};
-                }
-
-                // 把剩下的值 merge 到 result[key] 上，如果剩下的值的 key 里还有对象，就递归了
-                result[key] = mergeOptions(result[key], value);
-            }
-        });
-    });
-
-    return result;
-} /**
-   * @file 深拷贝和合并对象（为 options 定制）
-   * @author yuhui06@baidu.com
-   * @date 2017/11/3
-   */
-
-},{"./obj.js":45}],43:[function(require,module,exports){
+},{}],41:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -11142,7 +10782,7 @@ exports['default'] = {
     'wmv': 'video/x-ms-wmv'
 };
 
-},{}],44:[function(require,module,exports){
+},{}],42:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -11232,7 +10872,7 @@ function nomalizeSource(source) {
     }
 }
 
-},{"./mime-type-map":43,"./obj":45}],45:[function(require,module,exports){
+},{"./mime-type-map":41,"./obj":43}],43:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -11290,7 +10930,7 @@ function each(obj, fn) {
   });
 }
 
-},{}],46:[function(require,module,exports){
+},{}],44:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -11362,7 +11002,7 @@ function deregisterPlugin(name) {
   delete pluginStore[name];
 }
 
-},{}],47:[function(require,module,exports){
+},{}],45:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -11421,7 +11061,7 @@ function timeFormat(seconds) {
     }
 }
 
-},{}],48:[function(require,module,exports){
+},{}],46:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -11462,5 +11102,5 @@ function titleCaseEquals(str1, str2) {
   return toTitleCase(str1) === toTitleCase(str2);
 }
 
-},{}]},{},[8])(8)
+},{}]},{},[7])(7)
 });

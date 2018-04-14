@@ -12,7 +12,7 @@ import CurrentTime from './current-time';
 import Duration from './duration';
 import PlayButton from './play-button';
 import FullscreenButton from './fullscreen-button';
-import GradientBottom from'./gradient-bottom';
+import GradientBottom from './gradient-bottom';
 import Volume from './volume';
 import featureDetector from '../utils/feature-detector';
 

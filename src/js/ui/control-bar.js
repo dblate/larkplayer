@@ -7,7 +7,6 @@
 import classnames from 'classnames';
 
 import Component from '../plugin/component';
-import * as Dom from '../utils/dom';
 
 import CurrentTime from './current-time';
 import Duration from './duration';

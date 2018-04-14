@@ -123,7 +123,7 @@ export default class Component {
 // class ErrorDialog extends Component {
 //     constructor(player, options) {
 //         super(player, options);
-        
+
 //         this.handleError = this.handleError.bind(this);
 //         this.player.on('error', this.handleError);
 //     }

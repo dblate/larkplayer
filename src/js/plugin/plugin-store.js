@@ -87,7 +87,7 @@ const pluginStore = {
                 return allPlugins;
         }
     }
-}
+};
 
 export default pluginStore;
 

@@ -7,9 +7,7 @@
 
 import classnames from 'classnames';
 
-import Component from '../plugin/component';
 import * as Dom from '../utils/dom';
-import featureDetector from '../utils/feature-detector';
 
 export default class NotSupport extends Component {
     createEl() {

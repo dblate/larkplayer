@@ -8,17 +8,20 @@
 
 import find from 'lodash.find';
 
-import Component from './component';
 import * as Dom from './utils/dom';
 import toTitleCase from './utils/to-title-case';
 import normalizeSource from './utils/normalize-source';
 import {isPlain} from './utils/obj';
+import evented from './mixins/evented';
 
 const document = window.document;
 
-class Html5 extends Component {
-    constructor(player, options, ready) {
-        super(player, options, ready);
+class Html5 {
+    constructor(player, options) {
+        this.options = options;
+        this.el = this.options.el;
+
+        evented(this, {eventBusKey: this.el});
 
         // @todo 处理有 source 的情况
 
@@ -27,7 +30,7 @@ class Html5 extends Component {
 
     dispose() {
         Html5.disposeMediaElement(this.el);
-        super.dispose();
+        // super.dispose();
     }
 
 
@@ -201,7 +204,7 @@ Html5.canPlaySrc = function (src) {
     const mediaSourceHandler = Html5.selectMediaSourceHandler(source);
 
     return !!(mediaSourceHandler || Html5.canPlaySource(source));
-}
+};
 
 
 /**

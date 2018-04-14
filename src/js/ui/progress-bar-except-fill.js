@@ -15,7 +15,6 @@
 import classnames from 'classnames';
 
 import Component from '../plugin/component';
-import * as Dom from '../utils/dom';
 import BufferBar from './buffer-bar';
 
 export default class ProgressBarExceptFill extends Component {
