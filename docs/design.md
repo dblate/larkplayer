@@ -184,7 +184,7 @@ __如何编写插件__
 * 播放器初始化时通过 options.UI.name传递参数
 * 播放器初始化完成后通过 player.UI.name 访问插件实例
 
-详见 [《UI 插件编写示例》](./plugin/ui-plugin-exapmle.md)
+详见 [《UI 插件编写示例》](./plugin/ui-plugin-example.md)
 
 __初始化时机__
 
@@ -223,7 +223,7 @@ __如何编写插件__
 * 通过 MediaSourceHandler.register(class, options) 绑定（插件名默认为首字母小写的类名，options.name 可手动指定插件名）
 * 播放器初始化时通过 options.MS.name传递参数
 
-详见 [《MediaSource 插件编写》](./plugin/media-source-plugin-exapmle.md)
+详见 [《MediaSource 插件编写》](./plugin/media-source-plugin-example.md)
 
 __初始化及调用时机__
 
@@ -256,7 +256,7 @@ __如何编写插件__
 * 播放器初始化时通过 options.plugin.name 传递参数
 * 播放器初始化完成后通过 player.plugin.name 访问插件实例
 
-详见 [《普通插件编写》](./plugin/normal-plugin-exapmle.md)
+详见 [《普通插件编写》](./plugin/normal-plugin-example.md)
 
 __初始化时机__
 
