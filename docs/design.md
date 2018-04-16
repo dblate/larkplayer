@@ -48,7 +48,7 @@
 
 从大的角度看，播放器以后将如下图一样，包含它的核心模块以及它的插件们
 
-[img]
+<img alt="larkplayer composition" src="http://baikebcs.bdimg.com/front-end/larkplayer/larkplayer-composition.png" >
 
 ### 折衷
 
@@ -72,7 +72,7 @@
 * Plugin 插件机制，为不同类型的插件提供接口及运行机制
 * Helper 辅助模块
 
-[img]
+<img alt="larkplayer player structure" src="http://baikebcs.bdimg.com/front-end/larkplayer/larkplayer-player-structure.png" >
 
 ### 流程图
 
@@ -131,11 +131,11 @@ Event 算是比较核心的一个模块。由于涉及到对原生事件的代�
 
 on
 
-[img]
+<img alt="event on" src="http://baikebcs.bdimg.com/front-end/larkplayer/event-on.png" >
 
 trigger
 
-[img]
+<img alt="event trigger" src="http://baikebcs.bdimg.com/front-end/larkplayer/event-on.png" >
 
 ### Plugin
 
@@ -184,7 +184,7 @@ __如何编写插件__
 * 播放器初始化时通过 options.UI.name传递参数
 * 播放器初始化完成后通过 player.UI.name 访问插件实例
 
-详见 [《UI 插件编写示例》]()
+详见 [《UI 插件编写示例》](./plugin/ui-plugin-exapmle.md)
 
 __初始化时机__
 
@@ -222,7 +222,7 @@ __如何编写插件__
 * 通过 MediaSourceHandler.register(class, options) 绑定（插件名默认为首字母小写的类名，options.name 可手动指定插件名）
 * 播放器初始化时通过 options.MS.name传递参数
 
-详见 [《MediaSource 插件编写》]()
+详见 [《MediaSource 插件编写》](./plugin/media-source-plugin-exapmle.md)
 
 __初始化及调用时机__
 
@@ -255,7 +255,7 @@ __如何编写插件__
 * 播放器初始化时通过 options.plugin.name 传递参数
 * 播放器初始化完成后通过 player.plugin.name 访问插件实例
 
-详见 [《普通插件编写》]()
+详见 [《普通插件编写》](./plugin/normal-plugin-exapmle.md)
 
 __初始化时机__
 
