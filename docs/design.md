@@ -97,7 +97,7 @@ Event 算是比较核心的一个模块。由于涉及到对原生事件的代�
     * 自定义事件名及参数
     * 有类似原生事件的冒泡机制（仅在 Event 绑定的元素和事件间有效）
 
-支持的参数，见[player api 中 event 相关](https://github.com/dblate/larkplayer/blob/master/docs/player.md#Player+event_suspend)
+支持的参数，见 [player api 中 event 相关](https://github.com/dblate/larkplayer/blob/master/docs/player.md#Player+event_suspend)
 
 这里直接使用的 videojs 中的 event 实现，下面还是让我厚着脸皮来讲一下思路吧
 
