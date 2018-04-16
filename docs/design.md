@@ -181,7 +181,7 @@ __如何编写插件__
 
 * 继承 Component 类并实现 createEl dispose 方法，在构造函数中书写组件逻辑
 * 通过 Component.register(class, options) 绑定插件（插件名默认为首字母小写的类名，options.name 可手动指定插件名）
-* 播放器初始化时通过 options.UI.name传递参数
+* 播放器初始化时通过 options.UI.name 传递参数
 * 播放器初始化完成后通过 player.UI.name 访问插件实例
 
 详见 [《UI 插件编写示例》](./plugin/ui-plugin-example.md)
@@ -235,7 +235,7 @@ __初始化及调用时机__
 
 __特点__
 
-没想好有什么特点，姑且认为他们只是简单的调用播放器的 api，比如从上次播放的位置继续播放之类的
+没想好有什么特点，姑且认为他们只是简单的调用播放器的 api，比如断点续播之类的
 
 __实现__
 
