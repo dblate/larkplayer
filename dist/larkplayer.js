@@ -4846,6 +4846,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 
 
 var activeClass = 'lark-user-active';
+var document = window.document;
 
 var Player = function (_Component) {
     _inherits(Player, _Component);
@@ -4924,6 +4925,7 @@ var Player = function (_Component) {
         _this.handleMouseEnter = _this.handleMouseEnter.bind(_this);
         _this.handleMouseMove = _this.handleMouseMove.bind(_this);
         _this.handleMouseLeave = _this.handleMouseLeave.bind(_this);
+        _this.fullWindowOnEscKey = _this.fullWindowOnEscKey.bind(_this);
 
         // 3000ms 后自动隐藏播放器控制条
         _this.activeTimeout = 3000;
@@ -6094,9 +6096,16 @@ var Player = function (_Component) {
 
     Player.prototype.enterFullWindow = function enterFullWindow() {
         this.addClass('lark-full-window');
+        Events.on(document, 'keydown', this.fullWindowOnEscKey);
     };
 
-    Player.prototype.fullWindowOnEscKey = function fullWindowOnEscKey() {};
+    Player.prototype.fullWindowOnEscKey = function fullWindowOnEscKey(event) {
+        var keyCode = event.keyCode || event.which;
+        // Esc 键码为 27
+        if (keyCode === 27) {
+            this.exitFullscreen();
+        }
+    };
 
     /**
      * 去除由 css 控制展现的全屏样式
@@ -6107,6 +6116,7 @@ var Player = function (_Component) {
 
     Player.prototype.exitFullWindow = function exitFullWindow() {
         this.removeClass('lark-full-window');
+        Events.off(document, 'keydown', this.fullWindowOnEscKey);
     };
 
     /**
@@ -6116,11 +6126,6 @@ var Player = function (_Component) {
 
     Player.prototype.play = function play() {
         var _this9 = this;
-
-        if (!this.src()) {
-            _log2['default'].warn('No video src applied');
-            return;
-        }
 
         // changingSrc 现在用不上，后面支持 source 的时候可能会用上
         // if (this.isReady && this.src()) {

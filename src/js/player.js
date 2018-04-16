@@ -34,6 +34,7 @@ import './ui/loading-pc';
 import './ui/error-pc';
 
 const activeClass = 'lark-user-active';
+const document = window.document;
 
 class Player extends Component {
 
@@ -109,6 +110,7 @@ class Player extends Component {
         this.handleMouseEnter = this.handleMouseEnter.bind(this);
         this.handleMouseMove = this.handleMouseMove.bind(this);
         this.handleMouseLeave = this.handleMouseLeave.bind(this);
+        this.fullWindowOnEscKey = this.fullWindowOnEscKey.bind(this);
 
         // 3000ms 后自动隐藏播放器控制条
         this.activeTimeout = 3000;
@@ -1229,10 +1231,15 @@ class Player extends Component {
      */
     enterFullWindow() {
         this.addClass('lark-full-window');
+        Events.on(document, 'keydown', this.fullWindowOnEscKey);
     }
 
-    fullWindowOnEscKey() {
-
+    fullWindowOnEscKey(event) {
+        const keyCode = event.keyCode || event.which;
+        // Esc 键码为 27
+        if (keyCode === 27) {
+            this.exitFullscreen();
+        }
     }
 
     /**
@@ -1242,17 +1249,13 @@ class Player extends Component {
      */
     exitFullWindow() {
         this.removeClass('lark-full-window');
+        Events.off(document, 'keydown', this.fullWindowOnEscKey);
     }
 
     /**
      * 播放视频
      */
     play() {
-        if (!this.src()) {
-            log.warn('No video src applied');
-            return;
-        }
-
         // changingSrc 现在用不上，后面支持 source 的时候可能会用上
         // if (this.isReady && this.src()) {
         if (this.isReady) {
