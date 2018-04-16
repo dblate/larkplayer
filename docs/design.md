@@ -54,7 +54,7 @@
 
 这个折衷其实是名字的折衷
 
-按照上述设计思路，larkplayer 应该只包含核心功能，它的样式应该以 larkplayer-ui-default 之类的形势提供。但是播放器样式在我们业务中实在太常用了，因此打算将包含默认样式的播放器叫 larkplayer，真正的核心模块就叫 larkplayer-kernel 好了，给那些完全不需要我们样式，想要自己重新定制的朋友们提供
+按照上述设计思路，larkplayer 应该只包含核心功能，它的样式应该以 larkplayer-ui-default 之类的形势提供。但是播放器样式在我们业务中实在太常用了，因此打算将默认样式也包含在 larkplayer 中。同时我们提供一个 larkplayer-kernel(或者其他名字)，给那些完全不需要默认样式的情景
 
 
 ## 设计
@@ -74,9 +74,6 @@
 
 <img alt="larkplayer player structure" src="http://baikebcs.bdimg.com/front-end/larkplayer/larkplayer-player-structure.png" >
 
-### 流程图
-
-需要吗？
 
 ### 各模块介绍
 
@@ -85,7 +82,7 @@
 * html5 video 兼容性处理，如全屏等
 * 自定义 api
 
-跟 Html5 类似，还可以建立一个 Flash 模块，然后再在上面搭一层，处理 Html5 和 Flash 的切换，即可同时支持这两种技术。但按照目前的趋势来看，不考虑支持 Flash，暂时按下不表
+跟 Html5 类似，还可以建立一个 Flash 模块，然后再在上面搭一层，处理 Html5 和 Flash 的切换，即可同时支持这两种技术。但按照目前的趋势来看，不考虑支持 Flash
 
 #### Event
 
@@ -127,15 +124,18 @@ Event 算是比较核心的一个模块。由于涉及到对原生事件的代�
 
 ##### 流程图
 
-给一个 on 和 trigger 的流程图（由于 off 与 on 类似，one 可以经由 on 与 off 简单组合实现，故不予详述）
 
-on
+下面是 Events.on 的流程图
 
 <img alt="event on" src="http://baikebcs.bdimg.com/front-end/larkplayer/event-on.png" >
 
-trigger
+
+下面是 Events.trigger 的流程图
 
 <img alt="event trigger" src="http://baikebcs.bdimg.com/front-end/larkplayer/event-on.png" >
+
+
+由于 off 与 on 类似，one 可以经由 on 与 off 简单组合实现，故不予详述
 
 ### Plugin
 
@@ -153,7 +153,7 @@ __特点__
 * 与 DOM 交互
 * 与播放器交互
 * 组件化
-    * 逻辑与视图的结合（就没有搞数据驱动了，我可不想搞着搞着去重新设计一个 MVVM 框架，我也设计不出来..）
+    * 逻辑与视图的结合（没有数据驱动什么的，我可不想搞着搞着去重新设计一个 MVVM 框架，我也设计不出来..）
     * 组件间组合
 
 __实现__
@@ -193,6 +193,7 @@ __初始化时机__
 __注意事项__
 
 * 如果要选择 this.el 的子元素，需要将上下文设置为 this.el，因为此时元素还未被插入到 html 中
+
 
 #### MediaSource 插件
 
@@ -265,7 +266,7 @@ __初始化时机__
 
 有负责插件存取的方法即可，不予详述
 
-#### Helper
+### Helper
 
 Helper 这个名字不知道是否准确，拍脑袋想的
 
