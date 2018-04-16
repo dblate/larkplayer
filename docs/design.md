@@ -46,7 +46,7 @@
 
 功能和样式的质量只能看基本功了。而灵活方面，也已经早有先驱了，那就是 __插件的机制__
 
-从大的角度看，播放器以后将如下图一样，包含它的核心模块以及它的插件们
+从大的角度看，播放器以后将如下图一样，由主要模块和插件组成
 
 <img alt="larkplayer composition" src="http://baikebcs.bdimg.com/front-end/larkplayer/larkplayer-composition.png" >
 
