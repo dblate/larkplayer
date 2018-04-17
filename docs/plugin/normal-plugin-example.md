@@ -21,6 +21,9 @@ Plugin:
 ### 代码示例
 
 ```javascript
+    import larkplayer from 'larkplayer';
+
+    const Plugin = larkplayer.Plugin;
 
     // 编写插件
     class SayItAtTheRightTime extends Plugin {

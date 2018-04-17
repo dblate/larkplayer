@@ -33,7 +33,9 @@ Component:
 一个错误提示插件如下所示，在播放器初始化时，ErrorDialog 将被添加进播放器 DOM 容器中
 
 ```javascript
-    import {Component, DOM, Events} from 'larkplayer';
+    import larkplayer from 'larkplayer';
+
+    const {Component, DOM, Events} = larkplayer;
 
     class Dialog extends Component {
         constructor(player, options) {

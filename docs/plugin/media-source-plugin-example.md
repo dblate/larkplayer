@@ -25,6 +25,10 @@ MediaSourceHandler:
 ### 代码示例
 
 ```javascript
+    import larkplayer from 'larkplayer';
+    import Hls from 'hls.js';
+
+    const MediaSourceHandler = larkplayer.MediaSourceHandler;
 
     // 编写 hls 插件
     class HlsMediaSourceHandler extends MediaSourceHandler {
