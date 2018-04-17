@@ -3,8 +3,12 @@
  * @author yuhui<yuhui06@baidu.com>
  * @date 2017/11/10
  */
-import Component from '../component';
-import * as Dom from '../utils/dom';
+
+
+import classnames from 'classnames';
+
+import Component from '../plugin/component';
+import * as DOM from '../utils/dom';
 import {timeFormat} from '../utils/time-format';
 
 export default class Duration extends Component {
@@ -18,20 +22,22 @@ export default class Duration extends Component {
     }
 
     handleLoadedMetaData(event) {
-        Dom.textContent(this.el, timeFormat(Math.floor(this.player.duration())));
+        DOM.textContent(this.el, timeFormat(Math.floor(this.player.duration())));
     }
 
     reset() {
-        Dom.textContent(this.el, '');
+        DOM.textContent(this.el, '');
     }
 
     createEl() {
         // @todo 暂时将 duration 的值写在这，后面需要处理下对于已经发生的事件怎么办
-        let durationContent = timeFormat(Math.floor(this.player.duration()));
-        return Dom.createEl('div', {
-            className: 'lark-duration'
-        }, null, durationContent);
+        const durationContent = timeFormat(Math.floor(this.player.duration()));
+
+        return (
+            <div className={classnames('lark-duration', this.options.className)}>
+                {durationContent}
+            </div>
+        );
     }
 }
 
-Component.registerComponent('Duration', Duration);

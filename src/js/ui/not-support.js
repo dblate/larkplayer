@@ -3,17 +3,22 @@
  * @author yuhui06
  * @date 2018/3/29
  */
-import Component from '../component';
-import * as Dom from '../utils/dom';
+
+
+import classnames from 'classnames';
+
+import Component from '../plugin/component';
 
 export default class NotSupport extends Component {
     createEl() {
-        return Dom.createElement('div', {
-            className: 'lark-not-support-notice'
-        }, Dom.createElement('div', {
-            className: 'lark-not-support-notice__text'
-        }, '您的浏览器不支持 html5 视频播放，请升级浏览器版本或更换为 chrome 浏览器'));
+        return (
+            <div className={classnames('lark-not-support-notice', this.options.className)}>
+                <div className="lark-not-support-notice__text">
+                    您的浏览器不支持 html5 视频播放，请升级浏览器版本或更换为 chrome 浏览器
+                </div>
+            </div>
+        );
     }
 }
 
-Component.registerComponent('NotSupport', NotSupport);
+Component.register(NotSupport, {name: 'notSupport'});

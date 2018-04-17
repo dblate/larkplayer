@@ -4,28 +4,25 @@
  * @date 2018/3/8
  */
 
-import Component from '../component';
 
-import './loading';
+import classnames from 'classnames';
+
+import Component from '../plugin/component';
+import featureDetector from '../utils/feature-detector';
 
 
 export default class LoadingPc extends Component {
     createEl() {
-        const el = this.createElement(
-            'div',
-            {className: 'lark-loading-pc'},
-            this.createElement(
-                'div',
-                {className: 'lark-loading-area'},
-                this.createElement(
-                    'div',
-                    {className: 'lark-loading-spinner'}
-                )
-            ),
+        return (
+            <div className={classnames('lark-loading-pc', this.options.className)}>
+                <div className="lark-loading-area">
+                    <div className="lark-loading-spinner"></div>
+                </div>
+            </div>
         );
-
-        return el;
     }
 }
 
-Component.registerComponent('LoadingPc', LoadingPc);
+if (!featureDetector.touch) {
+    Component.register(LoadingPc, {name: 'loadingPc'});
+}

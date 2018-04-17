@@ -6,37 +6,47 @@
  */
 
 
-import includes from 'lodash.includes'; 
+import includes from 'lodash.includes';
 
-import Html5 from './html5';
-import Component from './component';
-import {newGUID} from './utils/guid';
-import * as Dom from './utils/dom';
-import * as Events from './utils/events';
+import Html5 from './html5/html5';
+import fullscreen from './html5/fullscreen';
+import Component from './plugin/component';
+import MediaSourceHandler from './plugin/media-source-handler';
+import Plugin from './plugin/plugin';
+import PluginTypes from './plugin/plugin-types';
+import * as Events from './events/events';
+import * as DOM from './utils/dom';
 import toTitleCase from './utils/to-title-case';
-import fullscreen from './utils/fullscreen';
-import evented from './mixins/evented';
+import evented from './events/evented';
 import {each} from './utils/obj';
-import * as Plugin from './utils/plugin';
 import log from './utils/log';
 import computedStyle from './utils/computed-style';
 import featureDetector from './utils/feature-detector';
-import normalizeSource from './utils/normalize-source';
 
-// 确保以下代码都执行一次
-import './ui/play-button';
-import './ui/control-bar';
-import './ui/loading';
-import './ui/progress-bar-simple';
-import './ui/error';
+import './ui/buffer-bar';
+import './ui/complete';
 import './ui/control-bar-pc';
-import './ui/loading-pc';
+import './ui/control-bar';
+import './ui/current-time';
+import './ui/duration';
 import './ui/error-pc';
+import './ui/error';
+import './ui/fullscreen-button';
+import './ui/gradient-bottom';
+import './ui/loading-pc';
+import './ui/not-support';
+import './ui/play-button';
+import './ui/progress-bar-except-fill';
+import './ui/progress-bar-simple';
+import './ui/progress-bar';
+import './ui/slider';
+import './ui/volume';
+
 
 const activeClass = 'lark-user-active';
 const document = window.document;
 
-class Player extends Component {
+class Player {
 
     /**
      * 初始化一个播放器实例
@@ -60,24 +70,9 @@ class Player extends Component {
      */
     /* eslint-disable fecs-max-statements */
     constructor(tag, options, ready) {
-        // tag.id = tag.id || `larkplayer-${newGUID()}`;
-
-        options.initChildren = false;
-        options.createEl = false;
-        options.reportTouchActivity = false;
-        // options.id = options.id || tag.id;
-
-        super(null, options, ready);
-
         this.isReady = false;
-
-        // if (!Html5.isSupported()) {
-        //     tag.innerHTML = '您的浏览器不支持 html5 视频播放，请升级浏览器版本或更换为 chrome 浏览器';
-        //     return;
-        // }
-
-        // @todo check valid options
-
+        this.player = this;
+        this.options = options;
         this.tag = tag;
 
         this.el = this.createEl();
@@ -115,8 +110,6 @@ class Player extends Component {
         // 3000ms 后自动隐藏播放器控制条
         this.activeTimeout = 3000;
 
-        // @todo ios11 click 事件触发问题
-        // this.on('click', this.handleClick);
         if (featureDetector.touch) {
             this.on('touchstart', this.handleTouchStart);
             this.on('touchend', this.handleTouchEnd);
@@ -131,35 +124,16 @@ class Player extends Component {
             this.tech = this.loadTech();
         }
 
-        this.initChildren();
-
         const src = this.src();
         if (src) {
             // 如果视频已经存在，看下是不是错过了 loadstart 事件
             this.handleLateInit(this.tech.el);
 
-            const source = normalizeSource({src})[0];
-            this.MSHandler = Html5.selectMediaSourceHandler(source);
-            if (this.MSHandler) {
-                const handlerOptions = this.getMediaSourceHanlderOptions(this.MSHandler.name);
-                this.MSHandler.handleSource(source, this, handlerOptions);
-            }
+            this.callMS(src);
         }
 
-        // plugins
-        this.plugins = {};
-        const plugins = this.options.plugins;
-        if (plugins) {
-            Object.keys(plugins).forEach(name => {
-                let plugin = Plugin.getPlugin(name);
-                if (typeof plugin === 'function') {
-                    plugin(this, plugins[name]);
-                    this.plugins[name] = plugin;
-                } else {
-                    throw new Error(`Plugin ${name} not exist`);
-                }
-            });
-        }
+        this.initialUIPlugins();
+        this.initialNormalPlugins();
 
         // 如果当前视频已经出错，重新触发一次 error 事件
         if (this.techGet('error')) {
@@ -170,15 +144,62 @@ class Player extends Component {
     }
     /* eslint-enable fecs-max-statements */
 
-    getMediaSourceHanlderOptions(name = '') {
-        if (this.options
-            && this.options.mediaSourceHandler
-            && this.options.mediaSourceHandler[name]) {
+    // internalInitialPlugins(className, namespace) {
+    //     this[namespace] = {};
+    //     const allPlugins = className.getAll();
+    //     allPlugins.forEach(pluginClass => {
+    //         const name = pluginClass._displayName;
+    //         const pluginInstance = new pluginClass(this, this.getPluginOptions(name, namespace));
+    //         this[namespace][name] = pluginInstance;
+    //     });
+    // }
 
-            return this.options.mediaSourceHandler[name];
-        } else {
-            return {};
+    // initialPlugins() {
+    //     // this.internalInitialPlugins(Component, UI);
+    //     this.internalInitialPlugins(Plugin, OTHERS);
+    // }
+
+    initialNormalPlugins() {
+        this[PluginTypes.OTHERS] = {};
+        const allPlugins = Plugin.getAll();
+        allPlugins.forEach(PluginClass => {
+            const name = PluginClass._displayName;
+            const pluginInstance = new PluginClass(this, this.getPluginOptions(name, PluginTypes.OTHERS));
+            this[PluginTypes.OTHERS][name] = pluginInstance;
+        });
+    }
+
+    initialUIPlugins() {
+        // @hack 为了让 Component.createElement 能取到 player
+        Component.player = this;
+
+        this[PluginTypes.UI] = {};
+        const allPlugins = Component.getAll();
+        allPlugins.forEach(PluginClass => {
+            const name = PluginClass._displayName;
+            const pluginInstance = new PluginClass(this, this.getPluginOptions(name, PluginTypes.UI));
+            const el = pluginInstance.el;
+            this.el.appendChild(el);
+            this[PluginTypes.UI][name] = pluginInstance;
+        });
+    }
+
+    getPluginOptions(name, namespace) {
+        return this.options && this.options[namespace] && this.options[namespace][name];
+    }
+
+    callMS(src) {
+        this.disposeMS();
+
+        const HandlerClass = MediaSourceHandler.select(src);
+        if (HandlerClass) {
+            this.MSHandler = new HandlerClass(this, this.getPluginOptions(HandlerClass._displayName, PluginTypes.MS));
+            this.MSHandler.src(src);
+
+            return true;
         }
+
+        return false;
     }
 
     disposeMS() {
@@ -188,6 +209,51 @@ class Player extends Component {
         }
     }
 
+    ready(fn) {
+        if (fn) {
+            if (this.isReady) {
+                setTimeout(() => {
+                    fn.call(this);
+                }, 1);
+            } else {
+                this.readyQueue = this.readyQueue || [];
+                this.readyQueue.push(fn);
+            }
+        }
+    }
+
+    triggerReady() {
+        this.isReady = true;
+
+        setTimeout(() => {
+            const readyQueue = this.readyQueue;
+            this.readyQueue = [];
+            if (readyQueue && readyQueue.length) {
+                readyQueue.forEach(fn => {
+                    fn.call(this);
+                });
+            }
+
+            this.trigger('ready');
+        }, 1);
+    }
+
+    removeClass(className) {
+        return DOM.removeClass(this.el, className);
+    }
+
+    addClass(className) {
+        return DOM.addClass(this.el, className);
+    }
+
+    hasClass(className) {
+        return DOM.hasClass(this.el, className);
+    }
+
+    toggleClass(className) {
+        return this.hasClass(className) ? this.removeClass(className) : this.addClass(className);
+    }
+
     /**
      * 销毁播放器
      *
@@ -195,8 +261,7 @@ class Player extends Component {
     dispose() {
         clearTimeout(this.activeTimeoutHandler);
         this.trigger('dispose');
-        // 避免 dispose 被调用两次
-        this.off('dispose');
+        this.off();
 
         // 注销全屏事件
         fullscreen.off();
@@ -215,8 +280,6 @@ class Player extends Component {
         if (this.tech) {
             this.tech.dispose();
         }
-
-        super.dispose();
     }
 
     /**
@@ -246,7 +309,7 @@ class Player extends Component {
         ];
         each(this.options, (value, key) => {
             if (includes(html5StandardOptions, key) && value) {
-                Dom.setAttribute(tag, key, value);
+                DOM.setAttribute(tag, key, value);
             }
         });
 
@@ -258,12 +321,12 @@ class Player extends Component {
         }
 
         // 创建容器元素
-        const el = Dom.createElement('div', {
+        const el = DOM.createElement('div', {
             className: 'larkplayer',
             id: tag.id + '-larkplayer'
         });
 
-        Dom.setAttribute(tag, 'tabindex', '-1');
+        DOM.setAttribute(tag, 'tabindex', '-1');
 
         // 将原生控制条移除
         // 目前只支持使用自定义的控制条
@@ -338,13 +401,13 @@ class Player extends Component {
         // watch for that also.
         if (el.readyState === 0) {
             let loadstartFired = false;
-            const setLoadstartFired = function () {
+            const setLoadstartFired = () => {
                 loadstartFired = true;
             };
 
             this.on('loadstart', setLoadstartFired);
 
-            const triggerLoadstart = function () {
+            const triggerLoadstart = () => {
                 if (!loadstartFired) {
                     this.trigger('loadstart');
                 }
@@ -975,8 +1038,8 @@ class Player extends Component {
     handleTouchStart(event) {
         // 当控制条显示并且手指放在控制条上时
         if (this.hasClass(activeClass)) {
-            if (Dom.parent(event.target, 'lark-play-button')
-                || Dom.parent(event.target, 'lark-control-bar')) {
+            if (DOM.parent(event.target, 'lark-play-button')
+                || DOM.parent(event.target, 'lark-control-bar')) {
 
                 clearTimeout(this.activeTimeoutHandler);
             }
@@ -1009,8 +1072,8 @@ class Player extends Component {
         // 点在播放按钮或者控制条上，（继续）展现控制条
         let clickOnControls = false;
         // @todo 处理得不够优雅
-        if (Dom.parent(event.target, 'lark-play-button')
-            || Dom.parent(event.target, 'lark-control-bar')) {
+        if (DOM.parent(event.target, 'lark-play-button')
+            || DOM.parent(event.target, 'lark-control-bar')) {
 
             clickOnControls = true;
         }
@@ -1128,8 +1191,8 @@ class Player extends Component {
         // 点在播放按钮或者控制条上，（继续）展现控制条
         let clickOnControls = false;
         // @todo 处理得不够优雅
-        if (Dom.parent(event.target, 'lark-control-bar-pc')
-            || Dom.hasClass(event.target, 'lark-control-bar-pc')) {
+        if (DOM.parent(event.target, 'lark-control-bar-pc')
+            || DOM.hasClass(event.target, 'lark-control-bar-pc')) {
 
             clickOnControls = true;
         }
@@ -1238,7 +1301,7 @@ class Player extends Component {
         const keyCode = event.keyCode || event.which;
         // Esc 键码为 27
         if (keyCode === 27) {
-            this.exitFullscreen();
+            this.exitFullWindow();
         }
     }
 
@@ -1475,19 +1538,11 @@ class Player extends Component {
      */
     src(src) {
         if (src !== undefined) {
-            this.disposeMS();
 
-            const source = normalizeSource({src})[0];
-            this.MSHandler = Html5.selectMediaSourceHandler(source);
-            if (this.MSHandler) {
-                const handlerOptions = this.getMediaSourceHanlderOptions(this.MSHandler.name);
-                this.MSHandler.handleSource(source, this, handlerOptions);
-            } else {
-                // 应该先暂停一下比较好
-                // this.techCall('pause');
+            const success = this.callMS(src);
+            if (!success) {
                 this.techCall('setSrc', src);
             }
-
 
             // src 改变后，重新绑定一次 firstplay 方法
             // 先 off 确保只绑定一次

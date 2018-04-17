@@ -5,14 +5,19 @@
  * @date 2018/3/15 支持 pc 端拖拽和 tooltip
  */
 
-import Component from '../component';
+
+import classnames from 'classnames';
+
+/* eslint-disable no-unused-vars */
+import Component from '../plugin/component';
+/* eslint-enable no-unused-vars */
 import Slider from './slider';
 import tooltip from './tooltip';
-import * as Dom from '../utils/dom';
+import * as DOM from '../utils/dom';
 import featureDetector from '../utils/feature-detector';
 import {timeFormat} from '../utils/time-format';
 
-import './progress-bar-except-fill';
+import ProgressBarExceptFill from './progress-bar-except-fill';
 
 
 export default class ProgressBar extends Slider {
@@ -30,10 +35,10 @@ export default class ProgressBar extends Slider {
         this.handleMouseMove = this.handleMouseMove.bind(this);
         this.handleMouseOut = this.handleMouseOut.bind(this);
 
-        this.line = Dom.$('.lark-progress-bar__line', this.el);
-        this.lineHandle = Dom.$('.lark-progress-bar__line__handle', this.el);
-        this.hoverLight = Dom.$('.lark-progress-bar-hover-light', this.el);
-        this.paddingEl = Dom.$('.lark-progress-bar-padding', this.el);
+        this.line = DOM.$('.lark-progress-bar__line', this.el);
+        this.lineHandle = DOM.$('.lark-progress-bar__line__handle', this.el);
+        this.hoverLight = DOM.$('.lark-progress-bar-hover-light', this.el);
+        this.paddingEl = DOM.$('.lark-progress-bar-padding', this.el);
 
         player.on('timeupdate', this.handleTimeUpdate);
         this.on('click', this.handleClick);
@@ -85,7 +90,7 @@ export default class ProgressBar extends Slider {
     }
 
     update(event) {
-        const pos = Dom.getPointerPosition(this.el, event);
+        const pos = DOM.getPointerPosition(this.el, event);
         const percent = pos.x * 100 + '%';
         const currentTime = this.player.duration() * pos.x;
 
@@ -103,8 +108,8 @@ export default class ProgressBar extends Slider {
     showToolTip(event) {
         const duration = this.player.duration();
         if (duration) {
-            const pointerPos = Dom.getPointerPosition(this.el, event);
-            // const elPos = Dom.findPosition(this.el);
+            const pointerPos = DOM.getPointerPosition(this.el, event);
+            // const elPos = DOM.findPosition(this.el);
 
             // const top = elPos.top - (this.paddingEl.offsetHeight - this.line.offsetHeight);
             // const left = elPos.left + this.el.offsetWidth * pointerPos.x;
@@ -126,7 +131,7 @@ export default class ProgressBar extends Slider {
     }
 
     showHoverLine(event) {
-        const pointerPos = Dom.getPointerPosition(this.el, event);
+        const pointerPos = DOM.getPointerPosition(this.el, event);
         const left = this.el.offsetWidth * pointerPos.x;
 
         this.hoverLight.style.width = left + 'px';
@@ -151,27 +156,26 @@ export default class ProgressBar extends Slider {
         this.hideHoverLine(event);
     }
 
-    createEl() {
-        let className = 'lark-progress-bar';
-        if (this.options.className) {
-            className = className + ' ' + this.options.className;
-        }
+    dispose() {
+        this.line = null;
+        this.lineHandle = null;
+        this.hoverLight = null;
+        this.paddingEl = null;
 
-        return this.createElement(
-            'div',
-            {className},
-            this.createElement(
-                'div',
-                {className: 'lark-progress-bar-padding'}
-            ),
-            this.createElement(
-                'div',
-                {className: 'lark-progress-bar-hover-light'}
-            ),
-            this.createElement('progressBarExceptFill')
+        super.dispose();
+    }
+
+    createEl() {
+        return (
+            <div className={classnames('lark-progress-bar', this.options.className)}>
+                <div className="lark-progress-bar-padding"></div>
+                <div className="lark-progress-bar-hover-light"></div>
+                <ProgressBarExceptFill />
+            </div>
         );
     }
 }
 
 
-Component.registerComponent('ProgressBar', ProgressBar);
+
+

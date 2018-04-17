@@ -10,14 +10,16 @@
  *           - auto 视浏览器而定，一般 >= metadata
  */
 
-import Component from '../component';
-import * as Dom from '../utils/dom';
+import classnames from 'classnames';
+
+import Component from '../plugin/component';
+import * as DOM from '../utils/dom';
 
 export default class BufferBar extends Component {
     constructor(player, options) {
         super(player, options);
 
-        this.line = Dom.$('.lark-buffer-bar__line', this.el);
+        this.line = DOM.$('.lark-buffer-bar__line', this.el);
         this.handleProgress = this.handleProgress.bind(this);
 
         this.player.on('progress', this.handleProgress);
@@ -52,15 +54,19 @@ export default class BufferBar extends Component {
         this.render(0);
     }
 
-    createEl() {
-        const line = Dom.createElement('div', {
-            className: 'lark-buffer-bar__line'
-        });
+    dispose() {
+        this.line = null;
 
-        return Dom.createElement('div', {
-            className: 'lark-buffer-bar'
-        }, line);
+        super.dispose();
+    }
+
+    createEl() {
+        return (
+            <div className={classnames('lark-buffer-bar', this.options.className)}>
+                <div className="lark-buffer-bar__line"></div>
+            </div>
+        );
     }
 }
 
-Component.registerComponent('BufferBar', BufferBar);
+

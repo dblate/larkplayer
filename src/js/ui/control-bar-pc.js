@@ -4,13 +4,17 @@
  * @date 2017/11/9
  */
 
-import Component from '../component';
-import './current-time';
-import './duration';
-import './play-button';
-import './fullscreen-button';
-import './gradient-bottom';
-import './volume';
+import classnames from 'classnames';
+
+import Component from '../plugin/component';
+import ProgressBar from './progress-bar';
+import CurrentTime from './current-time';
+import Duration from './duration';
+import PlayButton from './play-button';
+import FullscreenButton from './fullscreen-button';
+import GradientBottom from './gradient-bottom';
+import Volume from './volume';
+import featureDetector from '../utils/feature-detector';
 
 export default class ControlBarPc extends Component {
     reset() {
@@ -20,74 +24,29 @@ export default class ControlBarPc extends Component {
     }
 
     createEl() {
-        const time = this.createElement(
-            'div',
-            {className: 'lark-time'},
-            this.createElement('CurrentTime'),
-            this.createElement(
-                'span',
-                {className: 'lark-time-separator'},
-                '/'
-            ),
-            this.createElement('Duration')
-        );
-
-
-        const playButton = this.createElement(
-            'playButton',
-            {className: 'lark-play-button-pc'}
-        );
-
-        const fullscreenButton = this.createElement('FullscreenButton');
-        const gradientBottom = this.createElement('GradientBottom');
-
-
-        // jsxParser(`
-        //     <div className="lark-control-bar-pc">
-        //         <ProgressBar className="lark-progress-bar-pc" />
-        //         <div className="lark-control__left">
-        //             <PlayButton className="lark-play-button-pc" />
-        //             <div className="lark-time">
-        //                 <CurrentTime />
-        //                 <span className="lark-time-separator">/<span>
-        //                 <Duration />
-        //             </div>
-        //         </div>
-        //         <div className="lark-control__right">
-        //             <FullscreenButton />
-        //         </div>
-        //     </div>
-        // `);
-
-        const volume = this.createElement('Volume');
-
-        const controlLeft = this.createElement(
-            'div',
-            {className: 'lark-control__left'},
-            playButton,
-            volume,
-            time
-        );
-        const controlRight = this.createElement(
-            'div',
-            {className: 'lark-control__right'},
-            fullscreenButton
-        );
-
-        const progressBarPc = this.createElement(
-            'progressBar',
-            {className: 'lark-progress-bar-pc'}
-        );
-
-        return this.createElement(
-            'div',
-            {className: 'lark-control-bar-pc'},
-            gradientBottom,
-            progressBarPc,
-            controlLeft,
-            controlRight
+        return (
+            <div className={classnames('lark-control-bar-pc', this.options.className)}>
+                <GradientBottom />
+                <ProgressBar className="lark-progress-bar-pc" />
+                <div className="lark-control__left">
+                    <PlayButton className="lark-play-button-pc" />
+                    <Volume />
+                    <div className="lark-time">
+                        <CurrentTime />
+                        <span className="lark-time-separator">/</span>
+                        <Duration />
+                    </div>
+                </div>
+                <div className="lark-control__right">
+                    <FullscreenButton />
+                </div>
+            </div>
         );
     }
 }
 
-Component.registerComponent('ControlBarPc', ControlBarPc);
+if (!featureDetector.touch) {
+    Component.register(ControlBarPc, {name: 'controlBarPc'});
+}
+
+

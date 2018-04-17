@@ -4,13 +4,17 @@
  * @date 2017/11/9
  */
 
-import Component from '../component';
+
+import classnames from 'classnames';
+
+import Component from '../plugin/component';
 
 
 export default class GradientBottom extends Component {
     createEl() {
-        return this.createElement('div', {className: 'lark-gradient-bottom'});
+        return (
+            <div className={classnames('lark-gradient-bottom', this.options.className)}></div>
+        );
     }
 }
 
-Component.registerComponent('GradientBottom', GradientBottom);

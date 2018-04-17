@@ -11,7 +11,7 @@
  * @see https://github.com/sindresorhus/screenfull.js/blob/gh-pages/readme.md
  */
 
-import * as Events from './events';
+import * as Events from '../events/events';
 
 const document = window.document;
 

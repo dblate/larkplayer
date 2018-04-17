@@ -11,34 +11,27 @@
  *              可以自己做下实验外带参考下 https://www.w3.org/TR/css-flexbox-1/#abspos-items
  */
 
-import Component from '../component';
-import * as Dom from '../utils/dom';
-import './buffer-bar';
+
+import classnames from 'classnames';
+
+import Component from '../plugin/component';
+import BufferBar from './buffer-bar';
 
 export default class ProgressBarExceptFill extends Component {
     createEl() {
-        const lineHandle = Dom.createElement('div', {
-            className: 'lark-progress-bar__line__handle'
-        }, Dom.createElement('div', {
-            className: 'lark-progress-bar__line__handle-except-fill'
-        }));
-
-        const line = Dom.createElement('div', {
-            className: 'lark-progress-bar__line'
-        }, lineHandle);
-
-        const progressBarBackground = Dom.createElement('div', {
-            className: 'lark-progress-bar__background'
-        });
-
-        return Dom.createElement('div', {
-            className: 'lark-progress-bar-except-fill'
-        }, progressBarBackground, line);
+        return (
+            <div className={classnames('lark-progress-bar-except-fill', this.options.className)}>
+                <div className="lark-progress-bar__background"></div>
+                <div className="lark-progress-bar__line">
+                    <div className="lark-progress-bar__line__handle">
+                        <div className="lark-progress-bar__line__handle-except-fill"></div>
+                    </div>
+                </div>
+                <BufferBar />
+            </div>
+        );
     }
 }
 
-ProgressBarExceptFill.prototype.options = {
-    children: ['bufferBar']
-};
 
-Component.registerComponent('ProgressBarExceptFill', ProgressBarExceptFill);
+

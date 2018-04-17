@@ -6,19 +6,19 @@
  * @see https://www.w3.org/TR/html5/embedded-content-0.html#attr-media-src
  */
 
-import find from 'lodash.find';
-
-import Component from './component';
-import * as Dom from './utils/dom';
-import toTitleCase from './utils/to-title-case';
-import normalizeSource from './utils/normalize-source';
-import {isPlain} from './utils/obj';
+import * as DOM from '../utils/dom';
+import toTitleCase from '../utils/to-title-case';
+import normalizeSource from '../utils/normalize-source';
+import evented from '../events/evented';
 
 const document = window.document;
 
-class Html5 extends Component {
-    constructor(player, options, ready) {
-        super(player, options, ready);
+export default class Html5 {
+    constructor(player, options) {
+        this.options = options;
+        this.el = this.options.el;
+
+        evented(this, {eventBusKey: this.el});
 
         // @todo 处理有 source 的情况
 
@@ -27,7 +27,6 @@ class Html5 extends Component {
 
     dispose() {
         Html5.disposeMediaElement(this.el);
-        super.dispose();
     }
 
 
@@ -118,7 +117,7 @@ class Html5 extends Component {
 
     source(source) {
         if (source === undefined) {
-            const sourceNodeList = Dom.$$('source', this.el);
+            const sourceNodeList = DOM.$$('source', this.el);
             const sourceArray = Array.from(sourceNodeList);
             return sourceArray.map(value => {
                 return {
@@ -131,7 +130,7 @@ class Html5 extends Component {
 
             let docFragment = document.createDocumentFragment();
             source.forEach(value => {
-                const sourceElem = Dom.createElement('source', {
+                const sourceElem = DOM.createElement('source', {
                     src: value.src,
                     type: value.type
                 });
@@ -191,18 +190,6 @@ Html5.isSupported = function () {
 Html5.canPlayType = function (type) {
     return Html5.TEST_VID.canPlayType(type);
 };
-
-Html5.canPlaySource = function (srcObj, options) {
-    return Html5.canPlayType(srcObj.type);
-};
-
-Html5.canPlaySrc = function (src) {
-    const source = normalizeSource({src})[0];
-    const mediaSourceHandler = Html5.selectMediaSourceHandler(source);
-
-    return !!(mediaSourceHandler || Html5.canPlaySource(source));
-}
-
 
 /**
  * 检查是否可以改变播放器的声音大小（许多移动端的浏览器没法改变声音大小，比如 ios）
@@ -346,32 +333,6 @@ Html5.resetMediaElement = function (el) {
     }
 };
 
-Html5.mediaSourceHandler = [];
-
-Html5.validateMediaSourceHandler = function (handler) {
-    if (isPlain(handler)
-        && typeof handler.canHandleSource === 'function'
-        && typeof handler.handleSource === 'function') {
-        return true;
-    } else {
-        return false;
-    }
-};
-
-Html5.registerMediaSourceHandler = function (handler) {
-    if (Html5.validateMediaSourceHandler(handler)) {
-        Html5.mediaSourceHandler.push(handler);
-    } else {
-        /* eslint-disable no-console */
-        console.error('Invalid mediaSourceHandler');
-        /* eslint-enbale no-console */
-    }
-};
-
-Html5.selectMediaSourceHandler = function (source) {
-    return find(Html5.mediaSourceHandler, handler => handler.canHandleSource(source));
-};
-
 // HTML5 video attributes proxy
 // 获取对应属性的值
 // muted defaultMuted autoplay controls loop playsinline
@@ -469,36 +430,3 @@ Html5.selectMediaSourceHandler = function (source) {
 });
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-export default Html5;

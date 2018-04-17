@@ -5,8 +5,10 @@
  * @todo 多个播放器实例并存时有点鸡肋
  */
 
-import * as Dom from '../utils/dom';
+
 import assign from 'lodash.assign';
+
+import * as DOM from '../utils/dom';
 
 export default {
     id: 'lark-tooltip',
@@ -17,14 +19,14 @@ export default {
         //     return;
         // }
 
-        if (!Dom.isEl(container)) {
+        if (!DOM.isEl(container)) {
             return;
         }
 
-        const el = Dom.createElement('div', {
+        const el = DOM.createElement('div', {
             className: this.id
         });
-        Dom.appendContent(container, el);
+        DOM.appendContent(container, el);
 
         this.el = el;
         this.container = container;
@@ -49,12 +51,12 @@ export default {
         switch (options.placement) {
             case 'top':
                 // @todo 可以 cache
-                const hostElRect = Dom.getBoundingClientRect(options.hostEl);
-                const containerRect = Dom.getBoundingClientRect(this.container);
+                const hostElRect = DOM.getBoundingClientRect(options.hostEl);
+                const containerRect = DOM.getBoundingClientRect(this.container);
 
                 let left;
                 if (options.isFollowMouse) {
-                    const pointerPos = Dom.getPointerPosition(options.hostEl, options.event);
+                    const pointerPos = DOM.getPointerPosition(options.hostEl, options.event);
                     left = hostElRect.left
                         - containerRect.left
                         + hostElRect.width * pointerPos.x
@@ -80,12 +82,12 @@ export default {
 
         options = this.normalize(options);
 
-        if (!Dom.isEl(options.hostEl)) {
+        if (!DOM.isEl(options.hostEl)) {
             return;
         }
 
-        const container = Dom.parent(options.hostEl, 'larkplayer');
-        const el = Dom.$('.lark-tooltip', container);
+        const container = DOM.parent(options.hostEl, 'larkplayer');
+        const el = DOM.$('.lark-tooltip', container);
 
         // 多个播放器实例并存时需要不断切换 this.el 和 this.container
         if (el) {
@@ -96,11 +98,11 @@ export default {
         }
 
         // if (!this.el) {
-        //     const container = Dom.parent(options.hostEl, 'larkplayer');
+        //     const container = DOM.parent(options.hostEl, 'larkplayer');
         //     this.initial(container);
         // }
 
-        Dom.replaceContent(this.el, options.content);
+        DOM.replaceContent(this.el, options.content);
 
         setTimeout(() => {
             // 元素 display none 时获取到的 offsetHeight 和 offsetWidth 是 0

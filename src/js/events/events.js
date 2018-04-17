@@ -7,7 +7,7 @@
 import includes from 'lodash.includes';
 
 import * as DomData from './dom-data';
-import {newGUID} from './guid';
+import {newGUID} from '../utils/guid';
 
 // data.disabled
 // data.dispatcher

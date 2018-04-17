@@ -4,16 +4,21 @@ module.exports = function (grunt) {
         babel: {
             options: {
                     sourceMap: false,
+                    plugins: [
+                        ["transform-react-jsx", {
+                            "pragma": "Component.createElement"
+                        }]
+                    ],
                     presets: ['env']
                 },
-                dist: {
-                    files: [{
-                        expand: true,
-                        cwd: './src/js',
-                        src: ['**/*.js'],
-                        dest: './lib'
-                    }]
-                }
+            dist: {
+                files: [{
+                    expand: true,
+                    cwd: './src/js',
+                    src: ['**/*.js'],
+                    dest: './lib'
+                }]
+            }
         },
         copy: {
             dist: {
@@ -55,7 +60,12 @@ module.exports = function (grunt) {
                 options: {
                     transform: [
                         ["babelify", {
-                            presets: [ "es3", ["es2015", {"loose": true}]]
+                            presets: [ "es3", ["es2015", {"loose": true}]],
+                            plugins: [
+                                ["transform-react-jsx", {
+                                    "pragma": "Component.createElement"
+                                }]
+                            ]
                         }]
                     ],
                     browserifyOptions: {

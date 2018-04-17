@@ -3,8 +3,13 @@
  * @author yuhuiyuhui06
  * @date 2018/3/8
  */
-import Component from '../component';
-import * as Dom from '../utils/dom';
+
+
+import classnames from 'classnames';
+
+import Component from '../plugin/component';
+import * as DOM from '../utils/dom';
+import featureDetector from '../utils/feature-detector';
 
 import './error';
 
@@ -18,7 +23,7 @@ export default class ErrorPc extends Component {
         this.player.on('error', this.handleError);
         this.on('click', this.handleClick);
 
-        this.textEl = Dom.$('.lark-error-text', this.el);
+        this.textEl = DOM.$('.lark-error-text', this.el);
     }
 
     handleClick() {
@@ -53,24 +58,30 @@ export default class ErrorPc extends Component {
                 text = '加载失败，点击重试';
         }
 
-        Dom.replaceContent(this.textEl, text);
+        DOM.replaceContent(this.textEl, text);
+    }
+
+    dispose() {
+        this.textEl = null;
+        super.dispose();
     }
 
     createEl() {
-        return this.createElement(
-            'div',
-            {className: 'lark-error-pc'},
-            this.createElement(
-                'div',
-                {className: 'lark-error-area'},
-                this.createElement(
-                    'div',
-                    {className: 'lark-error-text'},
-                    '加载失败，请稍后重试'
-                )
-            )
+        return (
+            <div className={classnames('lark-error-pc', this.options.className)}>
+                <div className="lark-error-area">
+                    <div className="lark-error-text">
+                        加载失败，请稍后重试
+                    </div>
+                </div>
+            </div>
         );
     }
 }
 
-Component.registerComponent('ErrorPc', ErrorPc);
+if (!featureDetector.touch) {
+    Component.register(ErrorPc, {name: 'errorPc'});
+}
+
+
+

@@ -3,8 +3,12 @@
  * @author yuhui<yuhui06@baidu.com>
  * @date 2017/11/16
  */
-import Component from '../component';
-import * as Dom from '../utils/dom';
+
+
+import classnames from 'classnames';
+
+import Component from '../plugin/component';
+import featureDetector from '../utils/feature-detector';
 
 export default class Error extends Component {
     constructor(player, options) {
@@ -34,22 +38,20 @@ export default class Error extends Component {
     }
 
     createEl() {
-        const errorSpinner = Dom.createElement('span', {
-            className: 'lark-error-area__spinner lark-icon-loading'
-        });
-
-        const errorText = Dom.createElement('span', {
-            className: 'lark-error-area__text'
-        }, '加载失败，点击重试');
-
-        const errorCnt = Dom.createElement('div', {
-            className: 'lark-error-cnt'
-        }, errorSpinner, errorText);
-
-        return Dom.createElement('div', {
-            className: 'lark-error-area'
-        }, errorCnt);
+        return (
+            <div className={classnames('lark-error-area', this.options.className)}>
+                <div className="lark-error-cnt">
+                    <span className="lark-error-area__spinner lark-icon-loading"></span>
+                    <span className="lark-error-area__text">加载失败，点击重试</span>
+                </div>
+            </div>
+        );
     }
 }
 
-Component.registerComponent('Error', Error);
+if (featureDetector.touch) {
+    Component.register(Error, {name: 'error'});
+}
+
+
+
