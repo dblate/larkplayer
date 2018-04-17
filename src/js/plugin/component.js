@@ -9,10 +9,11 @@
  */
 
 import pluginStore from './plugin-store';
-import {UI} from './plugin-types';
+import PluginTypes from './plugin-types';
 import * as DOM from '../utils/dom';
-import * as Events from '../utils/events';
-import evented from '../mixins/evented';
+import * as Events from '../events/events';
+import evented from '../events/evented';
+import toCamelCase from '../utils/to-camel-case';
 
 
 export default class Component {
@@ -22,6 +23,8 @@ export default class Component {
         this.el = this.createEl(this.options);
 
         evented(this, {eventBusKey: this.el});
+        this.dispose = this.dispose.bind(this);
+        this.player.on('dispose', this.dispose);
     }
 
     createEl() {
@@ -45,18 +48,18 @@ export default class Component {
         // babel 编译后的默认值遇到 null 时会取 null，因为判断的是 !== undefined
         options = options || {};
 
-        let component;
+        let ComponentClass;
         if (typeof name === 'string') {
-            component = Component.get(name.toLowerCase());
-        } else if (Component.isPrototypeOf(name)) {
-            component = name;
+            ComponentClass = Component.get(toCamelCase(name));
+        } else if (name.prototype instanceof Component) {
+            ComponentClass = name;
         }
 
-        if (component) {
+        if (ComponentClass) {
             // 这里的 this.player 不是什么黑魔法，它确实无法取到实例中的 this.player
             // 只不过是在调用 Component.createElement 之前，先给 Component.player 赋了值而已
             // 如果你看不懂我在说什么，当我没说
-            const instance = new component(this.player, options);
+            const instance = new ComponentClass(this.player, options);
             const el = instance.el;
 
             if (child) {
@@ -70,78 +73,17 @@ export default class Component {
     }
 
     static register(component, options) {
-        return pluginStore.add(component, options, UI);
+        return pluginStore.add(component, options, PluginTypes.UI);
     }
 
     static get(name) {
-        return pluginStore.get(name, UI);
+        return pluginStore.get(name, PluginTypes.UI);
     }
 
     static getAll() {
-        return pluginStore.getAll(UI);
+        return pluginStore.getAll(PluginTypes.UI);
     }
 }
-
-
-// @example
-// class Dialog extends Component {
-//     constructor(player, options) {
-//         super(player, options);
-
-//         this.handleClose = this.handleClose.bind(this);
-
-//         this.closeEl = DOM.$('.dialog__close', this.el);
-//         Events.on(this.closeEl, 'click', this.handleClose);
-//     }
-
-//     handleClose() {
-//         this.el.style.display = 'none';
-//     }
-
-//     createEl() {
-//         this.options = Object.assign({
-//             className: '',
-//             title: '',
-//             cnt: ''
-//         }, this.options);
-
-//         const tpl = `
-//             <div class="dialog ${this.options.className}">
-//                 <i className="dialog__close">close</i>
-//                 <h1 class="dialog__title">${this.options.title}</h1>
-//                 <p class="dialog__cnt">${this.options.cnt}</p>
-//             </div>
-//         `;
-
-//         const el = Component.createElement('div', {className: 'dialog-container'});
-//         el.innerHTML = tpl;
-
-//         return el;
-//     }
-// }
-
-// class ErrorDialog extends Component {
-//     constructor(player, options) {
-//         super(player, options);
-
-//         this.handleError = this.handleError.bind(this);
-//         this.player.on('error', this.handleError);
-//     }
-
-//     handleError(event) {
-//         this.el.style.display = 'block';
-//     }
-
-//     createEl() {
-//         return Component.createElement(Dialog, {
-//             className: 'error-dialog',
-//             title: 'Error',
-//             cnt: 'Video play error, plz try again later.'
-//         });
-//     }
-// }
-
-// Component.register(ErrorDialog, {name: 'error_dialog'});
 
 
 

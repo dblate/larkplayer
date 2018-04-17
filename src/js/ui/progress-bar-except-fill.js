@@ -33,6 +33,5 @@ export default class ProgressBarExceptFill extends Component {
     }
 }
 
-// Component.register(ProgressBarExceptFill);
 
 

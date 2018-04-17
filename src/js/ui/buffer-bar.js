@@ -13,13 +13,13 @@
 import classnames from 'classnames';
 
 import Component from '../plugin/component';
-import * as Dom from '../utils/dom';
+import * as DOM from '../utils/dom';
 
 export default class BufferBar extends Component {
     constructor(player, options) {
         super(player, options);
 
-        this.line = Dom.$('.lark-buffer-bar__line', this.el);
+        this.line = DOM.$('.lark-buffer-bar__line', this.el);
         this.handleProgress = this.handleProgress.bind(this);
 
         this.player.on('progress', this.handleProgress);
@@ -54,6 +54,12 @@ export default class BufferBar extends Component {
         this.render(0);
     }
 
+    dispose() {
+        this.line = null;
+
+        super.dispose();
+    }
+
     createEl() {
         return (
             <div className={classnames('lark-buffer-bar', this.options.className)}>
@@ -62,7 +68,5 @@ export default class BufferBar extends Component {
         );
     }
 }
-
-// Component.register(BufferBar);
 
 

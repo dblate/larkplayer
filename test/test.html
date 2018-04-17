@@ -8,7 +8,7 @@
 </head>
 <body>
     <video id="my-video" src="https://baikebcs.bdimg.com/baike-other/big-buck-bunny.mp4" width="400" height="300" controls></video>
-    <script type="text/javascript" src="../dist/larkplayer.js"></script>
+    <script type="text/javascript" src="../dist/larkplayer.min.js"></script>
     <script type="text/javascript">
         var width = Math.min(document.body.clientWidth, 640);
         var player = larkplayer('my-video', {
@@ -40,8 +40,8 @@
 
         player.on('ended', function () {
             console.log('ended');
-            player.src(srcList[Math.round(Math.random())]);
-            player.play();
+            // player.src(srcList[Math.round(Math.random())]);
+            // player.play();
         });
 
         player.on('resize', function () {

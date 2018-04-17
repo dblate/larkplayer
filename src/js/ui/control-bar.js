@@ -34,5 +34,5 @@ export default class ControlBar extends Component {
 }
 
 if (featureDetector.touch) {
-    Component.register(ControlBar);
+    Component.register(ControlBar, {name: 'controlBar'});
 }

@@ -8,7 +8,7 @@
 import classnames from 'classnames';
 
 import Component from '../plugin/component';
-import * as Dom from '../utils/dom';
+import * as DOM from '../utils/dom';
 import BufferBar from './buffer-bar';
 import featureDetector from '../utils/feature-detector';
 
@@ -17,7 +17,7 @@ export default class ProgressBarSimple extends Component {
         super(player, options);
 
         this.handleTimeUpdate = this.handleTimeUpdate.bind(this);
-        this.line = Dom.$('.lark-progress-bar__line', this.el);
+        this.line = DOM.$('.lark-progress-bar__line', this.el);
         player.on('timeupdate', this.handleTimeUpdate);
     }
 
@@ -43,6 +43,12 @@ export default class ProgressBarSimple extends Component {
         });
     }
 
+    dispose() {
+        this.line = null;
+
+        super.dispose();
+    }
+
     createEl() {
         return (
             <div className={classnames('lark-progress-bar--simple', this.options.className)}>
@@ -55,7 +61,7 @@ export default class ProgressBarSimple extends Component {
 }
 
 if (featureDetector.touch) {
-    Component.register(ProgressBarSimple);
+    Component.register(ProgressBarSimple, {name: 'progressBarSimple'});
 }
 
 

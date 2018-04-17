@@ -8,8 +8,8 @@
 import classnames from 'classnames';
 
 import Component from '../plugin/component';
-import * as Dom from '../utils/dom';
-import * as Events from '../utils/events';
+import * as DOM from '../utils/dom';
+import * as Events from '../events/events';
 import featureDetector from '../utils/feature-detector';
 
 export default class PlayButton extends Component {
@@ -17,8 +17,8 @@ export default class PlayButton extends Component {
         super(player, options);
 
         // 注意 这里需要将 context（第二个参数） 设置为 this.el，因为这时 DOM 元素还没有插入到 document 里，所以在 document 里是查不到这个元素的
-        this.playBtn = Dom.$('.lark-play-button__play', this.el);
-        this.pauseBtn = Dom.$('.lark-play-button__pause', this.el);
+        this.playBtn = DOM.$('.lark-play-button__play', this.el);
+        this.pauseBtn = DOM.$('.lark-play-button__pause', this.el);
 
         const eventName = featureDetector.touch ? 'touchend' : 'click';
 
@@ -38,6 +38,15 @@ export default class PlayButton extends Component {
         }
     }
 
+    dispose() {
+        Events.off(this.playBtn);
+        Events.off(this.pauseBtn);
+        this.playBtn = null;
+        this.pauseBtn = null;
+
+        super.dispose();
+    }
+
     createEl() {
         return (
             <div className={classnames('lark-play-button', this.options.className, {
@@ -51,7 +60,7 @@ export default class PlayButton extends Component {
 }
 
 if (featureDetector.touch) {
-    Component.register(PlayButton);
+    Component.register(PlayButton, {name: 'playButton'});
 }
 
 

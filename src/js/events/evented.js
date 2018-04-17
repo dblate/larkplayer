@@ -4,8 +4,8 @@
  * @date 2017/11/7
  */
 
-import * as Events from '../utils/events';
-import * as Dom from '../utils/dom';
+import * as Events from './events';
+import * as DOM from '../utils/dom';
 
 /**
  * 使一个对象具有直接使用 on off one trigger 的能力
@@ -26,13 +26,13 @@ export default function evented(target, options = {}) {
     if (eventBusKey && eventBusKey.nodeType === 1) {
         target.eventBusEl = eventBusKey;
     } else {
-        target.eventBusEl = Dom.createEl('div');
+        target.eventBusEl = DOM.createEl('div');
     }
 
     // if (target[eventBusKey] && target[eventBusKey]['nodeType'] === 1) {
     //     target.eventBusEl = target[eventBusKey];
     // } else {
-    //     target.eventBusEl = Dom.createEl('div');
+    //     target.eventBusEl = DOM.createEl('div');
     // }
 
     target.on = function (type, fn) {

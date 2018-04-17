@@ -2,20 +2,14 @@
  * @file dom-data.js
  * @author yuhui06@baidu.com
  * @date 2017/11/3
- * @desc
- *      1) 这是一个神奇的方法，看好了，最好别眨眼😉
- *      2) 这里没有 setData 方法，只负责取数据就行了。我们往取回来的数据里塞东西，自然就存起来了
  */
 
-import {newGUID} from './guid';
+import {newGUID} from '../utils/guid';
 
 // 所有的数据会存在这里
 // 我们可以将数据与 DOM 元素绑定，但又不是直接将数据放在它上面
 // eg. Event listeners 是通过这种方式绑定的
 let elData = {};
-
-// @test
-window.elData = elData;
 
 const elIdAttr = 'larkplayer_data_' + Date.now();
 

@@ -33,7 +33,7 @@ export default class ControlBarPc extends Component {
                     <Volume />
                     <div className="lark-time">
                         <CurrentTime />
-                        <span className="lark-time-separator">|</span>
+                        <span className="lark-time-separator">/</span>
                         <Duration />
                     </div>
                 </div>
@@ -46,7 +46,7 @@ export default class ControlBarPc extends Component {
 }
 
 if (!featureDetector.touch) {
-    Component.register(ControlBarPc);
+    Component.register(ControlBarPc, {name: 'controlBarPc'});
 }
 
 

@@ -24,5 +24,5 @@ export default class LoadingPc extends Component {
 }
 
 if (!featureDetector.touch) {
-    Component.register(LoadingPc);
+    Component.register(LoadingPc, {name: 'loadingPc'});
 }

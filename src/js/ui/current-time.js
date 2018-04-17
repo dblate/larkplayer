@@ -7,7 +7,7 @@
 import classnames from 'classnames';
 
 import Component from '../plugin/component';
-import * as Dom from '../utils/dom';
+import * as DOM from '../utils/dom';
 import {timeFormat} from '../utils/time-format';
 
 export default class CurrentTime extends Component {
@@ -24,7 +24,7 @@ export default class CurrentTime extends Component {
     }
 
     render(time) {
-        Dom.textContent(this.el, timeFormat(Math.floor(time)));
+        DOM.textContent(this.el, timeFormat(Math.floor(time)));
     }
 
     reset() {
@@ -41,5 +41,3 @@ export default class CurrentTime extends Component {
         );
     }
 }
-
-// Component.register(CurrentTime);

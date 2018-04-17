@@ -112,6 +112,9 @@
 .lark-icon-loading-circle:before {
   content: '\e608';
 }
+.lark-icon-replay:before {
+  content: '\e609';
+}
 /**
  * @file 播放器状态
  * @author yuhui<yuhui06@baidu.com>
@@ -219,6 +222,9 @@
 .lark-paused.lark-seeking .lark-loading-pc .lark-loading-area,
 .lark-paused.lark-waiting .lark-loading-pc .lark-loading-area,
 .lark-paused.lark-loadstart .lark-loading-pc .lark-loading-area {
+  display: block;
+}
+.lark-ended .lark-complete {
   display: block;
 }
 .lark-error .lark-error-area {
@@ -692,6 +698,26 @@
   top: 50%;
   transform: translateY(-50%);
 }
+.lark-complete {
+  display: none;
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.8);
+}
+.lark-complete__replay {
+  position: absolute;
+  color: #fff;
+  font-size: 48px;
+  top: 50%;
+  left: 50%;
+  width: 48px;
+  height: 54px;
+  margin-left: -24px;
+  margin-top: -27px;
+}
 .lark-time {
   *zoom: 1;
   font-size: 13px;
@@ -714,6 +740,7 @@
 }
 .lark-time .lark-time-separator {
   float: left;
+  margin: 0 2px;
 }
 .lark-control-bar-pc {
   *zoom: 1;
@@ -724,6 +751,7 @@
   bottom: 0px;
   color: #fff;
   width: 100%;
+  cursor: default;
 }
 .lark-control-bar-pc:after {
   content: '\0020';
@@ -870,6 +898,7 @@
 }
 .larkplayer {
   position: relative;
+  cursor: pointer;
   background: #000;
   -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
   -webkit-touch-callout: none;

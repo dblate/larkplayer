@@ -9,7 +9,7 @@
 
 
 import pluginStore from './plugin-store';
-import {OTHERS} from './plugin-types';
+import PluginTypes from './plugin-types';
 
 export default class Plugin {
     constructor(player, options = {}) {
@@ -23,41 +23,17 @@ export default class Plugin {
     }
 
     static register(plugin, options) {
-        pluginStore.add(plugin, options, OTHERS);
+        pluginStore.add(plugin, options, PluginTypes.OTHERS);
     }
 
     static get(name) {
-        pluginStore.get(name, OTHERS);
+        pluginStore.get(name, PluginTypes.OTHERS);
     }
 
     static getAll() {
-        return pluginStore.getAll(OTHERS);
+        return pluginStore.getAll(PluginTypes.OTHERS);
     }
 }
-
-
-// @example
-// class PlayContinue extends Plugin {
-//     constructor(player, options) {
-//         super(player, options);
-
-//         this.handleFirstPlay = this.handleFirstPlay.bind(this);
-
-//         this.player.on('firstplay', this.handleFirstPlay);
-//     }
-
-//     handleFirstPlay() {
-//         console.log('firstplay in PlayContinue');
-//     }
-
-//     dispose() {
-//         this.player.off(this.handleFirstPlay);
-//         super.dispose();
-//     }
-// }
-
-
-// Plugin.register(PlayContinue, {name: 'playContinue'});
 
 
 

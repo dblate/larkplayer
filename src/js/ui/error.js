@@ -50,7 +50,7 @@ export default class Error extends Component {
 }
 
 if (featureDetector.touch) {
-    Component.register(Error);
+    Component.register(Error, {name: 'error'});
 }
 
 

@@ -7,7 +7,7 @@
 
 import classnames from 'classnames';
 
-import * as Dom from '../utils/dom';
+import Component from '../plugin/component';
 
 export default class NotSupport extends Component {
     createEl() {
@@ -21,4 +21,4 @@ export default class NotSupport extends Component {
     }
 }
 
-Component.register(NotSupport);
+Component.register(NotSupport, {name: 'notSupport'});

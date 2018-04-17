@@ -25,5 +25,5 @@ export default class Loading extends Component {
 }
 
 if (featureDetector.touch) {
-    Component.register(Loading);
+    Component.register(Loading, {name: 'loading'});
 }

@@ -7,9 +7,11 @@
 
 import classnames from 'classnames';
 
+/* eslint-disable no-unused-vars */
 import Component from '../plugin/component';
-import * as Dom from '../utils/dom';
-import * as Events from '../utils/events';
+/* eslint-enable no-unused-vars */
+import * as DOM from '../utils/dom';
+import * as Events from '../events/events';
 import Slider from './slider';
 import tooltip from './tooltip';
 
@@ -29,9 +31,9 @@ export default class Volume extends Slider {
         this.switchStatus = this.switchStatus.bind(this);
         this.clearStatus = this.clearStatus.bind(this);
 
-        this.line = Dom.$('.lark-volume-line__line', this.el);
-        this.ball = Dom.$('.lark-volume-line__ball', this.el);
-        this.icon = Dom.$('.lark-volume-icon', this.el);
+        this.line = DOM.$('.lark-volume-line__line', this.el);
+        this.ball = DOM.$('.lark-volume-line__ball', this.el);
+        this.icon = DOM.$('.lark-volume-icon', this.el);
 
         Events.on(this.icon, 'click', this.iconClick);
         Events.on(this.icon, 'mouseover', this.handleIconMouseOver);
@@ -47,7 +49,7 @@ export default class Volume extends Slider {
 
     onSlideMove(event) {
         event.preventDefault();
-        const pos = Dom.getPointerPosition(this.line, event);
+        const pos = DOM.getPointerPosition(this.line, event);
         this.update(pos.x);
     }
 
@@ -60,7 +62,7 @@ export default class Volume extends Slider {
     onClick(event) {
         this.lastVolume = this.player.volume();
 
-        const pos = Dom.getPointerPosition(this.line, event);
+        const pos = DOM.getPointerPosition(this.line, event);
         this.update(pos.x);
 
         if (this.player.volume() !== 0) {
@@ -114,14 +116,26 @@ export default class Volume extends Slider {
             status = 'large';
         }
 
-        Dom.addClass(this.icon, `lark-icon-sound-${status}`);
+        DOM.addClass(this.icon, `lark-icon-sound-${status}`);
     }
 
     clearStatus() {
         const statusClass = ['lark-icon-sound-small', 'lark-icon-sound-middle', 'lark-icon-sound-large'];
         statusClass.forEach(className => {
-            Dom.removeClass(this.icon, className);
+            DOM.removeClass(this.icon, className);
         });
+    }
+
+    dispose() {
+        Events.off(this.icon, 'click', this.iconClick);
+        Events.off(this.line, 'click', this.handleClick);
+        Events.off(this.ball, 'mousedown', this.handleSlideStart);
+
+        this.icon = null;
+        this.line = null;
+        this.ball = null;
+
+        super.dispose();
     }
 
     createEl() {
@@ -139,6 +153,5 @@ export default class Volume extends Slider {
     }
 }
 
-// Component.register(Volume);
 
 

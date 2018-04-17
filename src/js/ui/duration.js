@@ -8,7 +8,7 @@
 import classnames from 'classnames';
 
 import Component from '../plugin/component';
-import * as Dom from '../utils/dom';
+import * as DOM from '../utils/dom';
 import {timeFormat} from '../utils/time-format';
 
 export default class Duration extends Component {
@@ -22,11 +22,11 @@ export default class Duration extends Component {
     }
 
     handleLoadedMetaData(event) {
-        Dom.textContent(this.el, timeFormat(Math.floor(this.player.duration())));
+        DOM.textContent(this.el, timeFormat(Math.floor(this.player.duration())));
     }
 
     reset() {
-        Dom.textContent(this.el, '');
+        DOM.textContent(this.el, '');
     }
 
     createEl() {
@@ -41,4 +41,3 @@ export default class Duration extends Component {
     }
 }
 
-// Component.register(Duration);

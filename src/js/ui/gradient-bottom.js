@@ -18,4 +18,3 @@ export default class GradientBottom extends Component {
     }
 }
 
-// Component.register(GradientBottom);

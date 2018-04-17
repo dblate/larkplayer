@@ -8,8 +8,8 @@
 import classnames from 'classnames';
 
 import Component from '../plugin/component';
-import * as Dom from '../utils/dom';
-import * as Events from '../utils/events';
+import * as DOM from '../utils/dom';
+import * as Events from '../events/events';
 import tooltip from './tooltip';
 import featureDetector from '../utils/feature-detector';
 
@@ -24,8 +24,8 @@ export default class FullscreenButton extends Component {
         this.on('click', this.handleClick);
 
         if (!featureDetector.touch) {
-            this.fullscreenButton = Dom.$('.lark-request-fullscreen', this.el);
-            this.exitFullscreenButton = Dom.$('.lark-exit-fullscreen', this.el);
+            this.fullscreenButton = DOM.$('.lark-request-fullscreen', this.el);
+            this.exitFullscreenButton = DOM.$('.lark-exit-fullscreen', this.el);
 
             Events.on(
                 this.fullscreenButton,
@@ -65,6 +65,17 @@ export default class FullscreenButton extends Component {
         tooltip.hide();
     }
 
+    dispose() {
+        if (!featureDetector.touch) {
+            Events.off(this.fullscreenButton);
+            Events.off(this.exitFullscreenButton);
+            this.fullscreenButton = null;
+            this.exitFullscreenButton = null;
+        }
+
+        super.dispose();
+    }
+
     createEl() {
         // @todo 将两个 icon 分别放到两个类中，这样可以确定他们每个的 click 的事件一定跟自己的名称是相符的
         // @todo 需要一个非全屏的按钮 sueb
@@ -77,6 +88,5 @@ export default class FullscreenButton extends Component {
     }
 }
 
-// Component.register(FullscreenButton);
 
 

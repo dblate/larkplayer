@@ -5,8 +5,8 @@
  */
 
 
-export const UI = 'UI';
-export const MS = 'MS';
-export const OTHERS = 'otherPlugin';
-
-export default {UI, MS, OTHERS};
+export default {
+    UI: 'UI',
+    MS: 'MS',
+    OTHERS: 'plugin'
+};

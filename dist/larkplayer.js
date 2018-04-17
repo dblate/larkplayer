@@ -4364,32 +4364,739 @@ module.exports = values;
 'use strict';
 
 exports.__esModule = true;
+exports.getData = getData;
+exports.hasData = hasData;
+exports.removeData = removeData;
 
-var _lodash = require('lodash.find');
+var _guid = require('../utils/guid');
+
+// 所有的数据会存在这里
+// 我们可以将数据与 DOM 元素绑定，但又不是直接将数据放在它上面
+// eg. Event listeners 是通过这种方式绑定的
+var elData = {}; /**
+                  * @file dom-data.js
+                  * @author yuhui06@baidu.com
+                  * @date 2017/11/3
+                  */
+
+var elIdAttr = 'larkplayer_data_' + Date.now();
+
+/**
+ * 获取 DOM 元素上的数据
+ *
+ * @param {Element} el 获取该元素上的数据
+ * @return {Object} 想要的数据
+ */
+function getData(el) {
+    var id = el[elIdAttr];
+
+    if (!id) {
+        id = el[elIdAttr] = (0, _guid.newGUID)();
+    }
+
+    if (!elData[id]) {
+        elData[id] = {};
+    }
+
+    return elData[id];
+}
+
+/**
+ * 判断一个元素上是否有我们存的数据
+ *
+ * @param {Element} el 就是要看这个元素上有没有我们之前存的数据
+ * @return {boolean} 元素上是否存有数据
+ */
+function hasData(el) {
+    var id = el[elIdAttr];
+
+    if (!id || !elData[id]) {
+        return false;
+    }
+
+    return !!Object.keys(elData[id]).length;
+}
+
+/**
+ * 删除我们之前在元素上存放的数据
+ *
+ * @param {Element} el 宿主元素
+ */
+function removeData(el) {
+    var id = el[elIdAttr];
+
+    if (!id) {
+        return;
+    }
+
+    // 删除存放的数据
+    delete elData[id];
+
+    // 同时删除 DOM 上的对应属性
+    try {
+        delete el[elIdAttr];
+    } catch (e) {
+        if (el.removeAttribute) {
+            el.removeAttribute(elIdAttr);
+        } else {
+            // IE document 节点似乎不支持 removeAttribute 方法
+            el[elIdAttr] = null;
+        }
+    }
+}
+
+},{"../utils/guid":40}],7:[function(require,module,exports){
+'use strict';
+
+exports.__esModule = true;
+exports['default'] = evented;
+
+var _events = require('./events');
+
+var Events = _interopRequireWildcard(_events);
+
+var _dom = require('../utils/dom');
+
+var DOM = _interopRequireWildcard(_dom);
+
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj['default'] = obj; return newObj; } }
+
+/**
+ * 使一个对象具有直接使用 on off one trigger 的能力
+ *
+ * @param {Object} target 要具有事件能力的对象
+ * @param {Object} options 配置项
+ * @param {string=} options.eventBusKey 一个 DOM 元素，事件绑定在该元素上
+ */
+/**
+ * @file 给一个对象添加事件方面的 api
+ * @author yuhui<yuhui06@baidu.com>
+ * @date 2017/11/7
+ */
+
+function evented(target) {
+    var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+
+    if (target.isEvented && target.eventBusEl === options.eventBusKey) {
+        return;
+    } else {
+        target.isEvented = true;
+    }
+
+    // @todo normalize args
+    var eventBusKey = options.eventBusKey;
+    if (eventBusKey && eventBusKey.nodeType === 1) {
+        target.eventBusEl = eventBusKey;
+    } else {
+        target.eventBusEl = DOM.createEl('div');
+    }
+
+    // if (target[eventBusKey] && target[eventBusKey]['nodeType'] === 1) {
+    //     target.eventBusEl = target[eventBusKey];
+    // } else {
+    //     target.eventBusEl = DOM.createEl('div');
+    // }
+
+    target.on = function (type, fn) {
+        Events.on(target.eventBusEl, type, fn);
+    };
+
+    target.off = function (type, fn) {
+        Events.off(target.eventBusEl, type, fn);
+    };
+
+    target.one = function (type, fn) {
+        Events.one(target.eventBusEl, type, fn);
+    };
+
+    target.trigger = function (type, data) {
+        Events.trigger(target.eventBusEl, type, data);
+    };
+}
+
+},{"../utils/dom":38,"./events":8}],8:[function(require,module,exports){
+'use strict';
+
+exports.__esModule = true;
+exports.isPassiveSupported = undefined;
+exports.fixEvent = fixEvent;
+exports.on = on;
+exports.trigger = trigger;
+exports.off = off;
+exports.one = one;
+
+var _lodash = require('lodash.includes');
 
 var _lodash2 = _interopRequireDefault(_lodash);
 
-var _dom = require('./utils/dom');
+var _domData = require('./dom-data');
 
-var Dom = _interopRequireWildcard(_dom);
+var DomData = _interopRequireWildcard(_domData);
 
-var _toTitleCase = require('./utils/to-title-case');
-
-var _toTitleCase2 = _interopRequireDefault(_toTitleCase);
-
-var _normalizeSource = require('./utils/normalize-source');
-
-var _normalizeSource2 = _interopRequireDefault(_normalizeSource);
-
-var _obj = require('./utils/obj');
-
-var _evented = require('./mixins/evented');
-
-var _evented2 = _interopRequireDefault(_evented);
+var _guid = require('../utils/guid');
 
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj['default'] = obj; return newObj; } }
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
+
+// data.disabled
+// data.dispatcher
+// data.handlers
+// let data = {};
+
+var document = window.document;
+
+/**
+ * 清理事件相关的数据(Clean up the listener cache and dispatchers)
+ *
+ * @inner
+ *
+ * @param {Element} elem 待清理的元素
+ * @param {string} type 待清理的事件类型
+ */
+/**
+ * @file 事件系统，借用系统事件能力的同时，能添加自定义事件
+ * @author yuhui06@baidu.com
+ * @date 2017/11/3
+ */
+
+function cleanUpEvents(elem, type) {
+    var data = DomData.getData(elem);
+
+    // 如果该 type 下已经没有回调函数，那就取消掉之前注册的事件并且删除不必要的属性
+    if (data.handlers && data.handlers[type] && data.handlers[type]['length'] === 0) {
+        // 删除不必要的属性
+        delete data.handlers[type];
+
+        // 删除之前注册的事件
+        if (elem.removeEventListener) {
+            elem.removeEventListener(type, data.dispatcher, false);
+        } else if (elem.detachEvent) {
+            elem.detachEvent('on' + type, data.dispatcher);
+        }
+    }
+
+    // 如果 hanlders 下已经没有 type，那可以清除 data 下的所有属性了
+    if (Object.getOwnPropertyNames(data.handlers).length === 0) {
+        delete data.handlers;
+        delete data.dispatcher;
+        delete data.disabled;
+    }
+
+    // 如果 data 的属性已经被清空，那么对应 DOM 上的数据相关的属性也可以清除了
+    if (Object.getOwnPropertyNames(data).length === 0) {
+        DomData.removeData(elem);
+    }
+}
+
+/**
+ * 循环 types 数组，给每个 type 都执行指定的方法
+ *
+ * 将需要在不同函数里执行的循环操作抽离出来
+ *
+ * @inner
+ *
+ * @param {Function} func 要循环执行的函数
+ * @param {Element} elem 宿主元素
+ * @param {Array} types 类型数组
+ * @param {Function} callback 要注册的回调函数
+ */
+function handleMultipleEvents(func, elem, types, callback) {
+    if (types && types.length) {
+        types.forEach(function (type) {
+            return func(elem, type, callback);
+        });
+    }
+}
+
+/**
+ * 修复事件，使其具有标准的属性
+ *
+ * @param {Event|Object} event 待修复的事件
+ * @return {Object} 修复后的事件
+ */
+function fixEvent(event) {
+    function returnTure() {
+        return true;
+    }
+
+    function returnFalse() {
+        return false;
+    }
+
+    // Test if fixing up is needed
+    // Used to check if !event.stopPropagation instead of isPropagationStopped
+    // But native events return true for stopPropagation, but don't have
+    // other expected methods like isPropagationStopped. Seems to be a problem
+    // with the Javascript Ninja code. So we're just overriding all events now.
+    if (!event || !event.isPropagationStopped) {
+        var old = event || window.event;
+
+        event = {};
+
+        // Clone the old object so that we can modify the values event = {};
+        // IE8 Doesn't like when you mess with native event properties
+        // Firefox returns false for event.hasOwnProperty('type') and other props
+        //  which makes copying more difficult.
+        // TODO: Probably best to create a whitelist of event props
+        for (var key in old) {
+            // Safari 6.0.3 warns you if you try to copy deprecated layerX/Y
+            // Chrome warns you if you try to copy deprecated keyboardEvent.keyLocation
+            // and webkitMovementX/Y
+            if (key !== 'layerX' && key !== 'layerY' && key !== 'keyLocation' && key !== 'webkitMovementX' && key !== 'webkitMovementY') {
+                // Chrome 32+ warns if you try to copy deprecated returnValue, but
+                // we still want to if preventDefault isn't supported (IE8).
+                if (!(key === 'returnValue' && old.preventDefault)) {
+                    event[key] = old[key];
+                }
+            }
+        }
+
+        // 事件发生在此元素上
+        if (!event.target) {
+            event.target = event.srcElement || document;
+        }
+
+        // 跟事件发生元素有关联的元素
+        if (!event.relatedTarget) {
+            event.relatedTarget = event.fromElement === event.target ? event.toElement : event.fromElement;
+        }
+
+        // 阻止默认事件
+        event.preventDefault = function () {
+            if (old.preventDefault) {
+                old.preventDefault();
+            }
+
+            event.returnValue = false;
+            old.returnValue = false;
+            event.defaultPrevented = true;
+        };
+
+        event.defaultPrevented = false;
+
+        // 阻止事件冒泡
+        event.stopPropagation = function () {
+            if (old.stopPropagation) {
+                old.stopPropagation();
+            }
+
+            event.cancelBubble = true;
+            old.cancelBubble = true;
+            event.isPropagationStopped = returnTure;
+        };
+
+        event.isPropagationStopped = returnFalse;
+
+        // 阻止事件冒泡，并且当前阶段的事件也不执行
+        event.stopImmediatePropagation = function () {
+            if (old.stopImmediatePropagation) {
+                old.stopImmediatePropagation();
+            }
+
+            event.isImmediatePropagationStopped = returnTure;
+            event.stopPropagation();
+        };
+
+        event.isImmediatePropagationStopped = returnFalse;
+
+        // 鼠标位置
+        if (event.clientX != null) {
+            var doc = document.documentElement;
+            var body = document.body;
+
+            // clientX 代表与窗口左边的距离，根据页面滚动不同，是可变的
+            // pageX 代表相对于文档左边的距离，是个常量
+            event.pageX = event.clientX + (doc && doc.scrollLeft || body && body.scrollLeft || 0) - (doc && doc.clientLeft || body && body.clientLeft || 0);
+
+            event.pageY = event.clientY + (doc && doc.scrollTop || body && body.scrollTop || 0) - (doc && doc.clientTop || body && body.clientTop || 0);
+        }
+
+        // 键盘按键
+        event.which = event.charCode || event.keyCode;
+
+        // 鼠标按键
+        // 0: 左键
+        // 1: 中间按钮
+        // 2: 右键
+        if (event.button != null) {
+            // em... 这里应该是 与运算，就没去细究了
+            /* eslint-disable */
+            event.button = event.button & 1 ? 0 : event.button & 4 ? 1 : event.button & 2 ? 2 : 0;
+            /* eslint-disable */
+        }
+    }
+
+    return event;
+}
+
+/**
+ * 是否支持 passive event listeners
+ * passive event listeners 可以提升页面的滚动性能
+ *
+ * @see https://github.com/WICG/EventListenerOptions/blob/gh-pages/explainer.md
+ */
+var isPassiveSupported = exports.isPassiveSupported = false;
+(function () {
+    try {
+        var opts = Object.defineProperty({}, 'passive', {
+            get: function get() {
+                // 如果浏览器会来读取这个属性，说明支持该功能
+                exports.isPassiveSupported = isPassiveSupported = true;
+            }
+        });
+
+        window.addEventListener('test', null, opts);
+    } catch (ex) {}
+})();
+
+/**
+ * @const 目前 chrome 支持的 passive event
+ */
+var passiveEvents = ['touchstart', 'touchmove'];
+
+/**
+ * 向元素注册监听函数
+ *
+ * @todo explain
+ * @param {Element|Object} 要绑定事件的元素／对象，这里允许 Object 是考虑到后面讲事件处理作为一种能力赋予任何一个对象
+ * @param {string|Array} 事件类型，可以是数组的形式
+ * @param {Function} fn 要注册的回调函数
+ */
+function on(elem, type, fn) {
+    if (Array.isArray(type)) {
+        return handleMultipleEvents(on, elem, type, fn);
+    }
+
+    var data = DomData.getData(elem);
+    if (!data.handlers) {
+        data.handlers = {};
+    }
+
+    if (!data.handlers[type]) {
+        data.handlers[type] = [];
+    }
+
+    if (!fn.guid) {
+        fn.guid = (0, _guid.newGUID)();
+    }
+
+    // 我们往 handlers[type] 里面存函数，然后通过 dispatcher 调用
+    data.handlers[type].push(fn);
+
+    if (!data.dispatcher) {
+        /**
+         * trigger 的时候，我们通过调用这个函数，来调用注册在对应 elem 的对应 type 上的所有函数
+         *
+         * @param {Event} event 事件
+         * @param {Mixed} extraData 传入函数的数据
+         */
+        data.dispatcher = function (event, extraData) {
+            if (data.disabled) {
+                return;
+            }
+
+            // 通过 event.type 找到之前注册的回调函数
+            var handlers = data.handlers[event.type];
+
+            event = fixEvent(event);
+
+            if (handlers) {
+                // 鲁棒性。如果事件在执行过程中发生变动，不至于影响原来注册的事件，从而影响下次执行
+                var handlersClone = handlers.slice(0);
+
+                for (var i = 0; i < handlersClone.length; i++) {
+                    // 如果执行了 stopImmediatePropagation，那我们应该立即停止
+                    if (event.isImmediatePropagationStopped()) {
+                        break;
+                    } else {
+                        try {
+                            // 在当前 elem 上调用，同时将 event extraData 传过去当参数
+                            handlersClone[i].call(elem, event, extraData);
+                        } catch (ex) {
+                            console.log(ex);
+                        }
+                    }
+                }
+            }
+        };
+    }
+
+    // 只注册一次
+    if (data.handlers[type]['length'] === 1) {
+        // 系统事件，借用系统的能力调起
+        // 注意 这里注册的是 dispatcher 函数，通过 dispatcher 来统一地管理 fn
+        if (elem.addEventListener) {
+            // passive event listener
+            var options = false;
+            if (isPassiveSupported && (0, _lodash2['default'])(passiveEvents, type)) {
+                options = { passive: true };
+            }
+
+            elem.addEventListener(type, data.dispatcher, options);
+        } else if (elem.attachEvent) {
+            elem.attachEvent('on' + type, data.dispatcher);
+        }
+    }
+}
+
+/**
+ * 触发事件
+ *
+ * @param {string} 事件类型
+ * @param {Mixed} hash 事件触发时，传入的数据
+ */
+function trigger(elem, event, hash) {
+    // 先判断 hasData，避免直接用 getData 给 elem 添加额外的数据（具体可参见 DomData:getData）
+    var data = DomData.hasData(elem) ? DomData.getData(elem) : {};
+    // 事件冒泡
+    var parent = elem.parentNode || elem.ownerDocument;
+
+    // 将 string 包装成正常的事件类型
+    if (typeof event === 'string') {
+        event = { type: event, target: elem };
+    }
+
+    // 标准化
+    event = fixEvent(event);
+
+    // 如果有事件调度函数，那我们可以通过这个函数去调用注册在这个元素上的对应类型的事件
+    // 理论上注册过事件后就会有这个函数
+    if (data.dispatcher) {
+        data.dispatcher.call(elem, event, hash);
+    }
+
+    // 冒泡吧
+    // 如果还有父元素，并且没有手动阻止事件冒泡，且这个事件本身支持冒泡（media events 不支持），那我们继续
+    if (parent && !event.isPropagationStopped() && event.bubbles === true) {
+        // 注意 这里就直接传我们标准化过的 event 了，不用再传 type
+        trigger.call(null, parent, event, hash);
+        // 如果已经到最上层的元素，并且没有被阻止事件的默认行为，那我们看看有没有系统对这种事件有没有默认行为要执行
+    } else if (!parent && !event.defaultPrevented) {
+        var targetData = DomData.getData(event.target);
+        // 如果系统也在这个事件上注册有函数
+        if (event.target[event.type]) {
+            // 在执行系统的事件函数前，先关闭我们自己的事件分发，因为已经执行过一次了（否则之前的那些事件有会被执行一次）
+            targetData.disabled = true;
+
+            // 执行系统默认事件
+            if (typeof event.target[event.type] === 'function') {
+                event.target[event.type]();
+            }
+
+            // 恢复 disable 参数，避免对下次事件造成影响
+            targetData.disabled = false;
+        }
+    }
+
+    // 告知调用者这个事件的默认行为是否被阻止了
+    // @see https://www.w3.org/TR/DOM-Level-3-Events/#event-flow-default-cancel
+    return !event.defaultPrevented;
+}
+
+/**
+ * 移除已注册的事件
+ *
+ * @param {Element} elem 要移除事件的元素
+ * @param {string|Array=} 事件类型。可选，如果没有 type 参数，则移除该元素上所有的事件
+ * @param {Function=} 要移除的指定的函数。可选，如果没有此参数，则移除该 type 上的所有事件
+ *
+ * @desc
+ *    1) 请按照参数顺序传参数
+ */
+function off(elem, type, fn) {
+    if (!DomData.hasData(elem)) {
+        return;
+    }
+
+    var data = DomData.getData(elem);
+
+    if (!data.handlers) {
+        return;
+    }
+
+    if (Array.isArray(type)) {
+        return handleMultipleEvents(off, elem, type, fn);
+    }
+
+    function removeType(curType) {
+        data.handlers[curType] = [];
+        cleanUpEvents(elem, curType);
+    }
+
+    // 避免不传 type，直接传 fn 的情况
+    if (typeof type === 'function') {
+        throw new Error('注销指定事件函数前，先指定事件类型');
+    }
+
+    // 没有传 type，则移除所有事件
+    if (!type) {
+        for (var i in data.handlers) {
+            removeType(i);
+        }
+
+        return;
+    }
+
+    // 传了 type
+    var handlers = data.handlers[type];
+
+    if (!handlers) {
+        return;
+    }
+
+    // 传了 type，但没传 fn，则移除该 type 下的所有事件
+    if (type && !fn) {
+        removeType(type);
+        return;
+    }
+
+    // 传了 type 且传了 fn，则移除 type 下的 fn
+    // 如果这个函数之前注册过，就会有 guid 属性
+    if (fn.guid) {
+        if (handlers && handlers.length) {
+            data.handlers[type] = handlers.filter(function (value) {
+                return value.guid !== fn.guid;
+            });
+        }
+    }
+
+    // 最后需要再扫描下，有没有刚好被移除了所有函数的 type 或者 handlers
+    cleanUpEvents(elem, type);
+}
+
+/**
+ * 在指定事件下，只触发指定函数一次
+ *
+ * @param {Element} elem 要绑定事件的元素
+ * @param {string|Array} type 绑定的事件类型
+ * @param {Function} 注册的回调函数
+ */
+function one(elem, type, fn) {
+    if (Array.isArray(type)) {
+        return handleMultipleEvents(one, elem, type, fn);
+    }
+
+    function executeOnlyOnce() {
+        off(elem, type, executeOnlyOnce);
+        fn.apply(this, arguments);
+    }
+
+    // 移除函数需要 guid 属性
+    executeOnlyOnce.guid = fn.guid = fn.guid || (0, _guid.newGUID)();
+
+    on(elem, type, executeOnlyOnce);
+}
+
+},{"../utils/guid":40,"./dom-data":6,"lodash.includes":4}],9:[function(require,module,exports){
+'use strict';
+
+exports.__esModule = true;
+
+var _events = require('../events/events');
+
+var Events = _interopRequireWildcard(_events);
+
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj['default'] = obj; return newObj; } }
+
+var document = window.document;
+
+/**
+ * @const 目前所有的 fullscreen api
+ */
+/**
+ * @file 将 fullscreen api 抽象并统一
+ * @author yuhui<yuhui06@baidu.com>
+ * @date 2017/11/8
+ * @desc
+ *    1) 在全屏播放器的时候，选择将 video 的父元素全屏而不是将 video 标签全屏，在 pc 上可以帮你解决很多问题
+ *    2) 这个全屏并不是万能的，在一些浏览器下依然无法全屏（如 ios safari、IE9）
+ *
+ * @see https://fullscreen.spec.whatwg.org/
+ * @see https://developers.google.com/web/fundamentals/native-hardware/fullscreen/?hl=zh-cn
+ * @see https://github.com/sindresorhus/screenfull.js/blob/gh-pages/readme.md
+ */
+
+var API = [
+// ideal api
+['requestFullscreen', 'exitFullscreen', 'fullscreenElement', 'fullscreenEnabled', 'fullscreenchange', 'fullscreenerror'],
+// New WebKit
+['webkitRequestFullscreen', 'webkitExitFullscreen', 'webkitFullscreenElement', 'webkitFullscreenEnabled', 'webkitfullscreenchange', 'webkitfullscreenerror'],
+// Old WebKit (Safari 5.1)
+['webkitRequestFullScreen', 'webkitCancelFullScreen', 'webkitCurrentFullScreenElement', 'webkitCancelFullScreen', 'webkitfullscreenchange', 'webkitfullscreenerror'], ['mozRequestFullScreen', 'mozCancelFullScreen', 'mozFullScreenElement', 'mozFullScreenEnabled', 'mozfullscreenchange', 'mozfullscreenerror'], ['msRequestFullscreen', 'msExitFullscreen', 'msFullscreenElement', 'msFullscreenEnabled', 'MSFullscreenChange', 'MSFullscreenError']];
+
+var browserApi = {};
+
+API.forEach(function (value, index) {
+    if (value && value[1] in document) {
+        value.forEach(function (val, i) {
+            browserApi[API[0][i]] = val;
+        });
+    }
+});
+
+exports['default'] = {
+    requestFullscreen: function requestFullscreen(el) {
+        el[browserApi.requestFullscreen]();
+    },
+    exitFullscreen: function exitFullscreen() {
+        document[browserApi.exitFullscreen]();
+    },
+    fullscreenElement: function fullscreenElement() {
+        return document[browserApi.fullscreenElement];
+    },
+    fullscreenEnabled: function fullscreenEnabled() {
+        return document[browserApi.fullscreenEnabled];
+    },
+    isFullscreen: function isFullscreen() {
+        return !!this.fullscreenElement();
+    },
+    fullscreenchange: function fullscreenchange(callback) {
+        Events.on(document, browserApi.fullscreenchange, callback);
+    },
+    fullscreenerror: function fullscreenerror(callback) {
+        Events.on(document, browserApi.fullscreenerror, callback);
+    },
+
+    // @todo 不够优雅，不过好歹是给了事件注销的机会
+    off: function off(type, callback) {
+        if (type) {
+            if (callback) {
+                Events.off(document, type, callback);
+            } else {
+                Events.off(document, type);
+            }
+        } else {
+            Events.off(document, browserApi.fullscreenchange);
+            Events.off(document, browserApi.fullscreenerror);
+        }
+    }
+};
+
+},{"../events/events":8}],10:[function(require,module,exports){
+'use strict';
+
+exports.__esModule = true;
+
+var _dom = require('../utils/dom');
+
+var DOM = _interopRequireWildcard(_dom);
+
+var _toTitleCase = require('../utils/to-title-case');
+
+var _toTitleCase2 = _interopRequireDefault(_toTitleCase);
+
+var _normalizeSource = require('../utils/normalize-source');
+
+var _normalizeSource2 = _interopRequireDefault(_normalizeSource);
+
+var _evented = require('../events/evented');
+
+var _evented2 = _interopRequireDefault(_evented);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
+
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj['default'] = obj; return newObj; } }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } } /**
                                                                                                                                                            * @file html5 video api proxy
@@ -4417,7 +5124,6 @@ var Html5 = function () {
 
     Html5.prototype.dispose = function dispose() {
         Html5.disposeMediaElement(this.el);
-        // super.dispose();
     };
 
     Html5.prototype.setCurrentTime = function setCurrentTime(seconds) {
@@ -4508,7 +5214,7 @@ var Html5 = function () {
 
     Html5.prototype.source = function source(_source) {
         if (_source === undefined) {
-            var sourceNodeList = Dom.$$('source', this.el);
+            var sourceNodeList = DOM.$$('source', this.el);
             var sourceArray = Array.from(sourceNodeList);
             return sourceArray.map(function (value) {
                 return {
@@ -4521,7 +5227,7 @@ var Html5 = function () {
 
             var docFragment = document.createDocumentFragment();
             _source.forEach(function (value) {
-                var sourceElem = Dom.createElement('source', {
+                var sourceElem = DOM.createElement('source', {
                     src: value.src,
                     type: value.type
                 });
@@ -4555,6 +5261,7 @@ var Html5 = function () {
 // HTML5 Support Testing
 
 
+exports['default'] = Html5;
 Html5.TEST_VID = document.createElement('video');
 
 /**
@@ -4582,17 +5289,6 @@ Html5.isSupported = function () {
  */
 Html5.canPlayType = function (type) {
     return Html5.TEST_VID.canPlayType(type);
-};
-
-Html5.canPlaySource = function (srcObj, options) {
-    return Html5.canPlayType(srcObj.type);
-};
-
-Html5.canPlaySrc = function (src) {
-    var source = (0, _normalizeSource2['default'])({ src: src })[0];
-    var mediaSourceHandler = Html5.selectMediaSourceHandler(source);
-
-    return !!(mediaSourceHandler || Html5.canPlaySource(source));
 };
 
 /**
@@ -4713,32 +5409,6 @@ Html5.resetMediaElement = function (el) {
     }
 };
 
-Html5.mediaSourceHandler = [];
-
-Html5.validateMediaSourceHandler = function (handler) {
-    if ((0, _obj.isPlain)(handler) && typeof handler.canHandleSource === 'function' && typeof handler.handleSource === 'function') {
-        return true;
-    } else {
-        return false;
-    }
-};
-
-Html5.registerMediaSourceHandler = function (handler) {
-    if (Html5.validateMediaSourceHandler(handler)) {
-        Html5.mediaSourceHandler.push(handler);
-    } else {
-        /* eslint-disable no-console */
-        console.error('Invalid mediaSourceHandler');
-        /* eslint-enbale no-console */
-    }
-};
-
-Html5.selectMediaSourceHandler = function (source) {
-    return (0, _lodash2['default'])(Html5.mediaSourceHandler, function (handler) {
-        return handler.canHandleSource(source);
-    });
-};
-
 // HTML5 video attributes proxy
 // 获取对应属性的值
 // muted defaultMuted autoplay controls loop playsinline
@@ -4791,9 +5461,7 @@ Html5.selectMediaSourceHandler = function (source) {
     };
 });
 
-exports['default'] = Html5;
-
-},{"./mixins/evented":8,"./utils/dom":35,"./utils/normalize-source":42,"./utils/obj":43,"./utils/to-title-case":46,"lodash.find":3}],7:[function(require,module,exports){
+},{"../events/evented":7,"../utils/dom":38,"../utils/normalize-source":43,"../utils/to-title-case":47}],11:[function(require,module,exports){
 'use strict';
 
 var _lodash = require('lodash.assign');
@@ -4802,9 +5470,9 @@ var _lodash2 = _interopRequireDefault(_lodash);
 
 var _dom = require('./utils/dom');
 
-var Dom = _interopRequireWildcard(_dom);
+var DOM = _interopRequireWildcard(_dom);
 
-var _events = require('./utils/events');
+var _events = require('./events/events');
 
 var Events = _interopRequireWildcard(_events);
 
@@ -4812,48 +5480,50 @@ var _player = require('./player');
 
 var _player2 = _interopRequireDefault(_player);
 
-var _plugin = require('./utils/plugin');
-
-var Plugin = _interopRequireWildcard(_plugin);
-
-var _log = require('./utils/log');
-
-var _log2 = _interopRequireDefault(_log);
-
-var _html = require('./html5');
+var _html = require('./html5/html5');
 
 var _html2 = _interopRequireDefault(_html);
+
+var _component = require('./plugin/component');
+
+var _component2 = _interopRequireDefault(_component);
+
+var _mediaSourceHandler = require('./plugin/media-source-handler');
+
+var _mediaSourceHandler2 = _interopRequireDefault(_mediaSourceHandler);
+
+var _plugin = require('./plugin/plugin');
+
+var _plugin2 = _interopRequireDefault(_plugin);
 
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj['default'] = obj; return newObj; } }
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
 
+/**
+ * @file larkplayer.js larkplayer 入口函数
+ * @author yuhui<yuhui06@baidu.com>
+ * @date 2017/11/7
+ */
+
 function normalize(el) {
     var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
     var readyFn = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : function () {};
 
-    var defaultOptions = {
-        playsinline: true
-    };
-
-    options = (0, _lodash2['default'])({}, defaultOptions, options);
+    options = (0, _lodash2['default'])({ playsinline: true }, options);
 
     // 如果传入 id，则根据 id 获取元素
     if (typeof el === 'string') {
-        if (el.charAt(0) !== '#') {
-            el = '#' + el;
-        }
-
-        el = Dom.$(el);
+        el = DOM.$(/^#/.test(el) ? el : '#' + el);
     }
 
-    if (!Dom.isEl(el)) {
+    if (!DOM.isEl(el)) {
         throw new Error('[larkplayer initial error]: el should be an id or DOM element!');
     }
 
     // 如果该元素不是 video 标签，则在该元素内创建 video 标签
     if (el.tagName.toUpperCase() !== 'VIDEO') {
-        var videoEl = Dom.createElement('video', {
+        var videoEl = DOM.createElement('video', {
             id: el.id + '-video'
         });
 
@@ -4863,11 +5533,7 @@ function normalize(el) {
     }
 
     return { el: el, options: options, readyFn: readyFn };
-} /**
-   * @file larkplayer.js larkplayer 入口函数
-   * @author yuhui<yuhui06@baidu.com>
-   * @date 2017/11/7
-   */
+}
 
 function larkplayer(el, options, readyFn) {
     // @todo 优化不支持 html5 video 标签时的展示
@@ -4889,97 +5555,13 @@ function larkplayer(el, options, readyFn) {
     return player;
 }
 
-larkplayer.Html5 = _html2['default'];
+(0, _lodash2['default'])(larkplayer, { Events: Events, DOM: DOM, Component: _component2['default'], MediaSourceHandler: _mediaSourceHandler2['default'], Plugin: _plugin2['default'] });
 
-larkplayer.dom = Dom;
-
-// events
-larkplayer.on = Events.on;
-larkplayer.one = Events.one;
-larkplayer.off = Events.off;
-larkplayer.trigger = Events.trigger;
-
-larkplayer.log = _log2['default'];
-
-// plugin
-larkplayer.registerPlugin = Plugin.registerPlugin;
-larkplayer.deregisterPlugin = Plugin.deregisterPlugin;
-
-// export default larkplayer;
 // for babel es6
 // @see https://github.com/babel/babel/issues/2724
 module.exports = larkplayer;
 
-},{"./html5":6,"./player":9,"./utils/dom":35,"./utils/events":36,"./utils/log":40,"./utils/plugin":44,"lodash.assign":2}],8:[function(require,module,exports){
-'use strict';
-
-exports.__esModule = true;
-exports['default'] = evented;
-
-var _events = require('../utils/events');
-
-var Events = _interopRequireWildcard(_events);
-
-var _dom = require('../utils/dom');
-
-var Dom = _interopRequireWildcard(_dom);
-
-function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj['default'] = obj; return newObj; } }
-
-/**
- * 使一个对象具有直接使用 on off one trigger 的能力
- *
- * @param {Object} target 要具有事件能力的对象
- * @param {Object} options 配置项
- * @param {string=} options.eventBusKey 一个 DOM 元素，事件绑定在该元素上
- */
-/**
- * @file 给一个对象添加事件方面的 api
- * @author yuhui<yuhui06@baidu.com>
- * @date 2017/11/7
- */
-
-function evented(target) {
-    var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
-
-    if (target.isEvented && target.eventBusEl === options.eventBusKey) {
-        return;
-    } else {
-        target.isEvented = true;
-    }
-
-    // @todo normalize args
-    var eventBusKey = options.eventBusKey;
-    if (eventBusKey && eventBusKey.nodeType === 1) {
-        target.eventBusEl = eventBusKey;
-    } else {
-        target.eventBusEl = Dom.createEl('div');
-    }
-
-    // if (target[eventBusKey] && target[eventBusKey]['nodeType'] === 1) {
-    //     target.eventBusEl = target[eventBusKey];
-    // } else {
-    //     target.eventBusEl = Dom.createEl('div');
-    // }
-
-    target.on = function (type, fn) {
-        Events.on(target.eventBusEl, type, fn);
-    };
-
-    target.off = function (type, fn) {
-        Events.off(target.eventBusEl, type, fn);
-    };
-
-    target.one = function (type, fn) {
-        Events.one(target.eventBusEl, type, fn);
-    };
-
-    target.trigger = function (type, data) {
-        Events.trigger(target.eventBusEl, type, data);
-    };
-}
-
-},{"../utils/dom":35,"../utils/events":36}],9:[function(require,module,exports){
+},{"./events/events":8,"./html5/html5":10,"./player":12,"./plugin/component":13,"./plugin/media-source-handler":14,"./plugin/plugin":17,"./utils/dom":38,"lodash.assign":2}],12:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -4988,9 +5570,13 @@ var _lodash = require('lodash.includes');
 
 var _lodash2 = _interopRequireDefault(_lodash);
 
-var _html = require('./html5');
+var _html = require('./html5/html5');
 
 var _html2 = _interopRequireDefault(_html);
+
+var _fullscreen = require('./html5/fullscreen');
+
+var _fullscreen2 = _interopRequireDefault(_fullscreen);
 
 var _component = require('./plugin/component');
 
@@ -5006,25 +5592,21 @@ var _plugin2 = _interopRequireDefault(_plugin);
 
 var _pluginTypes = require('./plugin/plugin-types');
 
-var _guid = require('./utils/guid');
+var _pluginTypes2 = _interopRequireDefault(_pluginTypes);
+
+var _events = require('./events/events');
+
+var Events = _interopRequireWildcard(_events);
 
 var _dom = require('./utils/dom');
 
-var Dom = _interopRequireWildcard(_dom);
-
-var _events = require('./utils/events');
-
-var Events = _interopRequireWildcard(_events);
+var DOM = _interopRequireWildcard(_dom);
 
 var _toTitleCase = require('./utils/to-title-case');
 
 var _toTitleCase2 = _interopRequireDefault(_toTitleCase);
 
-var _fullscreen = require('./utils/fullscreen');
-
-var _fullscreen2 = _interopRequireDefault(_fullscreen);
-
-var _evented = require('./mixins/evented');
+var _evented = require('./events/evented');
 
 var _evented2 = _interopRequireDefault(_evented);
 
@@ -5042,27 +5624,41 @@ var _featureDetector = require('./utils/feature-detector');
 
 var _featureDetector2 = _interopRequireDefault(_featureDetector);
 
-var _normalizeSource = require('./utils/normalize-source');
+require('./ui/buffer-bar');
 
-var _normalizeSource2 = _interopRequireDefault(_normalizeSource);
-
-require('./ui/play-button');
-
-require('./ui/volume');
-
-require('./ui/control-bar');
-
-require('./ui/loading');
-
-require('./ui/progress-bar-simple');
-
-require('./ui/error');
+require('./ui/complete');
 
 require('./ui/control-bar-pc');
 
-require('./ui/loading-pc');
+require('./ui/control-bar');
+
+require('./ui/current-time');
+
+require('./ui/duration');
 
 require('./ui/error-pc');
+
+require('./ui/error');
+
+require('./ui/fullscreen-button');
+
+require('./ui/gradient-bottom');
+
+require('./ui/loading-pc');
+
+require('./ui/not-support');
+
+require('./ui/play-button');
+
+require('./ui/progress-bar-except-fill');
+
+require('./ui/progress-bar-simple');
+
+require('./ui/progress-bar');
+
+require('./ui/slider');
+
+require('./ui/volume');
 
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj['default'] = obj; return newObj; } }
 
@@ -5075,13 +5671,8 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
                                                                                                                                                            * @todo 对于 Player 构造函数的特殊照顾需要理一下，可能没必要
                                                                                                                                                            */
 
-// import * as Plugin from './utils/plugin';
-
-
-// 确保以下代码都执行一次
-
-
 var activeClass = 'lark-user-active';
+var document = window.document;
 
 var Player = function () {
 
@@ -5144,6 +5735,7 @@ var Player = function () {
         this.handleMouseEnter = this.handleMouseEnter.bind(this);
         this.handleMouseMove = this.handleMouseMove.bind(this);
         this.handleMouseLeave = this.handleMouseLeave.bind(this);
+        this.fullWindowOnEscKey = this.fullWindowOnEscKey.bind(this);
 
         // 3000ms 后自动隐藏播放器控制条
         this.activeTimeout = 3000;
@@ -5161,8 +5753,6 @@ var Player = function () {
         if (!this.tech) {
             this.tech = this.loadTech();
         }
-
-        // this.initChildren();
 
         var src = this.src();
         if (src) {
@@ -5202,12 +5792,12 @@ var Player = function () {
     Player.prototype.initialNormalPlugins = function initialNormalPlugins() {
         var _this = this;
 
-        this.plugin = {};
+        this[_pluginTypes2['default'].OTHERS] = {};
         var allPlugins = _plugin2['default'].getAll();
-        allPlugins.forEach(function (pluginClass) {
-            var name = pluginClass._displayName;
-            var pluginInstance = new pluginClass(_this, _this.getPluginOptions(name, namespace));
-            _this.plugin[name] = pluginInstance;
+        allPlugins.forEach(function (PluginClass) {
+            var name = PluginClass._displayName;
+            var pluginInstance = new PluginClass(_this, _this.getPluginOptions(name, _pluginTypes2['default'].OTHERS));
+            _this[_pluginTypes2['default'].OTHERS][name] = pluginInstance;
         });
     };
 
@@ -5217,19 +5807,16 @@ var Player = function () {
         // @hack 为了让 Component.createElement 能取到 player
         _component2['default'].player = this;
 
-        this.UI = {};
+        this[_pluginTypes2['default'].UI] = {};
         var allPlugins = _component2['default'].getAll();
-        allPlugins.forEach(function (pluginClass) {
-            var name = pluginClass._displayName;
-            var pluginInstance = new pluginClass(_this2, _this2.getPluginOptions(name, _pluginTypes.UI));
+        allPlugins.forEach(function (PluginClass) {
+            var name = PluginClass._displayName;
+            var pluginInstance = new PluginClass(_this2, _this2.getPluginOptions(name, _pluginTypes2['default'].UI));
             var el = pluginInstance.el;
             _this2.el.appendChild(el);
-            _this2.UI[name] = pluginInstance;
+            _this2[_pluginTypes2['default'].UI][name] = pluginInstance;
         });
     };
-
-    // @test
-
 
     Player.prototype.getPluginOptions = function getPluginOptions(name, namespace) {
         return this.options && this.options[namespace] && this.options[namespace][name];
@@ -5238,9 +5825,9 @@ var Player = function () {
     Player.prototype.callMS = function callMS(src) {
         this.disposeMS();
 
-        var handlerClass = _mediaSourceHandler2['default'].select(src);
-        if (handlerClass) {
-            this.MSHandler = new handlerClass(this, this.getPluginOptions(handlerClass._displayName, _pluginTypes.MS));
+        var HandlerClass = _mediaSourceHandler2['default'].select(src);
+        if (HandlerClass) {
+            this.MSHandler = new HandlerClass(this, this.getPluginOptions(HandlerClass._displayName, _pluginTypes2['default'].MS));
             this.MSHandler.src(src);
 
             return true;
@@ -5290,15 +5877,15 @@ var Player = function () {
     };
 
     Player.prototype.removeClass = function removeClass(className) {
-        return Dom.removeClass(this.el, className);
+        return DOM.removeClass(this.el, className);
     };
 
     Player.prototype.addClass = function addClass(className) {
-        return Dom.addClass(this.el, className);
+        return DOM.addClass(this.el, className);
     };
 
     Player.prototype.hasClass = function hasClass(className) {
-        return Dom.hasClass(this.el, className);
+        return DOM.hasClass(this.el, className);
     };
 
     Player.prototype.toggleClass = function toggleClass(className) {
@@ -5314,8 +5901,7 @@ var Player = function () {
     Player.prototype.dispose = function dispose() {
         clearTimeout(this.activeTimeoutHandler);
         this.trigger('dispose');
-        // 避免 dispose 被调用两次
-        this.off('dispose');
+        this.off();
 
         // 注销全屏事件
         _fullscreen2['default'].off();
@@ -5334,8 +5920,6 @@ var Player = function () {
         if (this.tech) {
             this.tech.dispose();
         }
-
-        Function.prototype.dispose.call(this);
     };
 
     /**
@@ -5357,7 +5941,7 @@ var Player = function () {
         'height', 'loop', 'muted', 'poster', 'preload', 'auto', 'metadata', 'none', 'src', 'width', 'playsinline'];
         (0, _obj.each)(this.options, function (value, key) {
             if ((0, _lodash2['default'])(html5StandardOptions, key) && value) {
-                Dom.setAttribute(tag, key, value);
+                DOM.setAttribute(tag, key, value);
             }
         });
 
@@ -5369,12 +5953,12 @@ var Player = function () {
         }
 
         // 创建容器元素
-        var el = Dom.createElement('div', {
+        var el = DOM.createElement('div', {
             className: 'larkplayer',
             id: tag.id + '-larkplayer'
         });
 
-        Dom.setAttribute(tag, 'tabindex', '-1');
+        DOM.setAttribute(tag, 'tabindex', '-1');
 
         // 将原生控制条移除
         // 目前只支持使用自定义的控制条
@@ -5460,7 +6044,7 @@ var Player = function () {
 
             var triggerLoadstart = function triggerLoadstart() {
                 if (!loadstartFired) {
-                    this.trigger('loadstart');
+                    _this6.trigger('loadstart');
                 }
             };
 
@@ -6121,7 +6705,7 @@ var Player = function () {
     Player.prototype.handleTouchStart = function handleTouchStart(event) {
         // 当控制条显示并且手指放在控制条上时
         if (this.hasClass(activeClass)) {
-            if (Dom.parent(event.target, 'lark-play-button') || Dom.parent(event.target, 'lark-control-bar')) {
+            if (DOM.parent(event.target, 'lark-play-button') || DOM.parent(event.target, 'lark-control-bar')) {
 
                 clearTimeout(this.activeTimeoutHandler);
             }
@@ -6158,7 +6742,7 @@ var Player = function () {
         // 点在播放按钮或者控制条上，（继续）展现控制条
         var clickOnControls = false;
         // @todo 处理得不够优雅
-        if (Dom.parent(event.target, 'lark-play-button') || Dom.parent(event.target, 'lark-control-bar')) {
+        if (DOM.parent(event.target, 'lark-play-button') || DOM.parent(event.target, 'lark-control-bar')) {
 
             clickOnControls = true;
         }
@@ -6286,7 +6870,7 @@ var Player = function () {
         // 点在播放按钮或者控制条上，（继续）展现控制条
         var clickOnControls = false;
         // @todo 处理得不够优雅
-        if (Dom.parent(event.target, 'lark-control-bar-pc') || Dom.hasClass(event.target, 'lark-control-bar-pc')) {
+        if (DOM.parent(event.target, 'lark-control-bar-pc') || DOM.hasClass(event.target, 'lark-control-bar-pc')) {
 
             clickOnControls = true;
         }
@@ -6397,9 +6981,16 @@ var Player = function () {
 
     Player.prototype.enterFullWindow = function enterFullWindow() {
         this.addClass('lark-full-window');
+        Events.on(document, 'keydown', this.fullWindowOnEscKey);
     };
 
-    Player.prototype.fullWindowOnEscKey = function fullWindowOnEscKey() {};
+    Player.prototype.fullWindowOnEscKey = function fullWindowOnEscKey(event) {
+        var keyCode = event.keyCode || event.which;
+        // Esc 键码为 27
+        if (keyCode === 27) {
+            this.exitFullWindow();
+        }
+    };
 
     /**
      * 去除由 css 控制展现的全屏样式
@@ -6410,6 +7001,7 @@ var Player = function () {
 
     Player.prototype.exitFullWindow = function exitFullWindow() {
         this.removeClass('lark-full-window');
+        Events.off(document, 'keydown', this.fullWindowOnEscKey);
     };
 
     /**
@@ -6419,11 +7011,6 @@ var Player = function () {
 
     Player.prototype.play = function play() {
         var _this12 = this;
-
-        if (!this.src()) {
-            _log2['default'].warn('No video src applied');
-            return;
-        }
 
         // changingSrc 现在用不上，后面支持 source 的时候可能会用上
         // if (this.isReady && this.src()) {
@@ -6856,7 +7443,7 @@ if (_featureDetector2['default'].touch) {
 
 exports['default'] = Player;
 
-},{"./html5":6,"./mixins/evented":8,"./plugin/component":10,"./plugin/media-source-handler":11,"./plugin/plugin":14,"./plugin/plugin-types":13,"./ui/control-bar":17,"./ui/control-bar-pc":16,"./ui/error":21,"./ui/error-pc":20,"./ui/loading":25,"./ui/loading-pc":24,"./ui/play-button":26,"./ui/progress-bar-simple":28,"./ui/volume":32,"./utils/computed-style":33,"./utils/dom":35,"./utils/events":36,"./utils/feature-detector":37,"./utils/fullscreen":38,"./utils/guid":39,"./utils/log":40,"./utils/normalize-source":42,"./utils/obj":43,"./utils/to-title-case":46,"lodash.includes":4}],10:[function(require,module,exports){
+},{"./events/evented":7,"./events/events":8,"./html5/fullscreen":9,"./html5/html5":10,"./plugin/component":13,"./plugin/media-source-handler":14,"./plugin/plugin":17,"./plugin/plugin-types":16,"./ui/buffer-bar":18,"./ui/complete":19,"./ui/control-bar":21,"./ui/control-bar-pc":20,"./ui/current-time":22,"./ui/duration":23,"./ui/error":25,"./ui/error-pc":24,"./ui/fullscreen-button":26,"./ui/gradient-bottom":27,"./ui/loading-pc":28,"./ui/not-support":29,"./ui/play-button":30,"./ui/progress-bar":33,"./ui/progress-bar-except-fill":31,"./ui/progress-bar-simple":32,"./ui/slider":34,"./ui/volume":36,"./utils/computed-style":37,"./utils/dom":38,"./utils/feature-detector":39,"./utils/log":41,"./utils/obj":44,"./utils/to-title-case":47,"lodash.includes":4}],13:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -6867,17 +7454,23 @@ var _pluginStore2 = _interopRequireDefault(_pluginStore);
 
 var _pluginTypes = require('./plugin-types');
 
+var _pluginTypes2 = _interopRequireDefault(_pluginTypes);
+
 var _dom = require('../utils/dom');
 
 var DOM = _interopRequireWildcard(_dom);
 
-var _events = require('../utils/events');
+var _events = require('../events/events');
 
 var Events = _interopRequireWildcard(_events);
 
-var _evented = require('../mixins/evented');
+var _evented = require('../events/evented');
 
 var _evented2 = _interopRequireDefault(_evented);
+
+var _toCamelCase = require('../utils/to-camel-case');
+
+var _toCamelCase2 = _interopRequireDefault(_toCamelCase);
 
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj['default'] = obj; return newObj; } }
 
@@ -6904,6 +7497,8 @@ var Component = function () {
         this.el = this.createEl(this.options);
 
         (0, _evented2['default'])(this, { eventBusKey: this.el });
+        this.dispose = this.dispose.bind(this);
+        this.player.on('dispose', this.dispose);
     }
 
     Component.prototype.createEl = function createEl() {
@@ -6931,22 +7526,22 @@ var Component = function () {
         // babel 编译后的默认值遇到 null 时会取 null，因为判断的是 !== undefined
         options = options || {};
 
-        var component = void 0;
+        var ComponentClass = void 0;
         if (typeof name === 'string') {
-            component = Component.get(name.toLowerCase());
-        } else if (Component.isPrototypeOf(name)) {
-            component = name;
+            ComponentClass = Component.get((0, _toCamelCase2['default'])(name));
+        } else if (name.prototype instanceof Component) {
+            ComponentClass = name;
         }
 
         for (var _len = arguments.length, child = Array(_len > 2 ? _len - 2 : 0), _key = 2; _key < _len; _key++) {
             child[_key - 2] = arguments[_key];
         }
 
-        if (component) {
+        if (ComponentClass) {
             // 这里的 this.player 不是什么黑魔法，它确实无法取到实例中的 this.player
             // 只不过是在调用 Component.createElement 之前，先给 Component.player 赋了值而已
             // 如果你看不懂我在说什么，当我没说
-            var instance = new component(this.player, options);
+            var instance = new ComponentClass(this.player, options);
             var el = instance.el;
 
             if (child) {
@@ -6960,84 +7555,23 @@ var Component = function () {
     };
 
     Component.register = function register(component, options) {
-        return _pluginStore2['default'].add(component, options, _pluginTypes.UI);
+        return _pluginStore2['default'].add(component, options, _pluginTypes2['default'].UI);
     };
 
     Component.get = function get(name) {
-        return _pluginStore2['default'].get(name, _pluginTypes.UI);
+        return _pluginStore2['default'].get(name, _pluginTypes2['default'].UI);
     };
 
     Component.getAll = function getAll() {
-        return _pluginStore2['default'].getAll(_pluginTypes.UI);
+        return _pluginStore2['default'].getAll(_pluginTypes2['default'].UI);
     };
 
     return Component;
 }();
 
-// @example
-// class Dialog extends Component {
-//     constructor(player, options) {
-//         super(player, options);
-
-//         this.handleClose = this.handleClose.bind(this);
-
-//         this.closeEl = DOM.$('.dialog__close', this.el);
-//         Events.on(this.closeEl, 'click', this.handleClose);
-//     }
-
-//     handleClose() {
-//         this.el.style.display = 'none';
-//     }
-
-//     createEl() {
-//         this.options = Object.assign({
-//             className: '',
-//             title: '',
-//             cnt: ''
-//         }, this.options);
-
-//         const tpl = `
-//             <div class="dialog ${this.options.className}">
-//                 <i className="dialog__close">close</i>
-//                 <h1 class="dialog__title">${this.options.title}</h1>
-//                 <p class="dialog__cnt">${this.options.cnt}</p>
-//             </div>
-//         `;
-
-//         const el = Component.createElement('div', {className: 'dialog-container'});
-//         el.innerHTML = tpl;
-
-//         return el;
-//     }
-// }
-
-// class ErrorDialog extends Component {
-//     constructor(player, options) {
-//         super(player, options);
-
-//         this.handleError = this.handleError.bind(this);
-//         this.player.on('error', this.handleError);
-//     }
-
-//     handleError(event) {
-//         this.el.style.display = 'block';
-//     }
-
-//     createEl() {
-//         return Component.createElement(Dialog, {
-//             className: 'error-dialog',
-//             title: 'Error',
-//             cnt: 'Video play error, plz try again later.'
-//         });
-//     }
-// }
-
-// Component.register(ErrorDialog, {name: 'error_dialog'});
-
-
 exports['default'] = Component;
 
-},{"../mixins/evented":8,"../utils/dom":35,"../utils/events":36,"./plugin-store":12,"./plugin-types":13}],11:[function(require,module,exports){
+},{"../events/evented":7,"../events/events":8,"../utils/dom":38,"../utils/to-camel-case":46,"./plugin-store":15,"./plugin-types":16}],14:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -7052,6 +7586,8 @@ var _pluginStore2 = _interopRequireDefault(_pluginStore);
 
 var _pluginTypes = require('./plugin-types');
 
+var _pluginTypes2 = _interopRequireDefault(_pluginTypes);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } } /**
@@ -7063,9 +7599,6 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
                                                                                                                                                            *     2) MS 插件通过 MediaSourceHandler.register(handler, options) 绑定
                                                                                                                                                            *     3) MS 插件需实现 canPlay 静态方法，用于判断插件是否支持特定类型
                                                                                                                                                            */
-
-// import Hls from 'hls.js';
-
 
 var MediaSourceHandler = function () {
     function MediaSourceHandler(player, options) {
@@ -7093,14 +7626,12 @@ var MediaSourceHandler = function () {
     };
 
     MediaSourceHandler.register = function register(handler, options) {
-        return _pluginStore2['default'].add(handler, options, _pluginTypes.MS);
+        return _pluginStore2['default'].add(handler, options, _pluginTypes2['default'].MS);
     };
 
     MediaSourceHandler.getAll = function getAll() {
-        return _pluginStore2['default'].getAll(_pluginTypes.MS);
+        return _pluginStore2['default'].getAll(_pluginTypes2['default'].MS);
     };
-
-    MediaSourceHandler.getName = function getName(handler) {};
 
     MediaSourceHandler.select = function select(src, type) {
         var allMSHandlers = MediaSourceHandler.getAll();
@@ -7112,101 +7643,9 @@ var MediaSourceHandler = function () {
     return MediaSourceHandler;
 }();
 
-// @example
-// class HlsMediaSourceHandler extends MediaSourceHandler {
-//     constructor(player, options) {
-//         super(player, options);
-
-//         this.player.isReady = false;
-
-//         this.hls = new Hls(options);
-
-//         this.hls.on(Hls.Events.MANIFEST_PARSED, (event, data) => {
-//             this.player.triggerReady();
-//         });
-
-//         this.hls.on(Hls.Events.ERROR, (event, data) => {
-//             if (data.fatal) {
-//                 switch (data.type) {
-//                     case Hls.ErrorTypes.MEDIA_ERROR:
-//                         this.handleMediaError();
-//                         break;
-//                     case Hls.ErrorTypes.NETWORK_ERROR:
-//                     default:
-//                         this.hls.destroy();
-//                         break;
-//                 }
-//             }
-//         });
-//     }
-
-//     src(src) {
-//         this.player.isReady = false;
-//         this.hls.attachMedia(this.player.tech.el);
-//         this.hls.loadSource(src);
-//     }
-
-//     internalPlay() {
-//         const playReturn = this.player.techGet('play');
-//         if (playReturn && playReturn.then) {
-//             playReturn.then(null, err => {
-//                 console.error(err);
-//             });
-//         }
-//     }
-
-//     play() {
-//         if (this.player.isReady) {
-//             this.internalPlay();
-//         } else {
-//             this.player.ready(() => {
-//                 this.internalPlay();
-//             });
-//         }
-//     }
-
-//     handleMediaError() {
-//         const now = Date.now();
-//         const minRecoverInterval = 3000;
-
-//         if (!this.recoverDecodingErrorDate || (now - this.recoverDecodingErrorDate) > minRecoverInterval) {
-//             this.recoverDecodingErrorDate = now;
-//             this.hls.recoverMediaError();
-//         } else if (!this.recoverSwapAudioCodecDate || (now - this.recoverSwapAudioCodecDate) > minRecoverInterval) {
-//             this.recoverSwapAudioCodecDate = now;
-//             this.hls.swapAudioCodec();
-//             this.hls.recoverMediaError();
-//         } else {
-//             this.hls.destroy();
-//         }
-//     }
-
-//     dispose() {
-//         if (this.hls instanceof Hls) {
-//             this.hls.destroy();
-//             if (this.hls.bufferTimer) {
-//                 clearInterval(this.hls.bufferTimer);
-//                 this.hls.bufferTimer = undefined;
-//             }
-//         }
-//         this.hls = null;
-//     }
-
-
-//     static canPlay(src, type) {
-//         const fileExtReg = /\.m3u8?/i;
-//         const typeReg = /application\/((x-mpegURL)|(vnd\.apple\.mpegurl))/i;
-
-//         return Hls.isSupported() && (typeReg.test(type) || fileExtReg.test(src));
-//     }
-// }
-
-// MediaSourceHandler.register(HlsMediaSourceHandler, {name: 'hls'});
-
-
 exports['default'] = MediaSourceHandler;
 
-},{"./plugin-store":12,"./plugin-types":13,"lodash.find":3}],12:[function(require,module,exports){
+},{"./plugin-store":15,"./plugin-types":16,"lodash.find":3}],15:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -7235,25 +7674,36 @@ var _plugin2 = _interopRequireDefault(_plugin);
 
 var _pluginTypes = require('./plugin-types');
 
+var _pluginTypes2 = _interopRequireDefault(_pluginTypes);
+
 var _guid = require('../utils/guid');
+
+var _toCamelCase = require('../utils/to-camel-case');
+
+var _toCamelCase2 = _interopRequireDefault(_toCamelCase);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
 
-var initialStore = (_initialStore = {}, _initialStore[_pluginTypes.UI] = {}, _initialStore[_pluginTypes.MS] = {}, _initialStore[_pluginTypes.OTHERS] = {}, _initialStore);
+var UI = _pluginTypes2['default'].UI,
+    MS = _pluginTypes2['default'].MS,
+    OTHERS = _pluginTypes2['default'].OTHERS;
 
-var pluginStore = {
+
+var initialStore = (_initialStore = {}, _initialStore[UI] = {}, _initialStore[MS] = {}, _initialStore[OTHERS] = {}, _initialStore);
+
+exports['default'] = {
     store: initialStore,
     validate: function validate(plugin, type) {
         switch (type) {
-            case _pluginTypes.UI:
-                return _component2['default'].isPrototypeOf(plugin);
-                break;
-            case _pluginTypes.MS:
-                return _mediaSourceHandler2['default'].isPrototypeOf(plugin);
-                break;
-            case _pluginTypes.OTHERS:
-                return _plugin2['default'].isPrototypeOf(plugin);
-                break;
+            case UI:
+                // return Component.isPrototypeOf(plugin);
+                return plugin && plugin.prototype instanceof _component2['default'];
+            case MS:
+                // return MediaSourceHandler.isPrototypeOf(plugin);
+                return plugin && plugin.prototype instanceof _mediaSourceHandler2['default'];
+            case OTHERS:
+                // return Plugin.isPrototypeOf(plugin);
+                return plugin && plugin.prototype instanceof _plugin2['default'];
             default:
                 return false;
         }
@@ -7266,7 +7716,7 @@ var pluginStore = {
         var type = arguments[2];
 
         if (this.validate(plugin, type)) {
-            var name = options.name || (plugin.name || 'plugin_' + (0, _guid.newGUID)()).toLowerCase();
+            var name = options.name || (0, _toCamelCase2['default'])(plugin.name) || 'plugin_' + (0, _guid.newGUID)();
             plugin._displayName = name;
 
             if (!this.has(name, type)) {
@@ -7293,15 +7743,12 @@ var pluginStore = {
     },
     getAll: function getAll(type) {
         switch (type) {
-            case _pluginTypes.UI:
-                return (0, _lodash2['default'])(this.store[_pluginTypes.UI]);
-                break;
-            case _pluginTypes.MS:
-                return (0, _lodash2['default'])(this.store[_pluginTypes.MS]);
-                break;
-            case _pluginTypes.OTHERS:
-                return (0, _lodash2['default'])(this.store[_pluginTypes.OTHERS]);
-                break;
+            case UI:
+                return (0, _lodash2['default'])(this.store[UI]);
+            case MS:
+                return (0, _lodash2['default'])(this.store[MS]);
+            case OTHERS:
+                return (0, _lodash2['default'])(this.store[OTHERS]);
             default:
                 var allPlugins = [];
                 for (var _type in this.store) {
@@ -7314,9 +7761,7 @@ var pluginStore = {
     }
 };
 
-exports['default'] = pluginStore;
-
-},{"../utils/guid":39,"./component":10,"./media-source-handler":11,"./plugin":14,"./plugin-types":13,"lodash.values":5}],13:[function(require,module,exports){
+},{"../utils/guid":40,"../utils/to-camel-case":46,"./component":13,"./media-source-handler":14,"./plugin":17,"./plugin-types":16,"lodash.values":5}],16:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -7326,13 +7771,13 @@ exports.__esModule = true;
  * @date 2018/4/8
  */
 
-var UI = exports.UI = 'UI';
-var MS = exports.MS = 'MS';
-var OTHERS = exports.OTHERS = 'otherPlugin';
+exports['default'] = {
+  UI: 'UI',
+  MS: 'MS',
+  OTHERS: 'plugin'
+};
 
-exports['default'] = { UI: UI, MS: MS, OTHERS: OTHERS };
-
-},{}],14:[function(require,module,exports){
+},{}],17:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -7342,6 +7787,8 @@ var _pluginStore = require('./plugin-store');
 var _pluginStore2 = _interopRequireDefault(_pluginStore);
 
 var _pluginTypes = require('./plugin-types');
+
+var _pluginTypes2 = _interopRequireDefault(_pluginTypes);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
 
@@ -7370,47 +7817,23 @@ var Plugin = function () {
     };
 
     Plugin.register = function register(plugin, options) {
-        _pluginStore2['default'].add(plugin, options, _pluginTypes.OTHERS);
+        _pluginStore2['default'].add(plugin, options, _pluginTypes2['default'].OTHERS);
     };
 
     Plugin.get = function get(name) {
-        _pluginStore2['default'].get(name, _pluginTypes.OTHERS);
+        _pluginStore2['default'].get(name, _pluginTypes2['default'].OTHERS);
     };
 
     Plugin.getAll = function getAll() {
-        return _pluginStore2['default'].getAll(_pluginTypes.OTHERS);
+        return _pluginStore2['default'].getAll(_pluginTypes2['default'].OTHERS);
     };
 
     return Plugin;
 }();
 
-// @example
-// class PlayContinue extends Plugin {
-//     constructor(player, options) {
-//         super(player, options);
-
-//         this.handleFirstPlay = this.handleFirstPlay.bind(this);
-
-//         this.player.on('firstplay', this.handleFirstPlay);
-//     }
-
-//     handleFirstPlay() {
-//         console.log('firstplay in PlayContinue');
-//     }
-
-//     dispose() {
-//         this.player.off(this.handleFirstPlay);
-//         super.dispose();
-//     }
-// }
-
-
-// Plugin.register(PlayContinue, {name: 'playContinue'});
-
-
 exports['default'] = Plugin;
 
-},{"./plugin-store":12,"./plugin-types":13}],15:[function(require,module,exports){
+},{"./plugin-store":15,"./plugin-types":16}],18:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -7425,7 +7848,7 @@ var _component2 = _interopRequireDefault(_component);
 
 var _dom = require('../utils/dom');
 
-var Dom = _interopRequireWildcard(_dom);
+var DOM = _interopRequireWildcard(_dom);
 
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj['default'] = obj; return newObj; } }
 
@@ -7455,7 +7878,7 @@ var BufferBar = function (_Component) {
 
         var _this = _possibleConstructorReturn(this, _Component.call(this, player, options));
 
-        _this.line = Dom.$('.lark-buffer-bar__line', _this.el);
+        _this.line = DOM.$('.lark-buffer-bar__line', _this.el);
         _this.handleProgress = _this.handleProgress.bind(_this);
 
         _this.player.on('progress', _this.handleProgress);
@@ -7491,6 +7914,12 @@ var BufferBar = function (_Component) {
         this.render(0);
     };
 
+    BufferBar.prototype.dispose = function dispose() {
+        this.line = null;
+
+        _Component.prototype.dispose.call(this);
+    };
+
     BufferBar.prototype.createEl = function createEl() {
         return _component2['default'].createElement(
             'div',
@@ -7502,12 +7931,66 @@ var BufferBar = function (_Component) {
     return BufferBar;
 }(_component2['default']);
 
-// Component.register(BufferBar);
-
-
 exports['default'] = BufferBar;
 
-},{"../plugin/component":10,"../utils/dom":35,"classnames":1}],16:[function(require,module,exports){
+},{"../plugin/component":13,"../utils/dom":38,"classnames":1}],19:[function(require,module,exports){
+'use strict';
+
+exports.__esModule = true;
+
+var _classnames = require('classnames');
+
+var _classnames2 = _interopRequireDefault(_classnames);
+
+var _component = require('../plugin/component');
+
+var _component2 = _interopRequireDefault(_component);
+
+var _featureDetector = require('../utils/feature-detector');
+
+var _featureDetector2 = _interopRequireDefault(_featureDetector);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; } /**
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                * @file 播放完成样式
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                * @author yuhui06
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                * @date 2018/4/17
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                */
+
+var Complete = function (_Component) {
+    _inherits(Complete, _Component);
+
+    function Complete() {
+        _classCallCheck(this, Complete);
+
+        return _possibleConstructorReturn(this, _Component.apply(this, arguments));
+    }
+
+    Complete.prototype.createEl = function createEl() {
+        return _component2['default'].createElement(
+            'div',
+            { className: (0, _classnames2['default'])('lark-complete', this.options.className) },
+            _component2['default'].createElement('div', { className: 'lark-complete__replay lark-icon-replay' })
+        );
+    };
+
+    return Complete;
+}(_component2['default']);
+
+// 目前只要 PC 端，移动端的样式不好看
+
+
+exports['default'] = Complete;
+if (!_featureDetector2['default'].touch) {
+    _component2['default'].register(Complete, { name: 'complete' });
+}
+
+},{"../plugin/component":13,"../utils/feature-detector":39,"classnames":1}],20:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -7597,7 +8080,7 @@ var ControlBarPc = function (_Component) {
                     _component2['default'].createElement(
                         'span',
                         { className: 'lark-time-separator' },
-                        '|'
+                        '/'
                     ),
                     _component2['default'].createElement(_duration2['default'], null)
                 )
@@ -7617,10 +8100,10 @@ exports['default'] = ControlBarPc;
 
 
 if (!_featureDetector2['default'].touch) {
-    _component2['default'].register(ControlBarPc);
+    _component2['default'].register(ControlBarPc, { name: 'controlBarPc' });
 }
 
-},{"../plugin/component":10,"../utils/feature-detector":37,"./current-time":18,"./duration":19,"./fullscreen-button":22,"./gradient-bottom":23,"./play-button":26,"./progress-bar":29,"./volume":32,"classnames":1}],17:[function(require,module,exports){
+},{"../plugin/component":13,"../utils/feature-detector":39,"./current-time":22,"./duration":23,"./fullscreen-button":26,"./gradient-bottom":27,"./play-button":30,"./progress-bar":33,"./volume":36,"classnames":1}],21:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -7698,10 +8181,10 @@ exports['default'] = ControlBar;
 
 
 if (_featureDetector2['default'].touch) {
-    _component2['default'].register(ControlBar);
+    _component2['default'].register(ControlBar, { name: 'controlBar' });
 }
 
-},{"../plugin/component":10,"../utils/feature-detector":37,"./current-time":18,"./duration":19,"./fullscreen-button":22,"./progress-bar":29,"classnames":1}],18:[function(require,module,exports){
+},{"../plugin/component":13,"../utils/feature-detector":39,"./current-time":22,"./duration":23,"./fullscreen-button":26,"./progress-bar":33,"classnames":1}],22:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -7716,7 +8199,7 @@ var _component2 = _interopRequireDefault(_component);
 
 var _dom = require('../utils/dom');
 
-var Dom = _interopRequireWildcard(_dom);
+var DOM = _interopRequireWildcard(_dom);
 
 var _timeFormat = require('../utils/time-format');
 
@@ -7753,7 +8236,7 @@ var CurrentTime = function (_Component) {
     };
 
     CurrentTime.prototype.render = function render(time) {
-        Dom.textContent(this.el, (0, _timeFormat.timeFormat)(Math.floor(time)));
+        DOM.textContent(this.el, (0, _timeFormat.timeFormat)(Math.floor(time)));
     };
 
     CurrentTime.prototype.reset = function reset() {
@@ -7773,12 +8256,9 @@ var CurrentTime = function (_Component) {
     return CurrentTime;
 }(_component2['default']);
 
-// Component.register(CurrentTime);
-
-
 exports['default'] = CurrentTime;
 
-},{"../plugin/component":10,"../utils/dom":35,"../utils/time-format":45,"classnames":1}],19:[function(require,module,exports){
+},{"../plugin/component":13,"../utils/dom":38,"../utils/time-format":45,"classnames":1}],23:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -7793,7 +8273,7 @@ var _component2 = _interopRequireDefault(_component);
 
 var _dom = require('../utils/dom');
 
-var Dom = _interopRequireWildcard(_dom);
+var DOM = _interopRequireWildcard(_dom);
 
 var _timeFormat = require('../utils/time-format');
 
@@ -7827,11 +8307,11 @@ var Duration = function (_Component) {
     }
 
     Duration.prototype.handleLoadedMetaData = function handleLoadedMetaData(event) {
-        Dom.textContent(this.el, (0, _timeFormat.timeFormat)(Math.floor(this.player.duration())));
+        DOM.textContent(this.el, (0, _timeFormat.timeFormat)(Math.floor(this.player.duration())));
     };
 
     Duration.prototype.reset = function reset() {
-        Dom.textContent(this.el, '');
+        DOM.textContent(this.el, '');
     };
 
     Duration.prototype.createEl = function createEl() {
@@ -7848,12 +8328,9 @@ var Duration = function (_Component) {
     return Duration;
 }(_component2['default']);
 
-// Component.register(Duration);
-
-
 exports['default'] = Duration;
 
-},{"../plugin/component":10,"../utils/dom":35,"../utils/time-format":45,"classnames":1}],20:[function(require,module,exports){
+},{"../plugin/component":13,"../utils/dom":38,"../utils/time-format":45,"classnames":1}],24:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -7868,7 +8345,7 @@ var _component2 = _interopRequireDefault(_component);
 
 var _dom = require('../utils/dom');
 
-var Dom = _interopRequireWildcard(_dom);
+var DOM = _interopRequireWildcard(_dom);
 
 var _featureDetector = require('../utils/feature-detector');
 
@@ -7904,7 +8381,7 @@ var ErrorPc = function (_Component) {
         _this.player.on('error', _this.handleError);
         _this.on('click', _this.handleClick);
 
-        _this.textEl = Dom.$('.lark-error-text', _this.el);
+        _this.textEl = DOM.$('.lark-error-text', _this.el);
         return _this;
     }
 
@@ -7942,7 +8419,12 @@ var ErrorPc = function (_Component) {
                 text = '加载失败，点击重试';
         }
 
-        Dom.replaceContent(this.textEl, text);
+        DOM.replaceContent(this.textEl, text);
+    };
+
+    ErrorPc.prototype.dispose = function dispose() {
+        this.textEl = null;
+        _Component.prototype.dispose.call(this);
     };
 
     ErrorPc.prototype.createEl = function createEl() {
@@ -7968,10 +8450,10 @@ exports['default'] = ErrorPc;
 
 
 if (!_featureDetector2['default'].touch) {
-    _component2['default'].register(ErrorPc);
+    _component2['default'].register(ErrorPc, { name: 'errorPc' });
 }
 
-},{"../plugin/component":10,"../utils/dom":35,"../utils/feature-detector":37,"./error":21,"classnames":1}],21:[function(require,module,exports){
+},{"../plugin/component":13,"../utils/dom":38,"../utils/feature-detector":39,"./error":25,"classnames":1}],25:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -8058,10 +8540,10 @@ exports['default'] = Error;
 
 
 if (_featureDetector2['default'].touch) {
-    _component2['default'].register(Error);
+    _component2['default'].register(Error, { name: 'error' });
 }
 
-},{"../plugin/component":10,"../utils/feature-detector":37,"classnames":1}],22:[function(require,module,exports){
+},{"../plugin/component":13,"../utils/feature-detector":39,"classnames":1}],26:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -8076,9 +8558,9 @@ var _component2 = _interopRequireDefault(_component);
 
 var _dom = require('../utils/dom');
 
-var Dom = _interopRequireWildcard(_dom);
+var DOM = _interopRequireWildcard(_dom);
 
-var _events = require('../utils/events');
+var _events = require('../events/events');
 
 var Events = _interopRequireWildcard(_events);
 
@@ -8119,8 +8601,8 @@ var FullscreenButton = function (_Component) {
         _this.on('click', _this.handleClick);
 
         if (!_featureDetector2['default'].touch) {
-            _this.fullscreenButton = Dom.$('.lark-request-fullscreen', _this.el);
-            _this.exitFullscreenButton = Dom.$('.lark-exit-fullscreen', _this.el);
+            _this.fullscreenButton = DOM.$('.lark-request-fullscreen', _this.el);
+            _this.exitFullscreenButton = DOM.$('.lark-exit-fullscreen', _this.el);
 
             Events.on(_this.fullscreenButton, 'mouseover', function () {
                 return _this.handleMouseOver(_this.fullscreenButton, '全屏');
@@ -8157,6 +8639,17 @@ var FullscreenButton = function (_Component) {
         _tooltip2['default'].hide();
     };
 
+    FullscreenButton.prototype.dispose = function dispose() {
+        if (!_featureDetector2['default'].touch) {
+            Events.off(this.fullscreenButton);
+            Events.off(this.exitFullscreenButton);
+            this.fullscreenButton = null;
+            this.exitFullscreenButton = null;
+        }
+
+        _Component.prototype.dispose.call(this);
+    };
+
     FullscreenButton.prototype.createEl = function createEl() {
         // @todo 将两个 icon 分别放到两个类中，这样可以确定他们每个的 click 的事件一定跟自己的名称是相符的
         // @todo 需要一个非全屏的按钮 sueb
@@ -8171,12 +8664,9 @@ var FullscreenButton = function (_Component) {
     return FullscreenButton;
 }(_component2['default']);
 
-// Component.register(FullscreenButton);
-
-
 exports['default'] = FullscreenButton;
 
-},{"../plugin/component":10,"../utils/dom":35,"../utils/events":36,"../utils/feature-detector":37,"./tooltip":31,"classnames":1}],23:[function(require,module,exports){
+},{"../events/events":8,"../plugin/component":13,"../utils/dom":38,"../utils/feature-detector":39,"./tooltip":35,"classnames":1}],27:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -8217,12 +8707,9 @@ var GradientBottom = function (_Component) {
     return GradientBottom;
 }(_component2['default']);
 
-// Component.register(GradientBottom);
-
-
 exports['default'] = GradientBottom;
 
-},{"../plugin/component":10,"classnames":1}],24:[function(require,module,exports){
+},{"../plugin/component":13,"classnames":1}],28:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -8279,10 +8766,10 @@ exports['default'] = LoadingPc;
 
 
 if (!_featureDetector2['default'].touch) {
-    _component2['default'].register(LoadingPc);
+    _component2['default'].register(LoadingPc, { name: 'loadingPc' });
 }
 
-},{"../plugin/component":10,"../utils/feature-detector":37,"classnames":1}],25:[function(require,module,exports){
+},{"../plugin/component":13,"../utils/feature-detector":39,"classnames":1}],29:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -8295,10 +8782,6 @@ var _component = require('../plugin/component');
 
 var _component2 = _interopRequireDefault(_component);
 
-var _featureDetector = require('../utils/feature-detector');
-
-var _featureDetector2 = _interopRequireDefault(_featureDetector);
-
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -8306,48 +8789,41 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; } /**
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                * @file 播放器 UI loading
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                * @author yuhui<yuhui06@baidu.com>
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                * @date 2017/11/9
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                * @file not-support.js 不支持 html5 video 标签时提示
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                * @author yuhui06
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                * @date 2018/3/29
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 */
 
-var Loading = function (_Component) {
-    _inherits(Loading, _Component);
+var NotSupport = function (_Component) {
+    _inherits(NotSupport, _Component);
 
-    function Loading() {
-        _classCallCheck(this, Loading);
+    function NotSupport() {
+        _classCallCheck(this, NotSupport);
 
         return _possibleConstructorReturn(this, _Component.apply(this, arguments));
     }
 
-    Loading.prototype.createEl = function createEl() {
+    NotSupport.prototype.createEl = function createEl() {
         return _component2['default'].createElement(
             'div',
-            { className: (0, _classnames2['default'])('lark-loading-area', this.options.className) },
+            { className: (0, _classnames2['default'])('lark-not-support-notice', this.options.className) },
             _component2['default'].createElement(
                 'div',
-                { className: 'lark-loading-cnt' },
-                _component2['default'].createElement('span', { className: 'lark-loading-area__spinner lark-icon-loading' }),
-                _component2['default'].createElement(
-                    'span',
-                    { className: 'lark-loading-area__text' },
-                    '\u6B63\u5728\u52A0\u8F7D'
-                )
+                { className: 'lark-not-support-notice__text' },
+                '\u60A8\u7684\u6D4F\u89C8\u5668\u4E0D\u652F\u6301 html5 \u89C6\u9891\u64AD\u653E\uFF0C\u8BF7\u5347\u7EA7\u6D4F\u89C8\u5668\u7248\u672C\u6216\u66F4\u6362\u4E3A chrome \u6D4F\u89C8\u5668'
             )
         );
     };
 
-    return Loading;
+    return NotSupport;
 }(_component2['default']);
 
-exports['default'] = Loading;
+exports['default'] = NotSupport;
 
 
-if (_featureDetector2['default'].touch) {
-    _component2['default'].register(Loading);
-}
+_component2['default'].register(NotSupport, { name: 'notSupport' });
 
-},{"../plugin/component":10,"../utils/feature-detector":37,"classnames":1}],26:[function(require,module,exports){
+},{"../plugin/component":13,"classnames":1}],30:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -8362,9 +8838,9 @@ var _component2 = _interopRequireDefault(_component);
 
 var _dom = require('../utils/dom');
 
-var Dom = _interopRequireWildcard(_dom);
+var DOM = _interopRequireWildcard(_dom);
 
-var _events = require('../utils/events');
+var _events = require('../events/events');
 
 var Events = _interopRequireWildcard(_events);
 
@@ -8395,8 +8871,8 @@ var PlayButton = function (_Component) {
         // 注意 这里需要将 context（第二个参数） 设置为 this.el，因为这时 DOM 元素还没有插入到 document 里，所以在 document 里是查不到这个元素的
         var _this = _possibleConstructorReturn(this, _Component.call(this, player, options));
 
-        _this.playBtn = Dom.$('.lark-play-button__play', _this.el);
-        _this.pauseBtn = Dom.$('.lark-play-button__pause', _this.el);
+        _this.playBtn = DOM.$('.lark-play-button__play', _this.el);
+        _this.pauseBtn = DOM.$('.lark-play-button__pause', _this.el);
 
         var eventName = _featureDetector2['default'].touch ? 'touchend' : 'click';
 
@@ -8421,6 +8897,15 @@ var PlayButton = function (_Component) {
         }
     };
 
+    PlayButton.prototype.dispose = function dispose() {
+        Events.off(this.playBtn);
+        Events.off(this.pauseBtn);
+        this.playBtn = null;
+        this.pauseBtn = null;
+
+        _Component.prototype.dispose.call(this);
+    };
+
     PlayButton.prototype.createEl = function createEl() {
         return _component2['default'].createElement(
             'div',
@@ -8439,10 +8924,10 @@ exports['default'] = PlayButton;
 
 
 if (_featureDetector2['default'].touch) {
-    _component2['default'].register(PlayButton);
+    _component2['default'].register(PlayButton, { name: 'playButton' });
 }
 
-},{"../plugin/component":10,"../utils/dom":35,"../utils/events":36,"../utils/feature-detector":37,"classnames":1}],27:[function(require,module,exports){
+},{"../events/events":8,"../plugin/component":13,"../utils/dom":38,"../utils/feature-detector":39,"classnames":1}],31:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -8508,12 +8993,9 @@ var ProgressBarExceptFill = function (_Component) {
     return ProgressBarExceptFill;
 }(_component2['default']);
 
-// Component.register(ProgressBarExceptFill);
-
-
 exports['default'] = ProgressBarExceptFill;
 
-},{"../plugin/component":10,"./buffer-bar":15,"classnames":1}],28:[function(require,module,exports){
+},{"../plugin/component":13,"./buffer-bar":18,"classnames":1}],32:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -8528,7 +9010,7 @@ var _component2 = _interopRequireDefault(_component);
 
 var _dom = require('../utils/dom');
 
-var Dom = _interopRequireWildcard(_dom);
+var DOM = _interopRequireWildcard(_dom);
 
 var _bufferBar = require('./buffer-bar');
 
@@ -8561,7 +9043,7 @@ var ProgressBarSimple = function (_Component) {
         var _this = _possibleConstructorReturn(this, _Component.call(this, player, options));
 
         _this.handleTimeUpdate = _this.handleTimeUpdate.bind(_this);
-        _this.line = Dom.$('.lark-progress-bar__line', _this.el);
+        _this.line = DOM.$('.lark-progress-bar__line', _this.el);
         player.on('timeupdate', _this.handleTimeUpdate);
         return _this;
     }
@@ -8588,6 +9070,12 @@ var ProgressBarSimple = function (_Component) {
         });
     };
 
+    ProgressBarSimple.prototype.dispose = function dispose() {
+        this.line = null;
+
+        _Component.prototype.dispose.call(this);
+    };
+
     ProgressBarSimple.prototype.createEl = function createEl() {
         return _component2['default'].createElement(
             'div',
@@ -8605,10 +9093,10 @@ exports['default'] = ProgressBarSimple;
 
 
 if (_featureDetector2['default'].touch) {
-    _component2['default'].register(ProgressBarSimple);
+    _component2['default'].register(ProgressBarSimple, { name: 'progressBarSimple' });
 }
 
-},{"../plugin/component":10,"../utils/dom":35,"../utils/feature-detector":37,"./buffer-bar":15,"classnames":1}],29:[function(require,module,exports){
+},{"../plugin/component":13,"../utils/dom":38,"../utils/feature-detector":39,"./buffer-bar":18,"classnames":1}],33:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -8631,7 +9119,7 @@ var _tooltip2 = _interopRequireDefault(_tooltip);
 
 var _dom = require('../utils/dom');
 
-var Dom = _interopRequireWildcard(_dom);
+var DOM = _interopRequireWildcard(_dom);
 
 var _featureDetector = require('../utils/feature-detector');
 
@@ -8658,6 +9146,11 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 * @date 2018/3/15 支持 pc 端拖拽和 tooltip
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 */
 
+/* eslint-disable no-unused-vars */
+
+/* eslint-enable no-unused-vars */
+
+
 var ProgressBar = function (_Slider) {
     _inherits(ProgressBar, _Slider);
 
@@ -8677,10 +9170,10 @@ var ProgressBar = function (_Slider) {
         _this.handleMouseMove = _this.handleMouseMove.bind(_this);
         _this.handleMouseOut = _this.handleMouseOut.bind(_this);
 
-        _this.line = Dom.$('.lark-progress-bar__line', _this.el);
-        _this.lineHandle = Dom.$('.lark-progress-bar__line__handle', _this.el);
-        _this.hoverLight = Dom.$('.lark-progress-bar-hover-light', _this.el);
-        _this.paddingEl = Dom.$('.lark-progress-bar-padding', _this.el);
+        _this.line = DOM.$('.lark-progress-bar__line', _this.el);
+        _this.lineHandle = DOM.$('.lark-progress-bar__line__handle', _this.el);
+        _this.hoverLight = DOM.$('.lark-progress-bar-hover-light', _this.el);
+        _this.paddingEl = DOM.$('.lark-progress-bar-padding', _this.el);
 
         player.on('timeupdate', _this.handleTimeUpdate);
         _this.on('click', _this.handleClick);
@@ -8733,7 +9226,7 @@ var ProgressBar = function (_Slider) {
     };
 
     ProgressBar.prototype.update = function update(event) {
-        var pos = Dom.getPointerPosition(this.el, event);
+        var pos = DOM.getPointerPosition(this.el, event);
         var percent = pos.x * 100 + '%';
         var currentTime = this.player.duration() * pos.x;
 
@@ -8751,8 +9244,8 @@ var ProgressBar = function (_Slider) {
     ProgressBar.prototype.showToolTip = function showToolTip(event) {
         var duration = this.player.duration();
         if (duration) {
-            var pointerPos = Dom.getPointerPosition(this.el, event);
-            // const elPos = Dom.findPosition(this.el);
+            var pointerPos = DOM.getPointerPosition(this.el, event);
+            // const elPos = DOM.findPosition(this.el);
 
             // const top = elPos.top - (this.paddingEl.offsetHeight - this.line.offsetHeight);
             // const left = elPos.left + this.el.offsetWidth * pointerPos.x;
@@ -8774,7 +9267,7 @@ var ProgressBar = function (_Slider) {
     };
 
     ProgressBar.prototype.showHoverLine = function showHoverLine(event) {
-        var pointerPos = Dom.getPointerPosition(this.el, event);
+        var pointerPos = DOM.getPointerPosition(this.el, event);
         var left = this.el.offsetWidth * pointerPos.x;
 
         this.hoverLight.style.width = left + 'px';
@@ -8799,6 +9292,15 @@ var ProgressBar = function (_Slider) {
         this.hideHoverLine(event);
     };
 
+    ProgressBar.prototype.dispose = function dispose() {
+        this.line = null;
+        this.lineHandle = null;
+        this.hoverLight = null;
+        this.paddingEl = null;
+
+        _Slider.prototype.dispose.call(this);
+    };
+
     ProgressBar.prototype.createEl = function createEl() {
         return _component2['default'].createElement(
             'div',
@@ -8812,12 +9314,9 @@ var ProgressBar = function (_Slider) {
     return ProgressBar;
 }(_slider2['default']);
 
-// Component.register(ProgressBar);
-
-
 exports['default'] = ProgressBar;
 
-},{"../plugin/component":10,"../utils/dom":35,"../utils/feature-detector":37,"../utils/time-format":45,"./progress-bar-except-fill":27,"./slider":30,"./tooltip":31,"classnames":1}],30:[function(require,module,exports){
+},{"../plugin/component":13,"../utils/dom":38,"../utils/feature-detector":39,"../utils/time-format":45,"./progress-bar-except-fill":31,"./slider":34,"./tooltip":35,"classnames":1}],34:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -8826,13 +9325,13 @@ var _component = require('../plugin/component');
 
 var _component2 = _interopRequireDefault(_component);
 
-var _events = require('../utils/events');
+var _events = require('../events/events');
 
 var Events = _interopRequireWildcard(_events);
 
 var _dom = require('../utils/dom');
 
-var Dom = _interopRequireWildcard(_dom);
+var DOM = _interopRequireWildcard(_dom);
 
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj['default'] = obj; return newObj; } }
 
@@ -8882,7 +9381,7 @@ var Slider = function (_Component) {
     Slider.prototype.handleSlideStart = function handleSlideStart(event) {
         this.onSlideStart(event);
 
-        Dom.addClass(this.el, 'lark-sliding');
+        DOM.addClass(this.el, 'lark-sliding');
 
         Events.on(document, 'touchmove', this.handleSlideMove);
         Events.on(document, 'touchend', this.handleSlideEnd);
@@ -8897,7 +9396,7 @@ var Slider = function (_Component) {
     Slider.prototype.handleSlideEnd = function handleSlideEnd(event) {
         this.onSlideEnd(event);
 
-        Dom.removeClass(this.el, 'lark-sliding');
+        DOM.removeClass(this.el, 'lark-sliding');
 
         Events.off(document, 'touchmove', this.handleSlideMove);
         Events.off(document, 'touchend', this.handleSlideEnd);
@@ -8910,7 +9409,7 @@ var Slider = function (_Component) {
 
 exports['default'] = Slider;
 
-},{"../plugin/component":10,"../utils/dom":35,"../utils/events":36}],31:[function(require,module,exports){
+},{"../events/events":8,"../plugin/component":13,"../utils/dom":38}],35:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -8921,7 +9420,7 @@ var _lodash2 = _interopRequireDefault(_lodash);
 
 var _dom = require('../utils/dom');
 
-var Dom = _interopRequireWildcard(_dom);
+var DOM = _interopRequireWildcard(_dom);
 
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj['default'] = obj; return newObj; } }
 
@@ -8943,14 +9442,14 @@ exports['default'] = {
         //     return;
         // }
 
-        if (!Dom.isEl(container)) {
+        if (!DOM.isEl(container)) {
             return;
         }
 
-        var el = Dom.createElement('div', {
+        var el = DOM.createElement('div', {
             className: this.id
         });
-        Dom.appendContent(container, el);
+        DOM.appendContent(container, el);
 
         this.el = el;
         this.container = container;
@@ -8975,12 +9474,12 @@ exports['default'] = {
         switch (options.placement) {
             case 'top':
                 // @todo 可以 cache
-                var hostElRect = Dom.getBoundingClientRect(options.hostEl);
-                var containerRect = Dom.getBoundingClientRect(this.container);
+                var hostElRect = DOM.getBoundingClientRect(options.hostEl);
+                var containerRect = DOM.getBoundingClientRect(this.container);
 
                 var left = void 0;
                 if (options.isFollowMouse) {
-                    var pointerPos = Dom.getPointerPosition(options.hostEl, options.event);
+                    var pointerPos = DOM.getPointerPosition(options.hostEl, options.event);
                     left = hostElRect.left - containerRect.left + hostElRect.width * pointerPos.x - this.el.offsetWidth / 2;
                 } else {
                     left = hostElRect.left - containerRect.left + (hostElRect.width - this.el.offsetWidth) / 2;
@@ -9005,12 +9504,12 @@ exports['default'] = {
 
         options = this.normalize(options);
 
-        if (!Dom.isEl(options.hostEl)) {
+        if (!DOM.isEl(options.hostEl)) {
             return;
         }
 
-        var container = Dom.parent(options.hostEl, 'larkplayer');
-        var el = Dom.$('.lark-tooltip', container);
+        var container = DOM.parent(options.hostEl, 'larkplayer');
+        var el = DOM.$('.lark-tooltip', container);
 
         // 多个播放器实例并存时需要不断切换 this.el 和 this.container
         if (el) {
@@ -9021,11 +9520,11 @@ exports['default'] = {
         }
 
         // if (!this.el) {
-        //     const container = Dom.parent(options.hostEl, 'larkplayer');
+        //     const container = DOM.parent(options.hostEl, 'larkplayer');
         //     this.initial(container);
         // }
 
-        Dom.replaceContent(this.el, options.content);
+        DOM.replaceContent(this.el, options.content);
 
         setTimeout(function () {
             // 元素 display none 时获取到的 offsetHeight 和 offsetWidth 是 0
@@ -9051,7 +9550,7 @@ exports['default'] = {
     }
 };
 
-},{"../utils/dom":35,"lodash.assign":2}],32:[function(require,module,exports){
+},{"../utils/dom":38,"lodash.assign":2}],36:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -9066,9 +9565,9 @@ var _component2 = _interopRequireDefault(_component);
 
 var _dom = require('../utils/dom');
 
-var Dom = _interopRequireWildcard(_dom);
+var DOM = _interopRequireWildcard(_dom);
 
-var _events = require('../utils/events');
+var _events = require('../events/events');
 
 var Events = _interopRequireWildcard(_events);
 
@@ -9094,6 +9593,11 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 * @date 2018/3/9
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 */
 
+/* eslint-disable no-unused-vars */
+
+/* eslint-enable no-unused-vars */
+
+
 var Volume = function (_Slider) {
     _inherits(Volume, _Slider);
 
@@ -9113,9 +9617,9 @@ var Volume = function (_Slider) {
         _this.switchStatus = _this.switchStatus.bind(_this);
         _this.clearStatus = _this.clearStatus.bind(_this);
 
-        _this.line = Dom.$('.lark-volume-line__line', _this.el);
-        _this.ball = Dom.$('.lark-volume-line__ball', _this.el);
-        _this.icon = Dom.$('.lark-volume-icon', _this.el);
+        _this.line = DOM.$('.lark-volume-line__line', _this.el);
+        _this.ball = DOM.$('.lark-volume-line__ball', _this.el);
+        _this.icon = DOM.$('.lark-volume-icon', _this.el);
 
         Events.on(_this.icon, 'click', _this.iconClick);
         Events.on(_this.icon, 'mouseover', _this.handleIconMouseOver);
@@ -9132,7 +9636,7 @@ var Volume = function (_Slider) {
 
     Volume.prototype.onSlideMove = function onSlideMove(event) {
         event.preventDefault();
-        var pos = Dom.getPointerPosition(this.line, event);
+        var pos = DOM.getPointerPosition(this.line, event);
         this.update(pos.x);
     };
 
@@ -9145,7 +9649,7 @@ var Volume = function (_Slider) {
     Volume.prototype.onClick = function onClick(event) {
         this.lastVolume = this.player.volume();
 
-        var pos = Dom.getPointerPosition(this.line, event);
+        var pos = DOM.getPointerPosition(this.line, event);
         this.update(pos.x);
 
         if (this.player.volume() !== 0) {
@@ -9199,7 +9703,7 @@ var Volume = function (_Slider) {
             status = 'large';
         }
 
-        Dom.addClass(this.icon, 'lark-icon-sound-' + status);
+        DOM.addClass(this.icon, 'lark-icon-sound-' + status);
     };
 
     Volume.prototype.clearStatus = function clearStatus() {
@@ -9207,8 +9711,20 @@ var Volume = function (_Slider) {
 
         var statusClass = ['lark-icon-sound-small', 'lark-icon-sound-middle', 'lark-icon-sound-large'];
         statusClass.forEach(function (className) {
-            Dom.removeClass(_this2.icon, className);
+            DOM.removeClass(_this2.icon, className);
         });
+    };
+
+    Volume.prototype.dispose = function dispose() {
+        Events.off(this.icon, 'click', this.iconClick);
+        Events.off(this.line, 'click', this.handleClick);
+        Events.off(this.ball, 'mousedown', this.handleSlideStart);
+
+        this.icon = null;
+        this.line = null;
+        this.ball = null;
+
+        _Slider.prototype.dispose.call(this);
     };
 
     Volume.prototype.createEl = function createEl() {
@@ -9232,12 +9748,9 @@ var Volume = function (_Slider) {
     return Volume;
 }(_slider2['default']);
 
-// Component.register(Volume);
-
-
 exports['default'] = Volume;
 
-},{"../plugin/component":10,"../utils/dom":35,"../utils/events":36,"./slider":30,"./tooltip":31,"classnames":1}],33:[function(require,module,exports){
+},{"../events/events":8,"../plugin/component":13,"../utils/dom":38,"./slider":34,"./tooltip":35,"classnames":1}],37:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -9271,100 +9784,7 @@ function computedStyle(el, prop) {
     return el.currentStyle && el.currentStyle[prop] || '';
 }
 
-},{}],34:[function(require,module,exports){
-'use strict';
-
-exports.__esModule = true;
-exports.getData = getData;
-exports.hasData = hasData;
-exports.removeData = removeData;
-
-var _guid = require('./guid');
-
-// 所有的数据会存在这里
-// 我们可以将数据与 DOM 元素绑定，但又不是直接将数据放在它上面
-// eg. Event listeners 是通过这种方式绑定的
-var elData = {};
-
-// @test
-/**
- * @file dom-data.js
- * @author yuhui06@baidu.com
- * @date 2017/11/3
- * @desc
- *      1) 这是一个神奇的方法，看好了，最好别眨眼😉
- *      2) 这里没有 setData 方法，只负责取数据就行了。我们往取回来的数据里塞东西，自然就存起来了
- */
-
-window.elData = elData;
-
-var elIdAttr = 'larkplayer_data_' + Date.now();
-
-/**
- * 获取 DOM 元素上的数据
- *
- * @param {Element} el 获取该元素上的数据
- * @return {Object} 想要的数据
- */
-function getData(el) {
-    var id = el[elIdAttr];
-
-    if (!id) {
-        id = el[elIdAttr] = (0, _guid.newGUID)();
-    }
-
-    if (!elData[id]) {
-        elData[id] = {};
-    }
-
-    return elData[id];
-}
-
-/**
- * 判断一个元素上是否有我们存的数据
- *
- * @param {Element} el 就是要看这个元素上有没有我们之前存的数据
- * @return {boolean} 元素上是否存有数据
- */
-function hasData(el) {
-    var id = el[elIdAttr];
-
-    if (!id || !elData[id]) {
-        return false;
-    }
-
-    return !!Object.keys(elData[id]).length;
-}
-
-/**
- * 删除我们之前在元素上存放的数据
- *
- * @param {Element} el 宿主元素
- */
-function removeData(el) {
-    var id = el[elIdAttr];
-
-    if (!id) {
-        return;
-    }
-
-    // 删除存放的数据
-    delete elData[id];
-
-    // 同时删除 DOM 上的对应属性
-    try {
-        delete el[elIdAttr];
-    } catch (e) {
-        if (el.removeAttribute) {
-            el.removeAttribute(elIdAttr);
-        } else {
-            // IE document 节点似乎不支持 removeAttribute 方法
-            el[elIdAttr] = null;
-        }
-    }
-}
-
-},{"./guid":39}],35:[function(require,module,exports){
+},{}],38:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -10116,481 +10536,7 @@ var $$ = exports.$$ = createQuerier('querySelectorAll');
 //     }
 // })();
 
-},{"./computed-style":33,"./obj":43,"lodash.includes":4}],36:[function(require,module,exports){
-'use strict';
-
-exports.__esModule = true;
-exports.isPassiveSupported = undefined;
-exports.fixEvent = fixEvent;
-exports.on = on;
-exports.trigger = trigger;
-exports.off = off;
-exports.one = one;
-
-var _lodash = require('lodash.includes');
-
-var _lodash2 = _interopRequireDefault(_lodash);
-
-var _domData = require('./dom-data');
-
-var DomData = _interopRequireWildcard(_domData);
-
-var _guid = require('./guid');
-
-function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj['default'] = obj; return newObj; } }
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
-
-// data.disabled
-// data.dispatcher
-// data.handlers
-// let data = {};
-
-var document = window.document;
-
-/**
- * 清理事件相关的数据(Clean up the listener cache and dispatchers)
- *
- * @inner
- *
- * @param {Element} elem 待清理的元素
- * @param {string} type 待清理的事件类型
- */
-/**
- * @file 事件系统，借用系统事件能力的同时，能添加自定义事件
- * @author yuhui06@baidu.com
- * @date 2017/11/3
- */
-
-function cleanUpEvents(elem, type) {
-    var data = DomData.getData(elem);
-
-    // 如果该 type 下已经没有回调函数，那就取消掉之前注册的事件并且删除不必要的属性
-    if (data.handlers && data.handlers[type] && data.handlers[type]['length'] === 0) {
-        // 删除不必要的属性
-        delete data.handlers[type];
-
-        // 删除之前注册的事件
-        if (elem.removeEventListener) {
-            elem.removeEventListener(type, data.dispatcher, false);
-        } else if (elem.detachEvent) {
-            elem.detachEvent('on' + type, data.dispatcher);
-        }
-    }
-
-    // 如果 hanlders 下已经没有 type，那可以清除 data 下的所有属性了
-    if (Object.getOwnPropertyNames(data.handlers).length === 0) {
-        delete data.handlers;
-        delete data.dispatcher;
-        delete data.disabled;
-    }
-
-    // 如果 data 的属性已经被清空，那么对应 DOM 上的数据相关的属性也可以清除了
-    if (Object.getOwnPropertyNames(data).length === 0) {
-        DomData.removeData(elem);
-    }
-}
-
-/**
- * 循环 types 数组，给每个 type 都执行指定的方法
- *
- * 将需要在不同函数里执行的循环操作抽离出来
- *
- * @inner
- *
- * @param {Function} func 要循环执行的函数
- * @param {Element} elem 宿主元素
- * @param {Array} types 类型数组
- * @param {Function} callback 要注册的回调函数
- */
-function handleMultipleEvents(func, elem, types, callback) {
-    if (types && types.length) {
-        types.forEach(function (type) {
-            return func(elem, type, callback);
-        });
-    }
-}
-
-/**
- * 修复事件，使其具有标准的属性
- *
- * @param {Event|Object} event 待修复的事件
- * @return {Object} 修复后的事件
- */
-function fixEvent(event) {
-    function returnTure() {
-        return true;
-    }
-
-    function returnFalse() {
-        return false;
-    }
-
-    // Test if fixing up is needed
-    // Used to check if !event.stopPropagation instead of isPropagationStopped
-    // But native events return true for stopPropagation, but don't have
-    // other expected methods like isPropagationStopped. Seems to be a problem
-    // with the Javascript Ninja code. So we're just overriding all events now.
-    if (!event || !event.isPropagationStopped) {
-        var old = event || window.event;
-
-        event = {};
-
-        // Clone the old object so that we can modify the values event = {};
-        // IE8 Doesn't like when you mess with native event properties
-        // Firefox returns false for event.hasOwnProperty('type') and other props
-        //  which makes copying more difficult.
-        // TODO: Probably best to create a whitelist of event props
-        for (var key in old) {
-            // Safari 6.0.3 warns you if you try to copy deprecated layerX/Y
-            // Chrome warns you if you try to copy deprecated keyboardEvent.keyLocation
-            // and webkitMovementX/Y
-            if (key !== 'layerX' && key !== 'layerY' && key !== 'keyLocation' && key !== 'webkitMovementX' && key !== 'webkitMovementY') {
-                // Chrome 32+ warns if you try to copy deprecated returnValue, but
-                // we still want to if preventDefault isn't supported (IE8).
-                if (!(key === 'returnValue' && old.preventDefault)) {
-                    event[key] = old[key];
-                }
-            }
-        }
-
-        // 事件发生在此元素上
-        if (!event.target) {
-            event.target = event.srcElement || document;
-        }
-
-        // 跟事件发生元素有关联的元素
-        if (!event.relatedTarget) {
-            event.relatedTarget = event.fromElement === event.target ? event.toElement : event.fromElement;
-        }
-
-        // 阻止默认事件
-        event.preventDefault = function () {
-            if (old.preventDefault) {
-                old.preventDefault();
-            }
-
-            event.returnValue = false;
-            old.returnValue = false;
-            event.defaultPrevented = true;
-        };
-
-        event.defaultPrevented = false;
-
-        // 阻止事件冒泡
-        event.stopPropagation = function () {
-            if (old.stopPropagation) {
-                old.stopPropagation();
-            }
-
-            event.cancelBubble = true;
-            old.cancelBubble = true;
-            event.isPropagationStopped = returnTure;
-        };
-
-        event.isPropagationStopped = returnFalse;
-
-        // 阻止事件冒泡，并且当前阶段的事件也不执行
-        event.stopImmediatePropagation = function () {
-            if (old.stopImmediatePropagation) {
-                old.stopImmediatePropagation();
-            }
-
-            event.isImmediatePropagationStopped = returnTure;
-            event.stopPropagation();
-        };
-
-        event.isImmediatePropagationStopped = returnFalse;
-
-        // 鼠标位置
-        if (event.clientX != null) {
-            var doc = document.documentElement;
-            var body = document.body;
-
-            // clientX 代表与窗口左边的距离，根据页面滚动不同，是可变的
-            // pageX 代表相对于文档左边的距离，是个常量
-            event.pageX = event.clientX + (doc && doc.scrollLeft || body && body.scrollLeft || 0) - (doc && doc.clientLeft || body && body.clientLeft || 0);
-
-            event.pageY = event.clientY + (doc && doc.scrollTop || body && body.scrollTop || 0) - (doc && doc.clientTop || body && body.clientTop || 0);
-        }
-
-        // 键盘按键
-        event.which = event.charCode || event.keyCode;
-
-        // 鼠标按键
-        // 0: 左键
-        // 1: 中间按钮
-        // 2: 右键
-        if (event.button != null) {
-            // em... 这里应该是 与运算，就没去细究了
-            /* eslint-disable */
-            event.button = event.button & 1 ? 0 : event.button & 4 ? 1 : event.button & 2 ? 2 : 0;
-            /* eslint-disable */
-        }
-    }
-
-    return event;
-}
-
-/**
- * 是否支持 passive event listeners
- * passive event listeners 可以提升页面的滚动性能
- *
- * @see https://github.com/WICG/EventListenerOptions/blob/gh-pages/explainer.md
- */
-var isPassiveSupported = exports.isPassiveSupported = false;
-(function () {
-    try {
-        var opts = Object.defineProperty({}, 'passive', {
-            get: function get() {
-                // 如果浏览器会来读取这个属性，说明支持该功能
-                exports.isPassiveSupported = isPassiveSupported = true;
-            }
-        });
-
-        window.addEventListener('test', null, opts);
-    } catch (ex) {}
-})();
-
-/**
- * @const 目前 chrome 支持的 passive event
- */
-var passiveEvents = ['touchstart', 'touchmove'];
-
-/**
- * 向元素注册监听函数
- *
- * @todo explain
- * @param {Element|Object} 要绑定事件的元素／对象，这里允许 Object 是考虑到后面讲事件处理作为一种能力赋予任何一个对象
- * @param {string|Array} 事件类型，可以是数组的形式
- * @param {Function} fn 要注册的回调函数
- */
-function on(elem, type, fn) {
-    if (Array.isArray(type)) {
-        return handleMultipleEvents(on, elem, type, fn);
-    }
-
-    var data = DomData.getData(elem);
-    if (!data.handlers) {
-        data.handlers = {};
-    }
-
-    if (!data.handlers[type]) {
-        data.handlers[type] = [];
-    }
-
-    if (!fn.guid) {
-        fn.guid = (0, _guid.newGUID)();
-    }
-
-    // 我们往 handlers[type] 里面存函数，然后通过 dispatcher 调用
-    data.handlers[type].push(fn);
-
-    if (!data.dispatcher) {
-        /**
-         * trigger 的时候，我们通过调用这个函数，来调用注册在对应 elem 的对应 type 上的所有函数
-         *
-         * @param {Event} event 事件
-         * @param {Mixed} extraData 传入函数的数据
-         */
-        data.dispatcher = function (event, extraData) {
-            if (data.disabled) {
-                return;
-            }
-
-            // 通过 event.type 找到之前注册的回调函数
-            var handlers = data.handlers[event.type];
-
-            event = fixEvent(event);
-
-            if (handlers) {
-                // 鲁棒性。如果事件在执行过程中发生变动，不至于影响原来注册的事件，从而影响下次执行
-                var handlersClone = handlers.slice(0);
-
-                for (var i = 0; i < handlersClone.length; i++) {
-                    // 如果执行了 stopImmediatePropagation，那我们应该立即停止
-                    if (event.isImmediatePropagationStopped()) {
-                        break;
-                    } else {
-                        try {
-                            // 在当前 elem 上调用，同时将 event extraData 传过去当参数
-                            handlersClone[i].call(elem, event, extraData);
-                        } catch (ex) {
-                            console.log(ex);
-                        }
-                    }
-                }
-            }
-        };
-    }
-
-    // 只注册一次
-    if (data.handlers[type]['length'] === 1) {
-        // 系统事件，借用系统的能力调起
-        // 注意 这里注册的是 dispatcher 函数，通过 dispatcher 来统一地管理 fn
-        if (elem.addEventListener) {
-            // passive event listener
-            var options = false;
-            if (isPassiveSupported && (0, _lodash2['default'])(passiveEvents, type)) {
-                options = { passive: true };
-            }
-
-            elem.addEventListener(type, data.dispatcher, options);
-        } else if (elem.attachEvent) {
-            elem.attachEvent('on' + type, data.dispatcher);
-        }
-    }
-}
-
-/**
- * 触发事件
- *
- * @param {string} 事件类型
- * @param {Mixed} hash 事件触发时，传入的数据
- */
-function trigger(elem, event, hash) {
-    // 先判断 hasData，避免直接用 getData 给 elem 添加额外的数据（具体可参见 DomData:getData）
-    var data = DomData.hasData(elem) ? DomData.getData(elem) : {};
-    // 事件冒泡
-    var parent = elem.parentNode || elem.ownerDocument;
-
-    // 将 string 包装成正常的事件类型
-    if (typeof event === 'string') {
-        event = { type: event, target: elem };
-    }
-
-    // 标准化
-    event = fixEvent(event);
-
-    // 如果有事件调度函数，那我们可以通过这个函数去调用注册在这个元素上的对应类型的事件
-    // 理论上注册过事件后就会有这个函数
-    if (data.dispatcher) {
-        data.dispatcher.call(elem, event, hash);
-    }
-
-    // 冒泡吧
-    // 如果还有父元素，并且没有手动阻止事件冒泡，且这个事件本身支持冒泡（media events 不支持），那我们继续
-    if (parent && !event.isPropagationStopped() && event.bubbles === true) {
-        // 注意 这里就直接传我们标准化过的 event 了，不用再传 type
-        trigger.call(null, parent, event, hash);
-        // 如果已经到最上层的元素，并且没有被阻止事件的默认行为，那我们看看有没有系统对这种事件有没有默认行为要执行
-    } else if (!parent && !event.defaultPrevented) {
-        var targetData = DomData.getData(event.target);
-        // 如果系统也在这个事件上注册有函数
-        if (event.target[event.type]) {
-            // 在执行系统的事件函数前，先关闭我们自己的事件分发，因为已经执行过一次了（否则之前的那些事件有会被执行一次）
-            targetData.disabled = true;
-
-            // 执行系统默认事件
-            if (typeof event.target[event.type] === 'function') {
-                event.target[event.type]();
-            }
-
-            // 恢复 disable 参数，避免对下次事件造成影响
-            targetData.disabled = false;
-        }
-    }
-
-    // 告知调用者这个事件的默认行为是否被阻止了
-    // @see https://www.w3.org/TR/DOM-Level-3-Events/#event-flow-default-cancel
-    return !event.defaultPrevented;
-}
-
-/**
- * 移除已注册的事件
- *
- * @param {Element} elem 要移除事件的元素
- * @param {string|Array=} 事件类型。可选，如果没有 type 参数，则移除该元素上所有的事件
- * @param {Function=} 要移除的指定的函数。可选，如果没有此参数，则移除该 type 上的所有事件
- *
- * @desc
- *    1) 请按照参数顺序传参数
- */
-function off(elem, type, fn) {
-    if (!DomData.hasData(elem)) {
-        return;
-    }
-
-    var data = DomData.getData(elem);
-
-    if (!data.handlers) {
-        return;
-    }
-
-    if (Array.isArray(type)) {
-        return handleMultipleEvents(off, elem, type, fn);
-    }
-
-    function removeType(curType) {
-        data.handlers[curType] = [];
-        cleanUpEvents(elem, curType);
-    }
-
-    // 避免不传 type，直接传 fn 的情况
-    if (typeof type === 'function') {
-        throw new Error('注销指定事件函数前，先指定事件类型');
-    }
-
-    // 没有传 type，则移除所有事件
-    if (!type) {
-        for (var i in data.handlers) {
-            removeType(i);
-        }
-
-        return;
-    }
-
-    // 传了 type
-    var handlers = data.handlers[type];
-
-    if (!handlers) {
-        return;
-    }
-
-    // 传了 type，但没传 fn，则移除该 type 下的所有事件
-    if (type && !fn) {
-        removeType(type);
-        return;
-    }
-
-    // 传了 type 且传了 fn，则移除 type 下的 fn
-    // 如果这个函数之前注册过，就会有 guid 属性
-    if (fn.guid) {
-        if (handlers && handlers.length) {
-            data.handlers[type] = handlers.filter(function (value) {
-                return value.guid !== fn.guid;
-            });
-        }
-    }
-
-    // 最后需要再扫描下，有没有刚好被移除了所有函数的 type 或者 handlers
-    cleanUpEvents(elem, type);
-}
-
-/**
- * 在指定事件下，只触发指定函数一次
- *
- * @param {Element} elem 要绑定事件的元素
- * @param {string|Array} type 绑定的事件类型
- * @param {Function} 注册的回调函数
- */
-function one(elem, type, fn) {
-    if (Array.isArray(type)) {
-        return handleMultipleEvents(one, elem, type, fn);
-    }
-
-    function executeOnlyOnce() {
-        off(elem, type, executeOnlyOnce);
-        fn.apply(this, arguments);
-    }
-
-    // 移除函数需要 guid 属性
-    executeOnlyOnce.guid = fn.guid = fn.guid || (0, _guid.newGUID)();
-
-    on(elem, type, executeOnlyOnce);
-}
-
-},{"./dom-data":34,"./guid":39,"lodash.includes":4}],37:[function(require,module,exports){
+},{"./computed-style":37,"./obj":44,"lodash.includes":4}],39:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -10606,92 +10552,7 @@ exports['default'] = {
   touch: 'ontouchend' in document
 };
 
-},{}],38:[function(require,module,exports){
-'use strict';
-
-exports.__esModule = true;
-
-var _events = require('./events');
-
-var Events = _interopRequireWildcard(_events);
-
-function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj['default'] = obj; return newObj; } }
-
-var document = window.document;
-
-/**
- * @const 目前所有的 fullscreen api
- */
-/**
- * @file 将 fullscreen api 抽象并统一
- * @author yuhui<yuhui06@baidu.com>
- * @date 2017/11/8
- * @desc
- *    1) 在全屏播放器的时候，选择将 video 的父元素全屏而不是将 video 标签全屏，在 pc 上可以帮你解决很多问题
- *    2) 这个全屏并不是万能的，在一些浏览器下依然无法全屏（如 ios safari、IE9）
- *
- * @see https://fullscreen.spec.whatwg.org/
- * @see https://developers.google.com/web/fundamentals/native-hardware/fullscreen/?hl=zh-cn
- * @see https://github.com/sindresorhus/screenfull.js/blob/gh-pages/readme.md
- */
-
-var API = [
-// ideal api
-['requestFullscreen', 'exitFullscreen', 'fullscreenElement', 'fullscreenEnabled', 'fullscreenchange', 'fullscreenerror'],
-// New WebKit
-['webkitRequestFullscreen', 'webkitExitFullscreen', 'webkitFullscreenElement', 'webkitFullscreenEnabled', 'webkitfullscreenchange', 'webkitfullscreenerror'],
-// Old WebKit (Safari 5.1)
-['webkitRequestFullScreen', 'webkitCancelFullScreen', 'webkitCurrentFullScreenElement', 'webkitCancelFullScreen', 'webkitfullscreenchange', 'webkitfullscreenerror'], ['mozRequestFullScreen', 'mozCancelFullScreen', 'mozFullScreenElement', 'mozFullScreenEnabled', 'mozfullscreenchange', 'mozfullscreenerror'], ['msRequestFullscreen', 'msExitFullscreen', 'msFullscreenElement', 'msFullscreenEnabled', 'MSFullscreenChange', 'MSFullscreenError']];
-
-var browserApi = {};
-
-API.forEach(function (value, index) {
-    if (value && value[1] in document) {
-        value.forEach(function (val, i) {
-            browserApi[API[0][i]] = val;
-        });
-    }
-});
-
-exports['default'] = {
-    requestFullscreen: function requestFullscreen(el) {
-        el[browserApi.requestFullscreen]();
-    },
-    exitFullscreen: function exitFullscreen() {
-        document[browserApi.exitFullscreen]();
-    },
-    fullscreenElement: function fullscreenElement() {
-        return document[browserApi.fullscreenElement];
-    },
-    fullscreenEnabled: function fullscreenEnabled() {
-        return document[browserApi.fullscreenEnabled];
-    },
-    isFullscreen: function isFullscreen() {
-        return !!this.fullscreenElement();
-    },
-    fullscreenchange: function fullscreenchange(callback) {
-        Events.on(document, browserApi.fullscreenchange, callback);
-    },
-    fullscreenerror: function fullscreenerror(callback) {
-        Events.on(document, browserApi.fullscreenerror, callback);
-    },
-
-    // @todo 不够优雅，不过好歹是给了事件注销的机会
-    off: function off(type, callback) {
-        if (type) {
-            if (callback) {
-                Events.off(document, type, callback);
-            } else {
-                Events.off(document, type);
-            }
-        } else {
-            Events.off(document, browserApi.fullscreenchange);
-            Events.off(document, browserApi.fullscreenerror);
-        }
-    }
-};
-
-},{"./events":36}],39:[function(require,module,exports){
+},{}],40:[function(require,module,exports){
 "use strict";
 
 exports.__esModule = true;
@@ -10714,7 +10575,7 @@ function newGUID() {
   return guid++;
 }
 
-},{}],40:[function(require,module,exports){
+},{}],41:[function(require,module,exports){
 "use strict";
 
 exports.__esModule = true;
@@ -10759,7 +10620,7 @@ log.error = console.error;
 
 log.clear = console.clear;
 
-},{}],41:[function(require,module,exports){
+},{}],42:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -10782,7 +10643,7 @@ exports['default'] = {
     'wmv': 'video/x-ms-wmv'
 };
 
-},{}],42:[function(require,module,exports){
+},{}],43:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -10872,7 +10733,7 @@ function nomalizeSource(source) {
     }
 }
 
-},{"./mime-type-map":41,"./obj":43}],43:[function(require,module,exports){
+},{"./mime-type-map":42,"./obj":44}],44:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -10928,78 +10789,6 @@ function each(obj, fn) {
   Object.keys(obj).forEach(function (key) {
     return fn(obj[key], key);
   });
-}
-
-},{}],44:[function(require,module,exports){
-'use strict';
-
-exports.__esModule = true;
-exports.isPluginExist = isPluginExist;
-exports.getPlugin = getPlugin;
-exports.registerPlugin = registerPlugin;
-exports.deregisterPlugin = deregisterPlugin;
-/**
- * @file plugin.js 一些不想直接写在播放器中的代码，但又可能用到的功能，我们称之为 plugin
- * @author yuhui<yuhui06@baidu.com>
- * @date 2017/11/20
- */
-
-/**
- * @const
- * @inner
- *
- * 以 name => plugin 的形式存储 plugin 的对象
- */
-var pluginStore = {};
-
-/**
- * 判断 plugin 的名称是否已存在
- *
- * @param {string} name plugin 名称
- * @return {boolean} 指定名称是否已存在
- */
-function isPluginExist(name) {
-  return pluginStore.hasOwnProperty(name);
-}
-
-/**
- * 通过名称获取对应过的 plugin
- *
- * @param {string} name 要获取的 plugin 的名称
- * @return {Function} 要获取的 plugin
- */
-function getPlugin(name) {
-  return pluginStore[name];
-}
-
-/**
- * 注册 plugin
- * 此方法会被赋值到 larkplayer 上（larkplayer.registerPlugin = registerPlugin）
- * 后续调用时，我们一般从 larkplayer 上调用
- *
- * @param {string} name 要注册的 plugin 的名称
- * @param {Function} plugin 要注册的 plugin 函数。
- *                   plugin 的 this 在运行时会被指定为 player
- */
-function registerPlugin(name, plugin) {
-  if (typeof plugin !== 'function') {
-    throw new TypeError('Plugin should be a function');
-  }
-
-  if (isPluginExist(name)) {
-    throw new Error('Plugin has existed, register fail');
-  }
-
-  pluginStore[name] = plugin;
-}
-
-/**
- * 注销 plugin
- *
- * @param {name} name 要注销的 plugin 名称
- */
-function deregisterPlugin(name) {
-  delete pluginStore[name];
 }
 
 },{}],45:[function(require,module,exports){
@@ -11065,6 +10854,26 @@ function timeFormat(seconds) {
 'use strict';
 
 exports.__esModule = true;
+exports['default'] = toCamelCase;
+/**
+ * @file 将命名风格改为驼峰式
+ * @author yuhui06
+ * @date 2018/4/16
+ */
+
+// @notice 由于目前不存在下划线等连接的单词，所以单纯将首字母改成小写即可
+function toCamelCase(str) {
+    if (typeof str !== 'string') {
+        return str;
+    }
+
+    return str.charAt(0).toLowerCase() + str.slice(1);
+}
+
+},{}],47:[function(require,module,exports){
+'use strict';
+
+exports.__esModule = true;
 exports['default'] = toTitleCase;
 exports.titleCaseEquals = titleCaseEquals;
 /**
@@ -11102,5 +10911,5 @@ function titleCaseEquals(str1, str2) {
   return toTitleCase(str1) === toTitleCase(str2);
 }
 
-},{}]},{},[7])(7)
+},{}]},{},[11])(11)
 });

@@ -9,9 +9,11 @@ import values from 'lodash.values';
 import Component from './component';
 import MediaSourceHandler from './media-source-handler';
 import Plugin from './plugin';
-import {UI, MS, OTHERS} from './plugin-types';
+import PluginTypes from './plugin-types';
 import {newGUID} from '../utils/guid';
+import toCamelCase from '../utils/to-camel-case';
 
+const {UI, MS, OTHERS} = PluginTypes;
 
 const initialStore = {
     [UI]: {},
@@ -19,19 +21,19 @@ const initialStore = {
     [OTHERS]: {}
 };
 
-const pluginStore = {
+export default {
     store: initialStore,
     validate(plugin, type) {
         switch (type) {
             case UI:
-                return Component.isPrototypeOf(plugin);
-                break;
+                // return Component.isPrototypeOf(plugin);
+                return plugin && plugin.prototype instanceof Component;
             case MS:
-                return MediaSourceHandler.isPrototypeOf(plugin);
-                break;
+                // return MediaSourceHandler.isPrototypeOf(plugin);
+                return plugin && plugin.prototype instanceof MediaSourceHandler;
             case OTHERS:
-                return Plugin.isPrototypeOf(plugin);
-                break;
+                // return Plugin.isPrototypeOf(plugin);
+                return plugin && plugin.prototype instanceof Plugin;
             default:
                 return false;
         }
@@ -41,7 +43,7 @@ const pluginStore = {
     },
     add(plugin, options = {}, type) {
         if (this.validate(plugin, type)) {
-            const name = options.name || (plugin.name || `plugin_${newGUID()}`).toLowerCase();
+            const name = options.name || toCamelCase(plugin.name) || `plugin_${newGUID()}`;
             plugin._displayName = name;
 
             if (!this.has(name, type)) {
@@ -70,13 +72,10 @@ const pluginStore = {
         switch (type) {
             case UI:
                 return values(this.store[UI]);
-                break;
             case MS:
                 return values(this.store[MS]);
-                break;
             case OTHERS:
                 return values(this.store[OTHERS]);
-                break;
             default:
                 let allPlugins = [];
                 for (let type in this.store) {
@@ -88,9 +87,6 @@ const pluginStore = {
         }
     }
 };
-
-export default pluginStore;
-
 
 
 

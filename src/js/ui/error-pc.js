@@ -8,7 +8,7 @@
 import classnames from 'classnames';
 
 import Component from '../plugin/component';
-import * as Dom from '../utils/dom';
+import * as DOM from '../utils/dom';
 import featureDetector from '../utils/feature-detector';
 
 import './error';
@@ -23,7 +23,7 @@ export default class ErrorPc extends Component {
         this.player.on('error', this.handleError);
         this.on('click', this.handleClick);
 
-        this.textEl = Dom.$('.lark-error-text', this.el);
+        this.textEl = DOM.$('.lark-error-text', this.el);
     }
 
     handleClick() {
@@ -58,7 +58,12 @@ export default class ErrorPc extends Component {
                 text = '加载失败，点击重试';
         }
 
-        Dom.replaceContent(this.textEl, text);
+        DOM.replaceContent(this.textEl, text);
+    }
+
+    dispose() {
+        this.textEl = null;
+        super.dispose();
     }
 
     createEl() {
@@ -75,7 +80,7 @@ export default class ErrorPc extends Component {
 }
 
 if (!featureDetector.touch) {
-    Component.register(ErrorPc);
+    Component.register(ErrorPc, {name: 'errorPc'});
 }
 
 
