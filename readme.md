@@ -109,7 +109,9 @@ __API__
 <h3>Future Work</h3>
 
 * ~~support both pc and mobile~~
-* ~~support hls(m3u8) format~~
+* ~~support hls(m3u8) format([larkplayer-hls]())~~
 * support flv format
 * support vr
 
+### License
+MIT
