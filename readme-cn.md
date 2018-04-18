@@ -10,7 +10,7 @@
 </p>
 
 <p align="left">
-    [English](https://github.com/dblate/larkplayer)|中文
+    <a href="https://github.com/dblate/larkplayer">English</a> | 中文
 </p>
 
 <h3>简介</h3>
@@ -94,12 +94,14 @@ const player = larkplayer('video-el');
 
 <h3>文档</h3>
 
+* [设计文档](https://github.com/dblate/larkplayer/blob/master/docs/design.md)
+* [插件编写](https://github.com/dblate/larkplayer/blob/master/docs/plugin)
+
+__API__
+
 * [Player](https://github.com/dblate/larkplayer/blob/master/docs/api/player.md)
 * [Events](https://github.com/dblate/larkplayer/blob/master/docs/api/events.md)
 * [DOM](https://github.com/dblate/larkplayer/blob/master/docs/api/dom.md)
-
-* [设计文档](https://github.com/dblate/larkplayer/blob/master/docs/design.md)
-* [插件编写](https://github.com/dblate/larkplayer/blob/master/docs/plugin)
 
 
 <h3>如何贡献代码</h3>
