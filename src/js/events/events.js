@@ -9,10 +9,6 @@ import includes from 'lodash.includes';
 import * as DomData from './dom-data';
 import {newGUID} from '../utils/guid';
 
-// data.disabled
-// data.dispatcher
-// data.handlers
-// let data = {};
 
 const document = window.document;
 
@@ -201,12 +197,7 @@ export function fixEvent(event) {
     return event;
 }
 
-/**
- * 是否支持 passive event listeners
- * passive event listeners 可以提升页面的滚动性能
- *
- * @see https://github.com/WICG/EventListenerOptions/blob/gh-pages/explainer.md
- */
+// https://github.com/WICG/EventListenerOptions/blob/gh-pages/explainer.md
 export let isPassiveSupported = false;
 (function () {
     try {
@@ -222,9 +213,7 @@ export let isPassiveSupported = false;
     }
 })();
 
-/**
- * @const 目前 chrome 支持的 passive event
- */
+
 const passiveEvents = [
     'touchstart',
     'touchmove'
@@ -233,9 +222,8 @@ const passiveEvents = [
 /**
  * 向元素注册监听函数
  *
- * @todo explain
- * @param {Element|Object} 要绑定事件的元素／对象，这里允许 Object 是考虑到后面讲事件处理作为一种能力赋予任何一个对象
- * @param {string|Array} 事件类型，可以是数组的形式
+ * @param {Element|Object} elem 要绑定事件的元素
+ * @param {string|Array} type 事件类型，可以是数组的形式
  * @param {Function} fn 要注册的回调函数
  */
 export function on(elem, type, fn) {
@@ -320,7 +308,8 @@ export function on(elem, type, fn) {
 /**
  * 触发事件
  *
- * @param {string} 事件类型
+ * @param {Element} elem 宿主元素
+ * @param {string} event 事件类型
  * @param {Mixed} hash 事件触发时，传入的数据
  */
 export function trigger(elem, event, hash) {
@@ -375,8 +364,8 @@ export function trigger(elem, event, hash) {
  * 移除已注册的事件
  *
  * @param {Element} elem 要移除事件的元素
- * @param {string|Array=} 事件类型。可选，如果没有 type 参数，则移除该元素上所有的事件
- * @param {Function=} 要移除的指定的函数。可选，如果没有此参数，则移除该 type 上的所有事件
+ * @param {string|Array=} type 事件类型。可选，如果没有 type 参数，则移除该元素上所有的事件
+ * @param {Function=} fn 要移除的指定的函数。可选，如果没有此参数，则移除该 type 上的所有事件
  *
  * @desc
  *    1) 请按照参数顺序传参数
@@ -445,7 +434,7 @@ export function off(elem, type, fn) {
  *
  * @param {Element} elem 要绑定事件的元素
  * @param {string|Array} type 绑定的事件类型
- * @param {Function} 注册的回调函数
+ * @param {Function} fn 注册的回调函数
  */
 export function one(elem, type, fn) {
     if (Array.isArray(type)) {
