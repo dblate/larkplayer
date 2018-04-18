@@ -114,4 +114,4 @@ __API__
 * support vr
 
 ### License
-MIT
+[MIT](https://github.com/dblate/larkplayer/blob/master/LICENSE)
