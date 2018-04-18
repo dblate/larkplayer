@@ -110,6 +110,7 @@ __API__
 
 * ~~support both pc and mobile~~
 * ~~support hls(m3u8) format([larkplayer-hls]())~~
+* add unit test
 * support flv format
 * support vr
 
