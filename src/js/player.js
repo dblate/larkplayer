@@ -46,6 +46,9 @@ import './ui/volume';
 const activeClass = 'lark-user-active';
 const document = window.document;
 
+/**
+ * @class Player
+ */
 class Player {
 
     /**
@@ -143,21 +146,6 @@ class Player {
         this.triggerReady();
     }
     /* eslint-enable fecs-max-statements */
-
-    // internalInitialPlugins(className, namespace) {
-    //     this[namespace] = {};
-    //     const allPlugins = className.getAll();
-    //     allPlugins.forEach(pluginClass => {
-    //         const name = pluginClass._displayName;
-    //         const pluginInstance = new pluginClass(this, this.getPluginOptions(name, namespace));
-    //         this[namespace][name] = pluginInstance;
-    //     });
-    // }
-
-    // initialPlugins() {
-    //     // this.internalInitialPlugins(Component, UI);
-    //     this.internalInitialPlugins(Plugin, OTHERS);
-    // }
 
     initialNormalPlugins() {
         this[PluginTypes.OTHERS] = {};
