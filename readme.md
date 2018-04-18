@@ -17,7 +17,7 @@
 * 提供自定义样式，自适应 pc 与移动端
 * 原生 javascript 编写，无特定框架依赖
 
-可以通过 [截图](https://raw.githubusercontent.com/dblate/larkplayer/master/screenshots) 或 [在线示例](https://s.codepen.io/dblate/debug/qojzZZ/ZoMBajEzGyDk) 来感受效果
+可以通过 [截图](https://github.com/dblate/larkplayer/tree/master/screenshots) 或 [在线示例](https://s.codepen.io/dblate/debug/qojzZZ/ZoMBajEzGyDk) 来感受效果
 
 
 <h3>下载</h3>
