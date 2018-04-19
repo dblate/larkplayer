@@ -4,7 +4,8 @@
  * @date 2018/3/8
  */
 
-const document = window.document;
+import document from 'global/document';
+
 
 export default {
     touch: 'ontouchend' in document

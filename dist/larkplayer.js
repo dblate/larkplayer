@@ -49,6 +49,46 @@
 }());
 
 },{}],2:[function(require,module,exports){
+(function (global){
+var topLevel = typeof global !== 'undefined' ? global :
+    typeof window !== 'undefined' ? window : {}
+var minDoc = require('min-document');
+
+var doccy;
+
+if (typeof document !== 'undefined') {
+    doccy = document;
+} else {
+    doccy = topLevel['__GLOBAL_DOCUMENT_CACHE@4'];
+
+    if (!doccy) {
+        doccy = topLevel['__GLOBAL_DOCUMENT_CACHE@4'] = minDoc;
+    }
+}
+
+module.exports = doccy;
+
+}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
+},{"min-document":4}],3:[function(require,module,exports){
+(function (global){
+var win;
+
+if (typeof window !== "undefined") {
+    win = window;
+} else if (typeof global !== "undefined") {
+    win = global;
+} else if (typeof self !== "undefined"){
+    win = self;
+} else {
+    win = {};
+}
+
+module.exports = win;
+
+}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
+},{}],4:[function(require,module,exports){
+
+},{}],5:[function(require,module,exports){
 /**
  * lodash (Custom Build) <https://lodash.com/>
  * Build: `lodash modularize exports="npm" -o ./`
@@ -687,7 +727,7 @@ function keys(object) {
 
 module.exports = assign;
 
-},{}],3:[function(require,module,exports){
+},{}],6:[function(require,module,exports){
 (function (global){
 /**
  * lodash (Custom Build) <https://lodash.com/>
@@ -3144,7 +3184,7 @@ function property(path) {
 module.exports = find;
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{}],4:[function(require,module,exports){
+},{}],7:[function(require,module,exports){
 /**
  * lodash (Custom Build) <https://lodash.com/>
  * Build: `lodash modularize exports="npm" -o ./`
@@ -3891,7 +3931,7 @@ function values(object) {
 
 module.exports = includes;
 
-},{}],5:[function(require,module,exports){
+},{}],8:[function(require,module,exports){
 /**
  * lodash (Custom Build) <https://lodash.com/>
  * Build: `lodash modularize exports="npm" -o ./`
@@ -4360,7 +4400,7 @@ function values(object) {
 
 module.exports = values;
 
-},{}],6:[function(require,module,exports){
+},{}],9:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -4445,7 +4485,7 @@ function removeData(el) {
     }
 }
 
-},{"../utils/guid":40}],7:[function(require,module,exports){
+},{"../utils/guid":43}],10:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -4514,7 +4554,7 @@ function evented(target) {
     };
 }
 
-},{"../utils/dom":38,"./events":8}],8:[function(require,module,exports){
+},{"../utils/dom":41,"./events":11}],11:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -4529,6 +4569,14 @@ var _lodash = require('lodash.includes');
 
 var _lodash2 = _interopRequireDefault(_lodash);
 
+var _window = require('global/window');
+
+var _window2 = _interopRequireDefault(_window);
+
+var _document = require('global/document');
+
+var _document2 = _interopRequireDefault(_document);
+
 var _domData = require('./dom-data');
 
 var DomData = _interopRequireWildcard(_domData);
@@ -4539,13 +4587,6 @@ function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj;
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
 
-// data.disabled
-// data.dispatcher
-// data.handlers
-// let data = {};
-
-var document = window.document;
-
 /**
  * 清理事件相关的数据(Clean up the listener cache and dispatchers)
  *
@@ -4554,12 +4595,6 @@ var document = window.document;
  * @param {Element} elem 待清理的元素
  * @param {string} type 待清理的事件类型
  */
-/**
- * @file 事件系统，借用系统事件能力的同时，能添加自定义事件
- * @author yuhui06@baidu.com
- * @date 2017/11/3
- */
-
 function cleanUpEvents(elem, type) {
     var data = DomData.getData(elem);
 
@@ -4601,6 +4636,12 @@ function cleanUpEvents(elem, type) {
  * @param {Array} types 类型数组
  * @param {Function} callback 要注册的回调函数
  */
+/**
+ * @file 事件系统，借用系统事件能力的同时，能添加自定义事件
+ * @author yuhui06@baidu.com
+ * @date 2017/11/3
+ */
+
 function handleMultipleEvents(func, elem, types, callback) {
     if (types && types.length) {
         types.forEach(function (type) {
@@ -4630,7 +4671,7 @@ function fixEvent(event) {
     // other expected methods like isPropagationStopped. Seems to be a problem
     // with the Javascript Ninja code. So we're just overriding all events now.
     if (!event || !event.isPropagationStopped) {
-        var old = event || window.event;
+        var old = event || _window2['default'].event;
 
         event = {};
 
@@ -4654,7 +4695,7 @@ function fixEvent(event) {
 
         // 事件发生在此元素上
         if (!event.target) {
-            event.target = event.srcElement || document;
+            event.target = event.srcElement || _document2['default'];
         }
 
         // 跟事件发生元素有关联的元素
@@ -4702,8 +4743,8 @@ function fixEvent(event) {
 
         // 鼠标位置
         if (event.clientX != null) {
-            var doc = document.documentElement;
-            var body = document.body;
+            var doc = _document2['default'].documentElement;
+            var body = _document2['default'].body;
 
             // clientX 代表与窗口左边的距离，根据页面滚动不同，是可变的
             // pageX 代表相对于文档左边的距离，是个常量
@@ -4730,12 +4771,7 @@ function fixEvent(event) {
     return event;
 }
 
-/**
- * 是否支持 passive event listeners
- * passive event listeners 可以提升页面的滚动性能
- *
- * @see https://github.com/WICG/EventListenerOptions/blob/gh-pages/explainer.md
- */
+// https://github.com/WICG/EventListenerOptions/blob/gh-pages/explainer.md
 var isPassiveSupported = exports.isPassiveSupported = false;
 (function () {
     try {
@@ -4746,21 +4782,17 @@ var isPassiveSupported = exports.isPassiveSupported = false;
             }
         });
 
-        window.addEventListener('test', null, opts);
+        _window2['default'].addEventListener('test', null, opts);
     } catch (ex) {}
 })();
 
-/**
- * @const 目前 chrome 支持的 passive event
- */
 var passiveEvents = ['touchstart', 'touchmove'];
 
 /**
  * 向元素注册监听函数
  *
- * @todo explain
- * @param {Element|Object} 要绑定事件的元素／对象，这里允许 Object 是考虑到后面讲事件处理作为一种能力赋予任何一个对象
- * @param {string|Array} 事件类型，可以是数组的形式
+ * @param {Element|Object} elem 要绑定事件的元素
+ * @param {string|Array} type 事件类型，可以是数组的形式
  * @param {Function} fn 要注册的回调函数
  */
 function on(elem, type, fn) {
@@ -4843,7 +4875,8 @@ function on(elem, type, fn) {
 /**
  * 触发事件
  *
- * @param {string} 事件类型
+ * @param {Element} elem 宿主元素
+ * @param {string} event 事件类型
  * @param {Mixed} hash 事件触发时，传入的数据
  */
 function trigger(elem, event, hash) {
@@ -4898,8 +4931,8 @@ function trigger(elem, event, hash) {
  * 移除已注册的事件
  *
  * @param {Element} elem 要移除事件的元素
- * @param {string|Array=} 事件类型。可选，如果没有 type 参数，则移除该元素上所有的事件
- * @param {Function=} 要移除的指定的函数。可选，如果没有此参数，则移除该 type 上的所有事件
+ * @param {string|Array=} type 事件类型。可选，如果没有 type 参数，则移除该元素上所有的事件
+ * @param {Function=} fn 要移除的指定的函数。可选，如果没有此参数，则移除该 type 上的所有事件
  *
  * @desc
  *    1) 请按照参数顺序传参数
@@ -4970,7 +5003,7 @@ function off(elem, type, fn) {
  *
  * @param {Element} elem 要绑定事件的元素
  * @param {string|Array} type 绑定的事件类型
- * @param {Function} 注册的回调函数
+ * @param {Function} fn 注册的回调函数
  */
 function one(elem, type, fn) {
     if (Array.isArray(type)) {
@@ -4988,10 +5021,14 @@ function one(elem, type, fn) {
     on(elem, type, executeOnlyOnce);
 }
 
-},{"../utils/guid":40,"./dom-data":6,"lodash.includes":4}],9:[function(require,module,exports){
+},{"../utils/guid":43,"./dom-data":9,"global/document":2,"global/window":3,"lodash.includes":7}],12:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
+
+var _document = require('global/document');
+
+var _document2 = _interopRequireDefault(_document);
 
 var _events = require('../events/events');
 
@@ -4999,7 +5036,7 @@ var Events = _interopRequireWildcard(_events);
 
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj['default'] = obj; return newObj; } }
 
-var document = window.document;
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
 
 /**
  * @const 目前所有的 fullscreen api
@@ -5028,7 +5065,7 @@ var API = [
 var browserApi = {};
 
 API.forEach(function (value, index) {
-    if (value && value[1] in document) {
+    if (value && value[1] in _document2['default']) {
         value.forEach(function (val, i) {
             browserApi[API[0][i]] = val;
         });
@@ -5040,43 +5077,51 @@ exports['default'] = {
         el[browserApi.requestFullscreen]();
     },
     exitFullscreen: function exitFullscreen() {
-        document[browserApi.exitFullscreen]();
+        _document2['default'][browserApi.exitFullscreen]();
     },
     fullscreenElement: function fullscreenElement() {
-        return document[browserApi.fullscreenElement];
+        return _document2['default'][browserApi.fullscreenElement];
     },
     fullscreenEnabled: function fullscreenEnabled() {
-        return document[browserApi.fullscreenEnabled];
+        return _document2['default'][browserApi.fullscreenEnabled];
     },
     isFullscreen: function isFullscreen() {
         return !!this.fullscreenElement();
     },
     fullscreenchange: function fullscreenchange(callback) {
-        Events.on(document, browserApi.fullscreenchange, callback);
+        Events.on(_document2['default'], browserApi.fullscreenchange, callback);
     },
     fullscreenerror: function fullscreenerror(callback) {
-        Events.on(document, browserApi.fullscreenerror, callback);
+        Events.on(_document2['default'], browserApi.fullscreenerror, callback);
     },
 
     // @todo 不够优雅，不过好歹是给了事件注销的机会
     off: function off(type, callback) {
         if (type) {
             if (callback) {
-                Events.off(document, type, callback);
+                Events.off(_document2['default'], type, callback);
             } else {
-                Events.off(document, type);
+                Events.off(_document2['default'], type);
             }
         } else {
-            Events.off(document, browserApi.fullscreenchange);
-            Events.off(document, browserApi.fullscreenerror);
+            Events.off(_document2['default'], browserApi.fullscreenchange);
+            Events.off(_document2['default'], browserApi.fullscreenerror);
         }
     }
 };
 
-},{"../events/events":8}],10:[function(require,module,exports){
+},{"../events/events":11,"global/document":2}],13:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
+
+var _window = require('global/window');
+
+var _window2 = _interopRequireDefault(_window);
+
+var _document = require('global/document');
+
+var _document2 = _interopRequireDefault(_document);
 
 var _dom = require('../utils/dom');
 
@@ -5094,9 +5139,9 @@ var _evented = require('../events/evented');
 
 var _evented2 = _interopRequireDefault(_evented);
 
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
-
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj['default'] = obj; return newObj; } }
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } } /**
                                                                                                                                                            * @file html5 video api proxy
@@ -5105,8 +5150,6 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
                                                                                                                                                            * @see https://html.spec.whatwg.org/#event-media-emptied
                                                                                                                                                            * @see https://www.w3.org/TR/html5/embedded-content-0.html#attr-media-src
                                                                                                                                                            */
-
-var document = window.document;
 
 var Html5 = function () {
     function Html5(player, options) {
@@ -5178,7 +5221,7 @@ var Html5 = function () {
         // return this.el.webkitSupportsFullscreen;
 
         if (typeof this.el.webkitEnterFullScreen === 'function') {
-            var userAgent = window.navigator && window.navigator.userAgent || '';
+            var userAgent = _window2['default'].navigator && _window2['default'].navigator.userAgent || '';
 
             // Seems to be broken in Chromium/Chrome && Safari in Leopard
             if (/Android/.test(userAgent) || !/Chrome|Mac OS X 10.5/.test(userAgent)) {
@@ -5225,7 +5268,7 @@ var Html5 = function () {
         } else {
             _source = (0, _normalizeSource2['default'])(_source);
 
-            var docFragment = document.createDocumentFragment();
+            var docFragment = _document2['default'].createDocumentFragment();
             _source.forEach(function (value) {
                 var sourceElem = DOM.createElement('source', {
                     src: value.src,
@@ -5262,7 +5305,7 @@ var Html5 = function () {
 
 
 exports['default'] = Html5;
-Html5.TEST_VID = document.createElement('video');
+Html5.TEST_VID = _document2['default'].createElement('video');
 
 /**
  * 检查是否支持 HTML5 video
@@ -5461,7 +5504,7 @@ Html5.resetMediaElement = function (el) {
     };
 });
 
-},{"../events/evented":7,"../utils/dom":38,"../utils/normalize-source":43,"../utils/to-title-case":47}],11:[function(require,module,exports){
+},{"../events/evented":10,"../utils/dom":41,"../utils/normalize-source":46,"../utils/to-title-case":50,"global/document":2,"global/window":3}],14:[function(require,module,exports){
 'use strict';
 
 var _lodash = require('lodash.assign');
@@ -5561,7 +5604,7 @@ function larkplayer(el, options, readyFn) {
 // @see https://github.com/babel/babel/issues/2724
 module.exports = larkplayer;
 
-},{"./events/events":8,"./html5/html5":10,"./player":12,"./plugin/component":13,"./plugin/media-source-handler":14,"./plugin/plugin":17,"./utils/dom":38,"lodash.assign":2}],12:[function(require,module,exports){
+},{"./events/events":11,"./html5/html5":13,"./player":15,"./plugin/component":16,"./plugin/media-source-handler":17,"./plugin/plugin":20,"./utils/dom":41,"lodash.assign":5}],15:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -5569,6 +5612,10 @@ exports.__esModule = true;
 var _lodash = require('lodash.includes');
 
 var _lodash2 = _interopRequireDefault(_lodash);
+
+var _document = require('global/document');
+
+var _document2 = _interopRequireDefault(_document);
 
 var _html = require('./html5/html5');
 
@@ -5672,7 +5719,10 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
                                                                                                                                                            */
 
 var activeClass = 'lark-user-active';
-var document = window.document;
+
+/**
+ * @class Player
+ */
 
 var Player = function () {
 
@@ -5773,21 +5823,6 @@ var Player = function () {
         this.triggerReady();
     }
     /* eslint-enable fecs-max-statements */
-
-    // internalInitialPlugins(className, namespace) {
-    //     this[namespace] = {};
-    //     const allPlugins = className.getAll();
-    //     allPlugins.forEach(pluginClass => {
-    //         const name = pluginClass._displayName;
-    //         const pluginInstance = new pluginClass(this, this.getPluginOptions(name, namespace));
-    //         this[namespace][name] = pluginInstance;
-    //     });
-    // }
-
-    // initialPlugins() {
-    //     // this.internalInitialPlugins(Component, UI);
-    //     this.internalInitialPlugins(Plugin, OTHERS);
-    // }
 
     Player.prototype.initialNormalPlugins = function initialNormalPlugins() {
         var _this = this;
@@ -6981,7 +7016,7 @@ var Player = function () {
 
     Player.prototype.enterFullWindow = function enterFullWindow() {
         this.addClass('lark-full-window');
-        Events.on(document, 'keydown', this.fullWindowOnEscKey);
+        Events.on(_document2['default'], 'keydown', this.fullWindowOnEscKey);
     };
 
     Player.prototype.fullWindowOnEscKey = function fullWindowOnEscKey(event) {
@@ -7001,7 +7036,7 @@ var Player = function () {
 
     Player.prototype.exitFullWindow = function exitFullWindow() {
         this.removeClass('lark-full-window');
-        Events.off(document, 'keydown', this.fullWindowOnEscKey);
+        Events.off(_document2['default'], 'keydown', this.fullWindowOnEscKey);
     };
 
     /**
@@ -7443,7 +7478,7 @@ if (_featureDetector2['default'].touch) {
 
 exports['default'] = Player;
 
-},{"./events/evented":7,"./events/events":8,"./html5/fullscreen":9,"./html5/html5":10,"./plugin/component":13,"./plugin/media-source-handler":14,"./plugin/plugin":17,"./plugin/plugin-types":16,"./ui/buffer-bar":18,"./ui/complete":19,"./ui/control-bar":21,"./ui/control-bar-pc":20,"./ui/current-time":22,"./ui/duration":23,"./ui/error":25,"./ui/error-pc":24,"./ui/fullscreen-button":26,"./ui/gradient-bottom":27,"./ui/loading-pc":28,"./ui/not-support":29,"./ui/play-button":30,"./ui/progress-bar":33,"./ui/progress-bar-except-fill":31,"./ui/progress-bar-simple":32,"./ui/slider":34,"./ui/volume":36,"./utils/computed-style":37,"./utils/dom":38,"./utils/feature-detector":39,"./utils/log":41,"./utils/obj":44,"./utils/to-title-case":47,"lodash.includes":4}],13:[function(require,module,exports){
+},{"./events/evented":10,"./events/events":11,"./html5/fullscreen":12,"./html5/html5":13,"./plugin/component":16,"./plugin/media-source-handler":17,"./plugin/plugin":20,"./plugin/plugin-types":19,"./ui/buffer-bar":21,"./ui/complete":22,"./ui/control-bar":24,"./ui/control-bar-pc":23,"./ui/current-time":25,"./ui/duration":26,"./ui/error":28,"./ui/error-pc":27,"./ui/fullscreen-button":29,"./ui/gradient-bottom":30,"./ui/loading-pc":31,"./ui/not-support":32,"./ui/play-button":33,"./ui/progress-bar":36,"./ui/progress-bar-except-fill":34,"./ui/progress-bar-simple":35,"./ui/slider":37,"./ui/volume":39,"./utils/computed-style":40,"./utils/dom":41,"./utils/feature-detector":42,"./utils/log":44,"./utils/obj":47,"./utils/to-title-case":50,"global/document":2,"lodash.includes":7}],16:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -7571,7 +7606,7 @@ var Component = function () {
 
 exports['default'] = Component;
 
-},{"../events/evented":7,"../events/events":8,"../utils/dom":38,"../utils/to-camel-case":46,"./plugin-store":15,"./plugin-types":16}],14:[function(require,module,exports){
+},{"../events/evented":10,"../events/events":11,"../utils/dom":41,"../utils/to-camel-case":49,"./plugin-store":18,"./plugin-types":19}],17:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -7645,7 +7680,7 @@ var MediaSourceHandler = function () {
 
 exports['default'] = MediaSourceHandler;
 
-},{"./plugin-store":15,"./plugin-types":16,"lodash.find":3}],15:[function(require,module,exports){
+},{"./plugin-store":18,"./plugin-types":19,"lodash.find":6}],18:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -7761,7 +7796,7 @@ exports['default'] = {
     }
 };
 
-},{"../utils/guid":40,"../utils/to-camel-case":46,"./component":13,"./media-source-handler":14,"./plugin":17,"./plugin-types":16,"lodash.values":5}],16:[function(require,module,exports){
+},{"../utils/guid":43,"../utils/to-camel-case":49,"./component":16,"./media-source-handler":17,"./plugin":20,"./plugin-types":19,"lodash.values":8}],19:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -7777,7 +7812,7 @@ exports['default'] = {
   OTHERS: 'plugin'
 };
 
-},{}],17:[function(require,module,exports){
+},{}],20:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -7833,7 +7868,7 @@ var Plugin = function () {
 
 exports['default'] = Plugin;
 
-},{"./plugin-store":15,"./plugin-types":16}],18:[function(require,module,exports){
+},{"./plugin-store":18,"./plugin-types":19}],21:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -7933,7 +7968,7 @@ var BufferBar = function (_Component) {
 
 exports['default'] = BufferBar;
 
-},{"../plugin/component":13,"../utils/dom":38,"classnames":1}],19:[function(require,module,exports){
+},{"../plugin/component":16,"../utils/dom":41,"classnames":1}],22:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -7990,7 +8025,7 @@ if (!_featureDetector2['default'].touch) {
     _component2['default'].register(Complete, { name: 'complete' });
 }
 
-},{"../plugin/component":13,"../utils/feature-detector":39,"classnames":1}],20:[function(require,module,exports){
+},{"../plugin/component":16,"../utils/feature-detector":42,"classnames":1}],23:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -8103,7 +8138,7 @@ if (!_featureDetector2['default'].touch) {
     _component2['default'].register(ControlBarPc, { name: 'controlBarPc' });
 }
 
-},{"../plugin/component":13,"../utils/feature-detector":39,"./current-time":22,"./duration":23,"./fullscreen-button":26,"./gradient-bottom":27,"./play-button":30,"./progress-bar":33,"./volume":36,"classnames":1}],21:[function(require,module,exports){
+},{"../plugin/component":16,"../utils/feature-detector":42,"./current-time":25,"./duration":26,"./fullscreen-button":29,"./gradient-bottom":30,"./play-button":33,"./progress-bar":36,"./volume":39,"classnames":1}],24:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -8184,7 +8219,7 @@ if (_featureDetector2['default'].touch) {
     _component2['default'].register(ControlBar, { name: 'controlBar' });
 }
 
-},{"../plugin/component":13,"../utils/feature-detector":39,"./current-time":22,"./duration":23,"./fullscreen-button":26,"./progress-bar":33,"classnames":1}],22:[function(require,module,exports){
+},{"../plugin/component":16,"../utils/feature-detector":42,"./current-time":25,"./duration":26,"./fullscreen-button":29,"./progress-bar":36,"classnames":1}],25:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -8258,7 +8293,7 @@ var CurrentTime = function (_Component) {
 
 exports['default'] = CurrentTime;
 
-},{"../plugin/component":13,"../utils/dom":38,"../utils/time-format":45,"classnames":1}],23:[function(require,module,exports){
+},{"../plugin/component":16,"../utils/dom":41,"../utils/time-format":48,"classnames":1}],26:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -8330,7 +8365,7 @@ var Duration = function (_Component) {
 
 exports['default'] = Duration;
 
-},{"../plugin/component":13,"../utils/dom":38,"../utils/time-format":45,"classnames":1}],24:[function(require,module,exports){
+},{"../plugin/component":16,"../utils/dom":41,"../utils/time-format":48,"classnames":1}],27:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -8453,7 +8488,7 @@ if (!_featureDetector2['default'].touch) {
     _component2['default'].register(ErrorPc, { name: 'errorPc' });
 }
 
-},{"../plugin/component":13,"../utils/dom":38,"../utils/feature-detector":39,"./error":25,"classnames":1}],25:[function(require,module,exports){
+},{"../plugin/component":16,"../utils/dom":41,"../utils/feature-detector":42,"./error":28,"classnames":1}],28:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -8543,7 +8578,7 @@ if (_featureDetector2['default'].touch) {
     _component2['default'].register(Error, { name: 'error' });
 }
 
-},{"../plugin/component":13,"../utils/feature-detector":39,"classnames":1}],26:[function(require,module,exports){
+},{"../plugin/component":16,"../utils/feature-detector":42,"classnames":1}],29:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -8666,7 +8701,7 @@ var FullscreenButton = function (_Component) {
 
 exports['default'] = FullscreenButton;
 
-},{"../events/events":8,"../plugin/component":13,"../utils/dom":38,"../utils/feature-detector":39,"./tooltip":35,"classnames":1}],27:[function(require,module,exports){
+},{"../events/events":11,"../plugin/component":16,"../utils/dom":41,"../utils/feature-detector":42,"./tooltip":38,"classnames":1}],30:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -8709,7 +8744,7 @@ var GradientBottom = function (_Component) {
 
 exports['default'] = GradientBottom;
 
-},{"../plugin/component":13,"classnames":1}],28:[function(require,module,exports){
+},{"../plugin/component":16,"classnames":1}],31:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -8769,7 +8804,7 @@ if (!_featureDetector2['default'].touch) {
     _component2['default'].register(LoadingPc, { name: 'loadingPc' });
 }
 
-},{"../plugin/component":13,"../utils/feature-detector":39,"classnames":1}],29:[function(require,module,exports){
+},{"../plugin/component":16,"../utils/feature-detector":42,"classnames":1}],32:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -8823,7 +8858,7 @@ exports['default'] = NotSupport;
 
 _component2['default'].register(NotSupport, { name: 'notSupport' });
 
-},{"../plugin/component":13,"classnames":1}],30:[function(require,module,exports){
+},{"../plugin/component":16,"classnames":1}],33:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -8927,7 +8962,7 @@ if (_featureDetector2['default'].touch) {
     _component2['default'].register(PlayButton, { name: 'playButton' });
 }
 
-},{"../events/events":8,"../plugin/component":13,"../utils/dom":38,"../utils/feature-detector":39,"classnames":1}],31:[function(require,module,exports){
+},{"../events/events":11,"../plugin/component":16,"../utils/dom":41,"../utils/feature-detector":42,"classnames":1}],34:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -8995,7 +9030,7 @@ var ProgressBarExceptFill = function (_Component) {
 
 exports['default'] = ProgressBarExceptFill;
 
-},{"../plugin/component":13,"./buffer-bar":18,"classnames":1}],32:[function(require,module,exports){
+},{"../plugin/component":16,"./buffer-bar":21,"classnames":1}],35:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -9096,7 +9131,7 @@ if (_featureDetector2['default'].touch) {
     _component2['default'].register(ProgressBarSimple, { name: 'progressBarSimple' });
 }
 
-},{"../plugin/component":13,"../utils/dom":38,"../utils/feature-detector":39,"./buffer-bar":18,"classnames":1}],33:[function(require,module,exports){
+},{"../plugin/component":16,"../utils/dom":41,"../utils/feature-detector":42,"./buffer-bar":21,"classnames":1}],36:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -9316,7 +9351,7 @@ var ProgressBar = function (_Slider) {
 
 exports['default'] = ProgressBar;
 
-},{"../plugin/component":13,"../utils/dom":38,"../utils/feature-detector":39,"../utils/time-format":45,"./progress-bar-except-fill":31,"./slider":34,"./tooltip":35,"classnames":1}],34:[function(require,module,exports){
+},{"../plugin/component":16,"../utils/dom":41,"../utils/feature-detector":42,"../utils/time-format":48,"./progress-bar-except-fill":34,"./slider":37,"./tooltip":38,"classnames":1}],37:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -9409,7 +9444,7 @@ var Slider = function (_Component) {
 
 exports['default'] = Slider;
 
-},{"../events/events":8,"../plugin/component":13,"../utils/dom":38}],35:[function(require,module,exports){
+},{"../events/events":11,"../plugin/component":16,"../utils/dom":41}],38:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -9550,7 +9585,7 @@ exports['default'] = {
     }
 };
 
-},{"../utils/dom":38,"lodash.assign":2}],36:[function(require,module,exports){
+},{"../utils/dom":41,"lodash.assign":5}],39:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -9750,16 +9785,17 @@ var Volume = function (_Slider) {
 
 exports['default'] = Volume;
 
-},{"../events/events":8,"../plugin/component":13,"../utils/dom":38,"./slider":34,"./tooltip":35,"classnames":1}],37:[function(require,module,exports){
+},{"../events/events":11,"../plugin/component":16,"../utils/dom":41,"./slider":37,"./tooltip":38,"classnames":1}],40:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
 exports['default'] = computedStyle;
-/**
- * @file 获取元素指定样式的值
- * @author yuhui06@baidu.com
- * @date 2017/11/3
- */
+
+var _window = require('global/window');
+
+var _window2 = _interopRequireDefault(_window);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
 
 /**
  * 获取元素指定样式
@@ -9776,15 +9812,19 @@ function computedStyle(el, prop) {
         return '';
     }
 
-    if (typeof window.getComputedStyle === 'function') {
-        var styleCollection = window.getComputedStyle(el);
+    if (typeof _window2['default'].getComputedStyle === 'function') {
+        var styleCollection = _window2['default'].getComputedStyle(el);
         return styleCollection ? styleCollection[prop] : '';
     }
 
     return el.currentStyle && el.currentStyle[prop] || '';
-}
+} /**
+   * @file 获取元素指定样式的值
+   * @author yuhui06@baidu.com
+   * @date 2017/11/3
+   */
 
-},{}],38:[function(require,module,exports){
+},{"global/window":3}],41:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -9822,6 +9862,14 @@ var _lodash = require('lodash.includes');
 
 var _lodash2 = _interopRequireDefault(_lodash);
 
+var _window = require('global/window');
+
+var _window2 = _interopRequireDefault(_window);
+
+var _document = require('global/document');
+
+var _document2 = _interopRequireDefault(_document);
+
 var _obj = require('./obj');
 
 var _computedStyle = require('./computed-style');
@@ -9829,8 +9877,6 @@ var _computedStyle = require('./computed-style');
 var _computedStyle2 = _interopRequireDefault(_computedStyle);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
-
-var document = window.document;
 
 /**
  * 检测一个字符串是否包含任何非空格的字符
@@ -9840,12 +9886,6 @@ var document = window.document;
  * @param {string} str 待检查的字符串
  * @return {boolean} 是否包含非空格的字符
  */
-/**
- * @file dom 相关 api
- * @author yuhui06@baidu.com
- * @date 2017/11/2
- */
-
 function isNonBlankString(str) {
     return typeof str === 'string' && /\S/.test(str);
 }
@@ -9858,6 +9898,12 @@ function isNonBlankString(str) {
  * @param {string} str 待检查的字符串
  * @throws {Error}
  */
+/**
+ * @file dom 相关 api
+ * @author yuhui06@baidu.com
+ * @date 2017/11/2
+ */
+
 function throwIfWhitespace(str) {
     if (/\s/.test(str)) {
         throw new Error('class has illegal whitespace characters');
@@ -9884,7 +9930,7 @@ function classRegExp(className) {
 function isReal() {
     // IE 9 以下，DOM 上的方法的 typeof 类型为 'object' 而不是 'function'
     // 所以这里用 'undefined' 检测
-    return typeof document.createElement !== 'undefined';
+    return typeof _document2['default'].createElement !== 'undefined';
 }
 
 /**
@@ -9906,13 +9952,13 @@ function isEl(value) {
 function createQuerier(method) {
     return function (selector, context) {
         if (!isNonBlankString(selector)) {
-            return document[method](null);
+            return _document2['default'][method](null);
         }
         if (isNonBlankString(context)) {
-            context = document.querySelector(context);
+            context = _document2['default'].querySelector(context);
         }
 
-        var ctx = isEl(context) ? context : document;
+        var ctx = isEl(context) ? context : _document2['default'];
 
         return ctx[method] && ctx[method](selector);
     };
@@ -9933,7 +9979,7 @@ function createEl() {
     var attributes = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
     var content = arguments[3];
 
-    var el = document.createElement(tagName);
+    var el = _document2['default'].createElement(tagName);
 
     if (properties == null) {
         properties = {};
@@ -9986,7 +10032,7 @@ function createElement() {
     var tagName = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 'div';
     var props = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
 
-    var el = document.createElement(tagName);
+    var el = _document2['default'].createElement(tagName);
 
     if (props == null) {
         props = {};
@@ -10050,7 +10096,7 @@ function normalizeContent(content) {
         }
 
         if (isNonBlankString(value)) {
-            return document.createTextNode(value);
+            return _document2['default'].createTextNode(value);
         }
     }).filter(function (value) {
         return !!value;
@@ -10286,8 +10332,8 @@ function removeAttribute(el, attribute) {
  * 当拖动东西的时候，尝试去阻塞选中文本的功能
  */
 function blockTextSelection() {
-    document.body.focus();
-    document.onselectstart = function () {
+    _document2['default'].body.focus();
+    _document2['default'].onselectstart = function () {
         return false;
     };
 }
@@ -10296,7 +10342,7 @@ function blockTextSelection() {
  * 关闭对文本选中功能的阻塞
  */
 function unblockTextSelection() {
-    document.onselectstart = function () {
+    _document2['default'].onselectstart = function () {
         return true;
     };
 }
@@ -10354,15 +10400,15 @@ function findPosition(el) {
         return { left: 0, top: 0 };
     }
 
-    var docEl = document.documentElement;
-    var body = document.body;
+    var docEl = _document2['default'].documentElement;
+    var body = _document2['default'].body;
 
     var clientLeft = docEl.clientLeft || body.clientLeft || 0;
-    var scrollLeft = window.pageXOffset || body.scrollLeft;
+    var scrollLeft = _window2['default'].pageXOffset || body.scrollLeft;
     var left = box.left + scrollLeft - clientLeft;
 
     var clientTop = docEl.clientLeft || body.clientLeft || 0;
-    var scrollTop = window.pageYOffset || body.scrollTop;
+    var scrollTop = _window2['default'].pageYOffset || body.scrollTop;
     var top = box.top + scrollTop - clientTop;
 
     // 安卓有时侯返回小数，稍微有点偏差，这里四舍五入下
@@ -10536,23 +10582,26 @@ var $$ = exports.$$ = createQuerier('querySelectorAll');
 //     }
 // })();
 
-},{"./computed-style":37,"./obj":44,"lodash.includes":4}],39:[function(require,module,exports){
+},{"./computed-style":40,"./obj":47,"global/document":2,"global/window":3,"lodash.includes":7}],42:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
-/**
- * @file 检测浏览器是否支持某些特性
- * @author yuhui06
- * @date 2018/3/8
- */
 
-var document = window.document;
+var _document = require('global/document');
+
+var _document2 = _interopRequireDefault(_document);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
 
 exports['default'] = {
-  touch: 'ontouchend' in document
-};
+  touch: 'ontouchend' in _document2['default']
+}; /**
+    * @file 检测浏览器是否支持某些特性
+    * @author yuhui06
+    * @date 2018/3/8
+    */
 
-},{}],40:[function(require,module,exports){
+},{"global/document":2}],43:[function(require,module,exports){
 "use strict";
 
 exports.__esModule = true;
@@ -10575,7 +10624,7 @@ function newGUID() {
   return guid++;
 }
 
-},{}],41:[function(require,module,exports){
+},{}],44:[function(require,module,exports){
 "use strict";
 
 exports.__esModule = true;
@@ -10620,7 +10669,7 @@ log.error = console.error;
 
 log.clear = console.clear;
 
-},{}],42:[function(require,module,exports){
+},{}],45:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -10643,7 +10692,7 @@ exports['default'] = {
     'wmv': 'video/x-ms-wmv'
 };
 
-},{}],43:[function(require,module,exports){
+},{}],46:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -10733,7 +10782,7 @@ function nomalizeSource(source) {
     }
 }
 
-},{"./mime-type-map":42,"./obj":44}],44:[function(require,module,exports){
+},{"./mime-type-map":45,"./obj":47}],47:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -10791,7 +10840,7 @@ function each(obj, fn) {
   });
 }
 
-},{}],45:[function(require,module,exports){
+},{}],48:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -10850,7 +10899,7 @@ function timeFormat(seconds) {
     }
 }
 
-},{}],46:[function(require,module,exports){
+},{}],49:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -10870,7 +10919,7 @@ function toCamelCase(str) {
     return str.charAt(0).toLowerCase() + str.slice(1);
 }
 
-},{}],47:[function(require,module,exports){
+},{}],50:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -10911,5 +10960,5 @@ function titleCaseEquals(str1, str2) {
   return toTitleCase(str1) === toTitleCase(str2);
 }
 
-},{}]},{},[11])(11)
+},{}]},{},[14])(14)
 });

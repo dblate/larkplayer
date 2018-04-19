@@ -5,12 +5,13 @@
  */
 
 import includes from 'lodash.includes';
+import window from 'global/window';
+import document from 'global/document';
 
 import * as DomData from './dom-data';
 import {newGUID} from '../utils/guid';
 
 
-const document = window.document;
 
 /**
  * 清理事件相关的数据(Clean up the listener cache and dispatchers)

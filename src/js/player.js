@@ -7,6 +7,7 @@
 
 
 import includes from 'lodash.includes';
+import document from 'global/document';
 
 import Html5 from './html5/html5';
 import fullscreen from './html5/fullscreen';
@@ -44,7 +45,6 @@ import './ui/volume';
 
 
 const activeClass = 'lark-user-active';
-const document = window.document;
 
 /**
  * @class Player

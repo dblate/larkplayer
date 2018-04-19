@@ -4,6 +4,8 @@
  * @date 2017/11/3
  */
 
+import window from 'global/window';
+
 /**
  * 获取元素指定样式
  * 主要针对 window.getComputedStyle 做兼容处理

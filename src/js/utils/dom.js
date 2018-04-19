@@ -5,11 +5,12 @@
  */
 
 import includes from 'lodash.includes';
+import window from 'global/window';
+import document from 'global/document';
 
 import {isObject} from './obj';
 import computedStyle from './computed-style';
 
-const document = window.document;
 
 
 /**

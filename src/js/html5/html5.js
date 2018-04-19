@@ -6,12 +6,14 @@
  * @see https://www.w3.org/TR/html5/embedded-content-0.html#attr-media-src
  */
 
+import window from 'global/window';
+import document from 'global/document';
+
 import * as DOM from '../utils/dom';
 import toTitleCase from '../utils/to-title-case';
 import normalizeSource from '../utils/normalize-source';
 import evented from '../events/evented';
 
-const document = window.document;
 
 export default class Html5 {
     constructor(player, options) {

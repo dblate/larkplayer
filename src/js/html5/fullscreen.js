@@ -11,9 +11,10 @@
  * @see https://github.com/sindresorhus/screenfull.js/blob/gh-pages/readme.md
  */
 
+import document from 'global/document';
+
 import * as Events from '../events/events';
 
-const document = window.document;
 
 /**
  * @const 目前所有的 fullscreen api
