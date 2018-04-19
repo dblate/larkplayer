@@ -11,10 +11,10 @@ An extendable html5 video player, supports mp4 m3u8 and other format.
 </p>
 
 <p align="left">
-    English | <a href="https://github.com/dblate/larkplayer/blob/master/readme-cn.md">中文</a>
+    English | <a href="./readme-cn.md">中文</a>
 </p>
 
-<h3>Overview</h3>
+## Overview
 
 * Solve most compatibility issues, such as full screen, mobile inline playback, etc
 * Provide an event mechanism to proxy native events and allow custom events
@@ -26,7 +26,7 @@ You can experience it through [screenshots](https://github.com/dblate/larkplayer
 
 
 
-<h3>Download</h3>
+## Download
 
 NPM
 ```
@@ -39,9 +39,9 @@ CDN
 <script src="https://unpkg.com/larkplayer@latest/dist/larkplayer.js"></script>
 ```
 
-<h3>Quick Start</h3>
+## Quick Start
 
-<h4>Via script</h4>
+#### Via script
 
 ```html
 <!DOCTYPE html>
@@ -82,7 +82,7 @@ CDN
 </html>
 ```
 
-<h4>Via npm & es6</h4>
+#### Via npm & es6
 
 
 ```javascript
@@ -92,21 +92,21 @@ const player = larkplayer('video-el');
 
 ```
 
-<h3>Documents</h3>
+## Document
 
 
-* [Design](https://github.com/dblate/larkplayer/blob/master/docs/design.md)
-* [Plugin writing example](https://github.com/dblate/larkplayer/blob/master/docs/plugin)
+* [Design](./docs/design.md)
+* [Plugin writing example](./docs/plugin)
 
 __API__
 
-* [Player](https://github.com/dblate/larkplayer/blob/master/docs/api/player.md)
-* [Events](https://github.com/dblate/larkplayer/blob/master/docs/api/events.md)
-* [DOM](https://github.com/dblate/larkplayer/blob/master/docs/api/dom.md)
+* [Player](./docs/api/player.md)
+* [Events](./docs/api/events.md)
+* [DOM](./docs/api/dom.md)
 
 
 
-<h3>Future Work</h3>
+## Future Work
 
 * ~~support both pc and mobile~~
 * ~~support hls(m3u8) format([larkplayer-hls]())~~
@@ -115,4 +115,4 @@ __API__
 * support vr
 
 ### License
-[MIT](https://github.com/dblate/larkplayer/blob/master/LICENSE)
+larkplayer is [MIT licensed](./LICENSE)
