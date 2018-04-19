@@ -1,10 +1,10 @@
 {
   "name": "larkplayer",
   "title": "larkplayer",
-  "description": "Html5 video player",
-  "version": "1.4.0",
+  "description": "An extendable html5 video player, includes event, plugin and custom style :)",
+  "version": "1.4.1",
   "main": "./dist/larkplayer.min.js",
-  "homepage": "https://dblate.gitbooks.io/larkplayer/content/gai-lan.html",
+  "homepage": "https://github.com/dblate/larkplayer",
   "author": {
     "name": "2222bnting"
   },
