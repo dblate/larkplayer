@@ -2,7 +2,7 @@
   "name": "larkplayer",
   "title": "larkplayer",
   "description": "An extendable html5 video player, includes event, plugin and custom style :)",
-  "version": "1.4.1",
+  "version": "1.4.2",
   "main": "./dist/larkplayer.min.js",
   "homepage": "https://github.com/dblate/larkplayer",
   "author": {
@@ -32,7 +32,9 @@
     "babel-preset-es2015": "^6.24.1",
     "babel-preset-es3": "^1.0.1",
     "babelify": "^8.0.0",
-    "browserify": "^14.5.0",
+    "brfs": "^1.6.1",
+    "browserify": "^16.2.0",
+    "browserify-shim": "^3.8.14",
     "grunt": "^1.0.1",
     "grunt-babel": "^7.0.0",
     "grunt-browserify": "^5.2.0",
@@ -42,7 +44,14 @@
     "grunt-contrib-less": "^1.4.1",
     "grunt-contrib-uglify": "^3.2.1",
     "grunt-contrib-watch": "^1.0.0",
-    "jsdoc-to-markdown": "^4.0.1"
+    "jasmine-core": "^3.1.0",
+    "jsdoc-to-markdown": "^4.0.1",
+    "karma": "^2.0.0",
+    "karma-babel-preprocessor": "^7.0.0",
+    "karma-browserify": "^5.2.0",
+    "karma-chrome-launcher": "^2.2.0",
+    "karma-jasmine": "^1.1.1",
+    "watchify": "^3.11.0"
   },
   "dependencies": {
     "classnames": "^2.2.5",
