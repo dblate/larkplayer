@@ -1,4 +1,6 @@
 (function(f){if(typeof exports==="object"&&typeof module!=="undefined"){module.exports=f()}else if(typeof define==="function"&&define.amd){define([],f)}else{var g;if(typeof window!=="undefined"){g=window}else if(typeof global!=="undefined"){g=global}else if(typeof self!=="undefined"){g=self}else{g=this}g.larkplayer = f()}})(function(){var define,module,exports;return (function(){function r(e,n,t){function o(i,f){if(!n[i]){if(!e[i]){var c="function"==typeof require&&require;if(!f&&c)return c(i,!0);if(u)return u(i,!0);var a=new Error("Cannot find module '"+i+"'");throw a.code="MODULE_NOT_FOUND",a}var p=n[i]={exports:{}};e[i][0].call(p.exports,function(r){var n=e[i][1][r];return o(n||r)},p,p.exports,r,e,n,t)}return n[i].exports}for(var u="function"==typeof require&&require,i=0;i<t.length;i++)o(t[i]);return o}return r})()({1:[function(require,module,exports){
+
+},{}],2:[function(require,module,exports){
 /*!
   Copyright (c) 2016 Jed Watson.
   Licensed under the MIT License (MIT), see
@@ -48,7 +50,7 @@
 	}
 }());
 
-},{}],2:[function(require,module,exports){
+},{}],3:[function(require,module,exports){
 (function (global){
 var topLevel = typeof global !== 'undefined' ? global :
     typeof window !== 'undefined' ? window : {}
@@ -69,7 +71,7 @@ if (typeof document !== 'undefined') {
 module.exports = doccy;
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"min-document":4}],3:[function(require,module,exports){
+},{"min-document":1}],4:[function(require,module,exports){
 (function (global){
 var win;
 
@@ -86,8 +88,6 @@ if (typeof window !== "undefined") {
 module.exports = win;
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{}],4:[function(require,module,exports){
-
 },{}],5:[function(require,module,exports){
 /**
  * lodash (Custom Build) <https://lodash.com/>
@@ -4485,7 +4485,7 @@ function removeData(el) {
     }
 }
 
-},{"../utils/guid":43}],10:[function(require,module,exports){
+},{"../utils/guid":44}],10:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -4554,7 +4554,7 @@ function evented(target) {
     };
 }
 
-},{"../utils/dom":41,"./events":11}],11:[function(require,module,exports){
+},{"../utils/dom":42,"./events":11}],11:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -5021,7 +5021,7 @@ function one(elem, type, fn) {
     on(elem, type, executeOnlyOnce);
 }
 
-},{"../utils/guid":43,"./dom-data":9,"global/document":2,"global/window":3,"lodash.includes":7}],12:[function(require,module,exports){
+},{"../utils/guid":44,"./dom-data":9,"global/document":3,"global/window":4,"lodash.includes":7}],12:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -5110,7 +5110,7 @@ exports['default'] = {
     }
 };
 
-},{"../events/events":11,"global/document":2}],13:[function(require,module,exports){
+},{"../events/events":11,"global/document":3}],13:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -5504,7 +5504,7 @@ Html5.resetMediaElement = function (el) {
     };
 });
 
-},{"../events/evented":10,"../utils/dom":41,"../utils/normalize-source":46,"../utils/to-title-case":50,"global/document":2,"global/window":3}],14:[function(require,module,exports){
+},{"../events/evented":10,"../utils/dom":42,"../utils/normalize-source":47,"../utils/to-title-case":51,"global/document":3,"global/window":4}],14:[function(require,module,exports){
 'use strict';
 
 var _lodash = require('lodash.assign');
@@ -5604,7 +5604,7 @@ function larkplayer(el, options, readyFn) {
 // @see https://github.com/babel/babel/issues/2724
 module.exports = larkplayer;
 
-},{"./events/events":11,"./html5/html5":13,"./player":15,"./plugin/component":16,"./plugin/media-source-handler":17,"./plugin/plugin":20,"./utils/dom":41,"lodash.assign":5}],15:[function(require,module,exports){
+},{"./events/events":11,"./html5/html5":13,"./player":15,"./plugin/component":16,"./plugin/media-source-handler":17,"./plugin/plugin":20,"./utils/dom":42,"lodash.assign":5}],15:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -5692,6 +5692,8 @@ require('./ui/fullscreen-button');
 require('./ui/gradient-bottom');
 
 require('./ui/loading-pc');
+
+require('./ui/loading');
 
 require('./ui/not-support');
 
@@ -7478,7 +7480,7 @@ if (_featureDetector2['default'].touch) {
 
 exports['default'] = Player;
 
-},{"./events/evented":10,"./events/events":11,"./html5/fullscreen":12,"./html5/html5":13,"./plugin/component":16,"./plugin/media-source-handler":17,"./plugin/plugin":20,"./plugin/plugin-types":19,"./ui/buffer-bar":21,"./ui/complete":22,"./ui/control-bar":24,"./ui/control-bar-pc":23,"./ui/current-time":25,"./ui/duration":26,"./ui/error":28,"./ui/error-pc":27,"./ui/fullscreen-button":29,"./ui/gradient-bottom":30,"./ui/loading-pc":31,"./ui/not-support":32,"./ui/play-button":33,"./ui/progress-bar":36,"./ui/progress-bar-except-fill":34,"./ui/progress-bar-simple":35,"./ui/slider":37,"./ui/volume":39,"./utils/computed-style":40,"./utils/dom":41,"./utils/feature-detector":42,"./utils/log":44,"./utils/obj":47,"./utils/to-title-case":50,"global/document":2,"lodash.includes":7}],16:[function(require,module,exports){
+},{"./events/evented":10,"./events/events":11,"./html5/fullscreen":12,"./html5/html5":13,"./plugin/component":16,"./plugin/media-source-handler":17,"./plugin/plugin":20,"./plugin/plugin-types":19,"./ui/buffer-bar":21,"./ui/complete":22,"./ui/control-bar":24,"./ui/control-bar-pc":23,"./ui/current-time":25,"./ui/duration":26,"./ui/error":28,"./ui/error-pc":27,"./ui/fullscreen-button":29,"./ui/gradient-bottom":30,"./ui/loading":32,"./ui/loading-pc":31,"./ui/not-support":33,"./ui/play-button":34,"./ui/progress-bar":37,"./ui/progress-bar-except-fill":35,"./ui/progress-bar-simple":36,"./ui/slider":38,"./ui/volume":40,"./utils/computed-style":41,"./utils/dom":42,"./utils/feature-detector":43,"./utils/log":45,"./utils/obj":48,"./utils/to-title-case":51,"global/document":3,"lodash.includes":7}],16:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -7606,7 +7608,7 @@ var Component = function () {
 
 exports['default'] = Component;
 
-},{"../events/evented":10,"../events/events":11,"../utils/dom":41,"../utils/to-camel-case":49,"./plugin-store":18,"./plugin-types":19}],17:[function(require,module,exports){
+},{"../events/evented":10,"../events/events":11,"../utils/dom":42,"../utils/to-camel-case":50,"./plugin-store":18,"./plugin-types":19}],17:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -7796,7 +7798,7 @@ exports['default'] = {
     }
 };
 
-},{"../utils/guid":43,"../utils/to-camel-case":49,"./component":16,"./media-source-handler":17,"./plugin":20,"./plugin-types":19,"lodash.values":8}],19:[function(require,module,exports){
+},{"../utils/guid":44,"../utils/to-camel-case":50,"./component":16,"./media-source-handler":17,"./plugin":20,"./plugin-types":19,"lodash.values":8}],19:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -7968,7 +7970,7 @@ var BufferBar = function (_Component) {
 
 exports['default'] = BufferBar;
 
-},{"../plugin/component":16,"../utils/dom":41,"classnames":1}],22:[function(require,module,exports){
+},{"../plugin/component":16,"../utils/dom":42,"classnames":2}],22:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -8025,7 +8027,7 @@ if (!_featureDetector2['default'].touch) {
     _component2['default'].register(Complete, { name: 'complete' });
 }
 
-},{"../plugin/component":16,"../utils/feature-detector":42,"classnames":1}],23:[function(require,module,exports){
+},{"../plugin/component":16,"../utils/feature-detector":43,"classnames":2}],23:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -8138,7 +8140,7 @@ if (!_featureDetector2['default'].touch) {
     _component2['default'].register(ControlBarPc, { name: 'controlBarPc' });
 }
 
-},{"../plugin/component":16,"../utils/feature-detector":42,"./current-time":25,"./duration":26,"./fullscreen-button":29,"./gradient-bottom":30,"./play-button":33,"./progress-bar":36,"./volume":39,"classnames":1}],24:[function(require,module,exports){
+},{"../plugin/component":16,"../utils/feature-detector":43,"./current-time":25,"./duration":26,"./fullscreen-button":29,"./gradient-bottom":30,"./play-button":34,"./progress-bar":37,"./volume":40,"classnames":2}],24:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -8219,7 +8221,7 @@ if (_featureDetector2['default'].touch) {
     _component2['default'].register(ControlBar, { name: 'controlBar' });
 }
 
-},{"../plugin/component":16,"../utils/feature-detector":42,"./current-time":25,"./duration":26,"./fullscreen-button":29,"./progress-bar":36,"classnames":1}],25:[function(require,module,exports){
+},{"../plugin/component":16,"../utils/feature-detector":43,"./current-time":25,"./duration":26,"./fullscreen-button":29,"./progress-bar":37,"classnames":2}],25:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -8293,7 +8295,7 @@ var CurrentTime = function (_Component) {
 
 exports['default'] = CurrentTime;
 
-},{"../plugin/component":16,"../utils/dom":41,"../utils/time-format":48,"classnames":1}],26:[function(require,module,exports){
+},{"../plugin/component":16,"../utils/dom":42,"../utils/time-format":49,"classnames":2}],26:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -8365,7 +8367,7 @@ var Duration = function (_Component) {
 
 exports['default'] = Duration;
 
-},{"../plugin/component":16,"../utils/dom":41,"../utils/time-format":48,"classnames":1}],27:[function(require,module,exports){
+},{"../plugin/component":16,"../utils/dom":42,"../utils/time-format":49,"classnames":2}],27:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -8488,7 +8490,7 @@ if (!_featureDetector2['default'].touch) {
     _component2['default'].register(ErrorPc, { name: 'errorPc' });
 }
 
-},{"../plugin/component":16,"../utils/dom":41,"../utils/feature-detector":42,"./error":28,"classnames":1}],28:[function(require,module,exports){
+},{"../plugin/component":16,"../utils/dom":42,"../utils/feature-detector":43,"./error":28,"classnames":2}],28:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -8578,7 +8580,7 @@ if (_featureDetector2['default'].touch) {
     _component2['default'].register(Error, { name: 'error' });
 }
 
-},{"../plugin/component":16,"../utils/feature-detector":42,"classnames":1}],29:[function(require,module,exports){
+},{"../plugin/component":16,"../utils/feature-detector":43,"classnames":2}],29:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -8701,7 +8703,7 @@ var FullscreenButton = function (_Component) {
 
 exports['default'] = FullscreenButton;
 
-},{"../events/events":11,"../plugin/component":16,"../utils/dom":41,"../utils/feature-detector":42,"./tooltip":38,"classnames":1}],30:[function(require,module,exports){
+},{"../events/events":11,"../plugin/component":16,"../utils/dom":42,"../utils/feature-detector":43,"./tooltip":39,"classnames":2}],30:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -8744,7 +8746,7 @@ var GradientBottom = function (_Component) {
 
 exports['default'] = GradientBottom;
 
-},{"../plugin/component":16,"classnames":1}],31:[function(require,module,exports){
+},{"../plugin/component":16,"classnames":2}],31:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -8804,7 +8806,72 @@ if (!_featureDetector2['default'].touch) {
     _component2['default'].register(LoadingPc, { name: 'loadingPc' });
 }
 
-},{"../plugin/component":16,"../utils/feature-detector":42,"classnames":1}],32:[function(require,module,exports){
+},{"../plugin/component":16,"../utils/feature-detector":43,"classnames":2}],32:[function(require,module,exports){
+'use strict';
+
+exports.__esModule = true;
+
+var _classnames = require('classnames');
+
+var _classnames2 = _interopRequireDefault(_classnames);
+
+var _component = require('../plugin/component');
+
+var _component2 = _interopRequireDefault(_component);
+
+var _featureDetector = require('../utils/feature-detector');
+
+var _featureDetector2 = _interopRequireDefault(_featureDetector);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; } /**
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                * @file 播放器 UI loading
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                * @author yuhui<yuhui06@baidu.com>
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                * @date 2017/11/9
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                */
+
+var Loading = function (_Component) {
+    _inherits(Loading, _Component);
+
+    function Loading() {
+        _classCallCheck(this, Loading);
+
+        return _possibleConstructorReturn(this, _Component.apply(this, arguments));
+    }
+
+    Loading.prototype.createEl = function createEl() {
+        return _component2['default'].createElement(
+            'div',
+            { className: (0, _classnames2['default'])('lark-loading-area', this.options.className) },
+            _component2['default'].createElement(
+                'div',
+                { className: 'lark-loading-cnt' },
+                _component2['default'].createElement('span', { className: 'lark-loading-area__spinner lark-icon-loading' }),
+                _component2['default'].createElement(
+                    'span',
+                    { className: 'lark-loading-area__text' },
+                    '\u6B63\u5728\u52A0\u8F7D'
+                )
+            )
+        );
+    };
+
+    return Loading;
+}(_component2['default']);
+
+exports['default'] = Loading;
+
+
+if (_featureDetector2['default'].touch) {
+    _component2['default'].register(Loading, { name: 'loading' });
+}
+
+},{"../plugin/component":16,"../utils/feature-detector":43,"classnames":2}],33:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -8858,7 +8925,7 @@ exports['default'] = NotSupport;
 
 _component2['default'].register(NotSupport, { name: 'notSupport' });
 
-},{"../plugin/component":16,"classnames":1}],33:[function(require,module,exports){
+},{"../plugin/component":16,"classnames":2}],34:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -8962,7 +9029,7 @@ if (_featureDetector2['default'].touch) {
     _component2['default'].register(PlayButton, { name: 'playButton' });
 }
 
-},{"../events/events":11,"../plugin/component":16,"../utils/dom":41,"../utils/feature-detector":42,"classnames":1}],34:[function(require,module,exports){
+},{"../events/events":11,"../plugin/component":16,"../utils/dom":42,"../utils/feature-detector":43,"classnames":2}],35:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -9030,7 +9097,7 @@ var ProgressBarExceptFill = function (_Component) {
 
 exports['default'] = ProgressBarExceptFill;
 
-},{"../plugin/component":16,"./buffer-bar":21,"classnames":1}],35:[function(require,module,exports){
+},{"../plugin/component":16,"./buffer-bar":21,"classnames":2}],36:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -9131,7 +9198,7 @@ if (_featureDetector2['default'].touch) {
     _component2['default'].register(ProgressBarSimple, { name: 'progressBarSimple' });
 }
 
-},{"../plugin/component":16,"../utils/dom":41,"../utils/feature-detector":42,"./buffer-bar":21,"classnames":1}],36:[function(require,module,exports){
+},{"../plugin/component":16,"../utils/dom":42,"../utils/feature-detector":43,"./buffer-bar":21,"classnames":2}],37:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -9351,7 +9418,7 @@ var ProgressBar = function (_Slider) {
 
 exports['default'] = ProgressBar;
 
-},{"../plugin/component":16,"../utils/dom":41,"../utils/feature-detector":42,"../utils/time-format":48,"./progress-bar-except-fill":34,"./slider":37,"./tooltip":38,"classnames":1}],37:[function(require,module,exports){
+},{"../plugin/component":16,"../utils/dom":42,"../utils/feature-detector":43,"../utils/time-format":49,"./progress-bar-except-fill":35,"./slider":38,"./tooltip":39,"classnames":2}],38:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -9444,7 +9511,7 @@ var Slider = function (_Component) {
 
 exports['default'] = Slider;
 
-},{"../events/events":11,"../plugin/component":16,"../utils/dom":41}],38:[function(require,module,exports){
+},{"../events/events":11,"../plugin/component":16,"../utils/dom":42}],39:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -9585,7 +9652,7 @@ exports['default'] = {
     }
 };
 
-},{"../utils/dom":41,"lodash.assign":5}],39:[function(require,module,exports){
+},{"../utils/dom":42,"lodash.assign":5}],40:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -9785,7 +9852,7 @@ var Volume = function (_Slider) {
 
 exports['default'] = Volume;
 
-},{"../events/events":11,"../plugin/component":16,"../utils/dom":41,"./slider":37,"./tooltip":38,"classnames":1}],40:[function(require,module,exports){
+},{"../events/events":11,"../plugin/component":16,"../utils/dom":42,"./slider":38,"./tooltip":39,"classnames":2}],41:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -9824,7 +9891,7 @@ function computedStyle(el, prop) {
    * @date 2017/11/3
    */
 
-},{"global/window":3}],41:[function(require,module,exports){
+},{"global/window":4}],42:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -10582,7 +10649,7 @@ var $$ = exports.$$ = createQuerier('querySelectorAll');
 //     }
 // })();
 
-},{"./computed-style":40,"./obj":47,"global/document":2,"global/window":3,"lodash.includes":7}],42:[function(require,module,exports){
+},{"./computed-style":41,"./obj":48,"global/document":3,"global/window":4,"lodash.includes":7}],43:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -10601,7 +10668,7 @@ exports['default'] = {
     * @date 2018/3/8
     */
 
-},{"global/document":2}],43:[function(require,module,exports){
+},{"global/document":3}],44:[function(require,module,exports){
 "use strict";
 
 exports.__esModule = true;
@@ -10624,7 +10691,7 @@ function newGUID() {
   return guid++;
 }
 
-},{}],44:[function(require,module,exports){
+},{}],45:[function(require,module,exports){
 "use strict";
 
 exports.__esModule = true;
@@ -10669,7 +10736,7 @@ log.error = console.error;
 
 log.clear = console.clear;
 
-},{}],45:[function(require,module,exports){
+},{}],46:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -10692,7 +10759,7 @@ exports['default'] = {
     'wmv': 'video/x-ms-wmv'
 };
 
-},{}],46:[function(require,module,exports){
+},{}],47:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -10782,7 +10849,7 @@ function nomalizeSource(source) {
     }
 }
 
-},{"./mime-type-map":45,"./obj":47}],47:[function(require,module,exports){
+},{"./mime-type-map":46,"./obj":48}],48:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -10840,7 +10907,7 @@ function each(obj, fn) {
   });
 }
 
-},{}],48:[function(require,module,exports){
+},{}],49:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -10899,7 +10966,7 @@ function timeFormat(seconds) {
     }
 }
 
-},{}],49:[function(require,module,exports){
+},{}],50:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -10919,7 +10986,7 @@ function toCamelCase(str) {
     return str.charAt(0).toLowerCase() + str.slice(1);
 }
 
-},{}],50:[function(require,module,exports){
+},{}],51:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;

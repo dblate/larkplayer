@@ -35,6 +35,7 @@ import './ui/error';
 import './ui/fullscreen-button';
 import './ui/gradient-bottom';
 import './ui/loading-pc';
+import './ui/loading';
 import './ui/not-support';
 import './ui/play-button';
 import './ui/progress-bar-except-fill';
