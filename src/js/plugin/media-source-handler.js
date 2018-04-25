@@ -41,6 +41,10 @@ export default class MediaSourceHandler {
         return pluginStore.add(handler, options, PluginTypes.MS);
     }
 
+    static unregister(name) {
+        pluginStore.delete(name, PluginTypes.MS);
+    }
+
     static getAll() {
         return pluginStore.getAll(PluginTypes.MS);
     }

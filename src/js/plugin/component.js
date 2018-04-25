@@ -76,6 +76,10 @@ export default class Component {
         return pluginStore.add(component, options, PluginTypes.UI);
     }
 
+    static unregister(name) {
+        pluginStore.delete(name, PluginTypes.UI);
+    }
+
     static get(name) {
         return pluginStore.get(name, PluginTypes.UI);
     }
