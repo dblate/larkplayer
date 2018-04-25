@@ -2,7 +2,7 @@
   "name": "larkplayer",
   "title": "larkplayer",
   "description": "An extendable html5 video player, includes event, plugin and custom style :)",
-  "version": "1.4.1",
+  "version": "1.4.2",
   "main": "./dist/larkplayer.min.js",
   "homepage": "https://github.com/dblate/larkplayer",
   "author": {

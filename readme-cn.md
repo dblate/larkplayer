@@ -13,7 +13,7 @@
     <a href="https://github.com/dblate/larkplayer">English</a> | 中文
 </p>
 
-<h3>简介</h3>
+## 简介
 
 * 解决大部分兼容性问题，如全屏、移动端内联播放等
 * 提供事件机制，代理原生事件并允许自定义事件
@@ -24,7 +24,7 @@
 可以通过 [截图](https://github.com/dblate/larkplayer/tree/master/screenshots) 或 [在线示例](https://s.codepen.io/dblate/debug/qojzZZ/ZoMBajEzGyDk) 来感受效果
 
 
-<h3>下载</h3>
+## 下载
 
 NPM
 ```
@@ -37,9 +37,9 @@ CDN
 <script src="https://unpkg.com/larkplayer@latest/dist/larkplayer.js"></script>
 ```
 
-<h3>快速上手</h3>
+## 快速上手
 
-<h4>通过 script 的方式</h4>
+#### 通过 script 的方式
 
 ```html
 <!DOCTYPE html>
@@ -81,9 +81,8 @@ CDN
 </html>
 ```
 
-<h4>通过 npm + es6 的方式</h4>
+#### 通过 npm + es6 的方式
 
-* require 和 import 使用方式相似，毕竟目前 import 也是转化为 require 来使用的
 
 ```javascript
 import larkplayer from 'larkplayer';
@@ -92,19 +91,19 @@ const player = larkplayer('video-el');
 
 ```
 
-<h3>文档</h3>
+## 文档
 
-* [设计文档](https://github.com/dblate/larkplayer/blob/master/docs/design.md)
-* [插件编写](https://github.com/dblate/larkplayer/blob/master/docs/plugin)
+* [设计文档](./docs/design.md)
+* [插件编写](./docs/plugin)
 
 __API__
 
-* [Player](https://github.com/dblate/larkplayer/blob/master/docs/api/player.md)
-* [Events](https://github.com/dblate/larkplayer/blob/master/docs/api/events.md)
-* [DOM](https://github.com/dblate/larkplayer/blob/master/docs/api/dom.md)
+* [Player](./docs/api/player.md)
+* [Events](./docs/api/events.md)
+* [DOM](./docs/api/dom.md)
 
 
-<h3>如何贡献代码</h3>
+## 如何贡献代码
 
 * fork 或 clone 代码到本地
 * 修改代码
@@ -115,7 +114,7 @@ __API__
 * 提交 pull request
 
 
-<h3>后续规划</h3>
+## 后续规划
 
 ~~2018/3/7 前增加以下功能~~
 * 支持 vr 视频
@@ -124,5 +123,5 @@ __API__
 * ~~同步支持 pc 与移动端的使用~~ √
 * 添加单测
 
-### License
-[MIT](https://github.com/dblate/larkplayer/blob/master/LICENSE)
+## License
+larkplayer is [MIT licensed](./LICENSE)

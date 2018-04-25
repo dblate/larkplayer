@@ -6952,7 +6952,7 @@ var Player = function () {
     // = = = func = = =
 
     /**
-     * 获取／设置当前全屏状态标志
+     * 判断当前是否处于全屏状态
      *
      * @return {boolean} 返回当前全屏状态
      */
@@ -9696,7 +9696,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 * @file 音量 UI 组件
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 * @author yuhui06
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 * @date 2018/3/9
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                * @todo 通过 js 控制声音的问题，一团乱现在 @_@
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                * @date 2018/4/25 现在通过 js 修改音量也会触发 UI 改变（yuhui06）
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 */
 
 /* eslint-disable no-unused-vars */
