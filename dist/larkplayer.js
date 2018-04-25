@@ -1,6 +1,4 @@
 (function(f){if(typeof exports==="object"&&typeof module!=="undefined"){module.exports=f()}else if(typeof define==="function"&&define.amd){define([],f)}else{var g;if(typeof window!=="undefined"){g=window}else if(typeof global!=="undefined"){g=global}else if(typeof self!=="undefined"){g=self}else{g=this}g.larkplayer = f()}})(function(){var define,module,exports;return (function(){function r(e,n,t){function o(i,f){if(!n[i]){if(!e[i]){var c="function"==typeof require&&require;if(!f&&c)return c(i,!0);if(u)return u(i,!0);var a=new Error("Cannot find module '"+i+"'");throw a.code="MODULE_NOT_FOUND",a}var p=n[i]={exports:{}};e[i][0].call(p.exports,function(r){var n=e[i][1][r];return o(n||r)},p,p.exports,r,e,n,t)}return n[i].exports}for(var u="function"==typeof require&&require,i=0;i<t.length;i++)o(t[i]);return o}return r})()({1:[function(require,module,exports){
-
-},{}],2:[function(require,module,exports){
 /*!
   Copyright (c) 2016 Jed Watson.
   Licensed under the MIT License (MIT), see
@@ -50,7 +48,7 @@
 	}
 }());
 
-},{}],3:[function(require,module,exports){
+},{}],2:[function(require,module,exports){
 (function (global){
 var topLevel = typeof global !== 'undefined' ? global :
     typeof window !== 'undefined' ? window : {}
@@ -71,7 +69,7 @@ if (typeof document !== 'undefined') {
 module.exports = doccy;
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"min-document":1}],4:[function(require,module,exports){
+},{"min-document":4}],3:[function(require,module,exports){
 (function (global){
 var win;
 
@@ -88,6 +86,8 @@ if (typeof window !== "undefined") {
 module.exports = win;
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
+},{}],4:[function(require,module,exports){
+
 },{}],5:[function(require,module,exports){
 /**
  * lodash (Custom Build) <https://lodash.com/>
@@ -5021,7 +5021,7 @@ function one(elem, type, fn) {
     on(elem, type, executeOnlyOnce);
 }
 
-},{"../utils/guid":44,"./dom-data":9,"global/document":3,"global/window":4,"lodash.includes":7}],12:[function(require,module,exports){
+},{"../utils/guid":44,"./dom-data":9,"global/document":2,"global/window":3,"lodash.includes":7}],12:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -5110,7 +5110,7 @@ exports['default'] = {
     }
 };
 
-},{"../events/events":11,"global/document":3}],13:[function(require,module,exports){
+},{"../events/events":11,"global/document":2}],13:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -5504,7 +5504,7 @@ Html5.resetMediaElement = function (el) {
     };
 });
 
-},{"../events/evented":10,"../utils/dom":42,"../utils/normalize-source":47,"../utils/to-title-case":51,"global/document":3,"global/window":4}],14:[function(require,module,exports){
+},{"../events/evented":10,"../utils/dom":42,"../utils/normalize-source":47,"../utils/to-title-case":51,"global/document":2,"global/window":3}],14:[function(require,module,exports){
 'use strict';
 
 var _lodash = require('lodash.assign');
@@ -5749,15 +5749,15 @@ var Player = function () {
      * @param {Function=} ready 播放器初始化完成后执行的函数，可选
      */
     /* eslint-disable fecs-max-statements */
-    function Player(tag, options, ready) {
+    function Player(tag, options, readyFn) {
         _classCallCheck(this, Player);
 
         this.isReady = false;
         this.player = this;
         this.options = options;
         this.tag = tag;
-
         this.el = this.createEl();
+        this.ready(readyFn);
 
         // 使得 this 具有事件能力(on off one trigger)
         (0, _evented2['default'])(this, { eventBusKey: this.el });
@@ -6294,7 +6294,7 @@ var Player = function () {
      * 获取或设置播放器的宽度
      *
      * @param {number=} value 要设置的播放器宽度值，可选
-     * @return {number} 不传参数则返回播放器当前宽度
+     * @return {number|NaN} 不传参数则返回播放器当前宽度
      */
 
 
@@ -6306,7 +6306,7 @@ var Player = function () {
 
             this.el.style.width = value;
         } else {
-            return (0, _computedStyle2['default'])(this.el, 'width');
+            return parseInt((0, _computedStyle2['default'])(this.el, 'width'), 0);
         }
     };
 
@@ -6314,7 +6314,7 @@ var Player = function () {
      * 获取或设置播放器的高度
      *
      * @param {number=} value 要设置的播放器高度值，可选
-     * @return {number} 不传参数则返回播放器当前高度
+     * @return {number|NaN} 不传参数则返回播放器当前高度
      */
 
 
@@ -6326,7 +6326,7 @@ var Player = function () {
 
             this.el.style.height = value;
         } else {
-            return (0, _computedStyle2['default'])(this.el, 'height');
+            return parseInt((0, _computedStyle2['default'])(this.el, 'height'), 0);
         }
     };
 
@@ -6815,10 +6815,10 @@ var Player = function () {
 
         // 移动端的全屏事件会传 extData
         if (extData.isFullscreen !== undefined) {
-            this.isFullscreen(extData.isFullscreen);
+            this.fullscreenStatus = extData.isFullscreen;
         } else if (_fullscreen2['default'].fullscreenEnabled()) {
             // pc 端 fullscreen 事件
-            this.isFullscreen(_fullscreen2['default'].isFullscreen());
+            this.fullscreenStatus = _fullscreen2['default'].isFullscreen();
         }
 
         if (this.isFullscreen()) {
@@ -6952,19 +6952,14 @@ var Player = function () {
     // = = = func = = =
 
     /**
-     * 获取／设置当前全屏状态标志
+     * 判断当前是否处于全屏状态
      *
-     * @param {boolean=} isFs 全屏状态标志
-     * @return {boolean} 不传参则返回当前全屏状态
+     * @return {boolean} 返回当前全屏状态
      */
 
 
-    Player.prototype.isFullscreen = function isFullscreen(isFs) {
-        if (isFs !== undefined) {
-            this.fullscreenStatus = isFs;
-        } else {
-            return this.fullscreenStatus;
-        }
+    Player.prototype.isFullscreen = function isFullscreen() {
+        return this.fullscreenStatus || false;
     };
 
     /**
@@ -6974,19 +6969,17 @@ var Player = function () {
 
 
     Player.prototype.requestFullscreen = function requestFullscreen() {
-        this.isFullscreen(true);
+        this.fullscreenStatus = true;
 
         if (_fullscreen2['default'].fullscreenEnabled()) {
             // 利用 css 强制设置 top right bottom left margin 的值为 0
             // 避免因为定位使得元素全屏时看不到
-            // 应该不会出现什么问题
             this.addClass('lark-fullscreen-adjust');
             _fullscreen2['default'].requestFullscreen(this.el);
         } else if (this.tech.supportsFullScreen()) {
             this.techGet('enterFullScreen');
         } else {
             this.enterFullWindow();
-            this.trigger('fullscreenchange');
         }
     };
 
@@ -6996,7 +6989,7 @@ var Player = function () {
 
 
     Player.prototype.exitFullscreen = function exitFullscreen() {
-        this.isFullscreen(false);
+        this.fullscreenStatus = false;
 
         if (_fullscreen2['default'].fullscreenEnabled() && _fullscreen2['default'].isFullscreen()) {
             this.removeClass('lark-fullscreen-adjust');
@@ -7005,7 +6998,6 @@ var Player = function () {
             this.techGet('exitFullScreen');
         } else {
             this.exitFullWindow();
-            this.trigger('fullscreenchange');
         }
     };
 
@@ -7018,6 +7010,7 @@ var Player = function () {
 
     Player.prototype.enterFullWindow = function enterFullWindow() {
         this.addClass('lark-full-window');
+        this.trigger('fullscreenchange');
         Events.on(_document2['default'], 'keydown', this.fullWindowOnEscKey);
     };
 
@@ -7038,7 +7031,18 @@ var Player = function () {
 
     Player.prototype.exitFullWindow = function exitFullWindow() {
         this.removeClass('lark-full-window');
+        this.trigger('fullscreenchange');
         Events.off(_document2['default'], 'keydown', this.fullWindowOnEscKey);
+    };
+
+    Player.prototype.internalPlay = function internalPlay() {
+        var playReturn = this.techGet('play');
+        if (playReturn && playReturn.then) {
+            playReturn.then(null, function (err) {
+                // @todo 这里返回的 err 可以利用下？
+                _log2['default'].error(err);
+            });
+        }
     };
 
     /**
@@ -7047,29 +7051,10 @@ var Player = function () {
 
 
     Player.prototype.play = function play() {
-        var _this12 = this;
-
-        // changingSrc 现在用不上，后面支持 source 的时候可能会用上
-        // if (this.isReady && this.src()) {
-        if (this.isReady) {
-            // play 可能返回一个 Promise
-            var playReturn = this.techGet('play');
-            if (playReturn && playReturn.then) {
-                playReturn.then(null, function (err) {
-                    // @todo 这里返回的 err 可以利用下？
-                    _log2['default'].error(err);
-                });
-            }
+        if (this.MSHandler) {
+            this.MSHandler.play();
         } else {
-            this.ready(function () {
-                var playReturn = _this12.techGet('play');
-                if (playReturn && playReturn.then) {
-                    playReturn.then(null, function (err) {
-                        // @todo 这里返回的 err 可以利用下？
-                        _log2['default'].error(err);
-                    });
-                }
-            });
+            this.isReady ? this.internalPlay() : this.ready(this.internalPlay);
         }
     };
 
@@ -7368,6 +7353,8 @@ var Player = function () {
     /**
      * 获取或设置当前视频的默认播放速率
      *
+     * @todo 确认是否有必要传参
+     *
      * @param {number=} defaultPlaybackRate 要设置的默认播放速率的值，可选
      * @return {number} 不传参数则返回当前视频的默认播放速率
      */
@@ -7480,7 +7467,7 @@ if (_featureDetector2['default'].touch) {
 
 exports['default'] = Player;
 
-},{"./events/evented":10,"./events/events":11,"./html5/fullscreen":12,"./html5/html5":13,"./plugin/component":16,"./plugin/media-source-handler":17,"./plugin/plugin":20,"./plugin/plugin-types":19,"./ui/buffer-bar":21,"./ui/complete":22,"./ui/control-bar":24,"./ui/control-bar-pc":23,"./ui/current-time":25,"./ui/duration":26,"./ui/error":28,"./ui/error-pc":27,"./ui/fullscreen-button":29,"./ui/gradient-bottom":30,"./ui/loading":32,"./ui/loading-pc":31,"./ui/not-support":33,"./ui/play-button":34,"./ui/progress-bar":37,"./ui/progress-bar-except-fill":35,"./ui/progress-bar-simple":36,"./ui/slider":38,"./ui/volume":40,"./utils/computed-style":41,"./utils/dom":42,"./utils/feature-detector":43,"./utils/log":45,"./utils/obj":48,"./utils/to-title-case":51,"global/document":3,"lodash.includes":7}],16:[function(require,module,exports){
+},{"./events/evented":10,"./events/events":11,"./html5/fullscreen":12,"./html5/html5":13,"./plugin/component":16,"./plugin/media-source-handler":17,"./plugin/plugin":20,"./plugin/plugin-types":19,"./ui/buffer-bar":21,"./ui/complete":22,"./ui/control-bar":24,"./ui/control-bar-pc":23,"./ui/current-time":25,"./ui/duration":26,"./ui/error":28,"./ui/error-pc":27,"./ui/fullscreen-button":29,"./ui/gradient-bottom":30,"./ui/loading":32,"./ui/loading-pc":31,"./ui/not-support":33,"./ui/play-button":34,"./ui/progress-bar":37,"./ui/progress-bar-except-fill":35,"./ui/progress-bar-simple":36,"./ui/slider":38,"./ui/volume":40,"./utils/computed-style":41,"./utils/dom":42,"./utils/feature-detector":43,"./utils/log":45,"./utils/obj":48,"./utils/to-title-case":51,"global/document":2,"lodash.includes":7}],16:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -7595,6 +7582,10 @@ var Component = function () {
         return _pluginStore2['default'].add(component, options, _pluginTypes2['default'].UI);
     };
 
+    Component.unregister = function unregister(name) {
+        _pluginStore2['default']['delete'](name, _pluginTypes2['default'].UI);
+    };
+
     Component.get = function get(name) {
         return _pluginStore2['default'].get(name, _pluginTypes2['default'].UI);
     };
@@ -7666,6 +7657,10 @@ var MediaSourceHandler = function () {
         return _pluginStore2['default'].add(handler, options, _pluginTypes2['default'].MS);
     };
 
+    MediaSourceHandler.unregister = function unregister(name) {
+        _pluginStore2['default']['delete'](name, _pluginTypes2['default'].MS);
+    };
+
     MediaSourceHandler.getAll = function getAll() {
         return _pluginStore2['default'].getAll(_pluginTypes2['default'].MS);
     };
@@ -7686,12 +7681,6 @@ exports['default'] = MediaSourceHandler;
 'use strict';
 
 exports.__esModule = true;
-
-var _initialStore; /**
-                    * @file plugin-store.js 用于存取插件
-                    * @author yuhui06
-                    * @date 2018/4/8
-                    */
 
 var _lodash = require('lodash.values');
 
@@ -7723,13 +7712,20 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'd
 
 var UI = _pluginTypes2['default'].UI,
     MS = _pluginTypes2['default'].MS,
-    OTHERS = _pluginTypes2['default'].OTHERS;
+    OTHERS = _pluginTypes2['default'].OTHERS; /**
+                                               * @file plugin-store.js 用于存取插件
+                                               * @author yuhui06
+                                               * @date 2018/4/8
+                                               */
 
+function getInitialStore() {
+    var _ref;
 
-var initialStore = (_initialStore = {}, _initialStore[UI] = {}, _initialStore[MS] = {}, _initialStore[OTHERS] = {}, _initialStore);
+    return _ref = {}, _ref[UI] = {}, _ref[MS] = {}, _ref[OTHERS] = {}, _ref;
+}
 
 exports['default'] = {
-    store: initialStore,
+    store: getInitialStore(),
     validate: function validate(plugin, type) {
         switch (type) {
             case UI:
@@ -7771,7 +7767,7 @@ exports['default'] = {
         }
     },
     clear: function clear() {
-        this.store = initialStore;
+        this.store = getInitialStore();
     },
     get: function get(name, type) {
         if (this.has(name, type)) {
@@ -7846,6 +7842,9 @@ var Plugin = function () {
 
         this.player = player;
         this.options = options;
+
+        this.dispose = this.dispose.bind(this);
+        this.player.on('dispose', this.dispose);
     }
 
     Plugin.prototype.dispose = function dispose() {
@@ -7855,6 +7854,10 @@ var Plugin = function () {
 
     Plugin.register = function register(plugin, options) {
         _pluginStore2['default'].add(plugin, options, _pluginTypes2['default'].OTHERS);
+    };
+
+    Plugin.unregister = function unregister(name) {
+        _pluginStore2['default']['delete'](name, _pluginTypes2['default'].OTHERS);
     };
 
     Plugin.get = function get(name) {
@@ -7970,7 +7973,7 @@ var BufferBar = function (_Component) {
 
 exports['default'] = BufferBar;
 
-},{"../plugin/component":16,"../utils/dom":42,"classnames":2}],22:[function(require,module,exports){
+},{"../plugin/component":16,"../utils/dom":42,"classnames":1}],22:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -8027,7 +8030,7 @@ if (!_featureDetector2['default'].touch) {
     _component2['default'].register(Complete, { name: 'complete' });
 }
 
-},{"../plugin/component":16,"../utils/feature-detector":43,"classnames":2}],23:[function(require,module,exports){
+},{"../plugin/component":16,"../utils/feature-detector":43,"classnames":1}],23:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -8140,7 +8143,7 @@ if (!_featureDetector2['default'].touch) {
     _component2['default'].register(ControlBarPc, { name: 'controlBarPc' });
 }
 
-},{"../plugin/component":16,"../utils/feature-detector":43,"./current-time":25,"./duration":26,"./fullscreen-button":29,"./gradient-bottom":30,"./play-button":34,"./progress-bar":37,"./volume":40,"classnames":2}],24:[function(require,module,exports){
+},{"../plugin/component":16,"../utils/feature-detector":43,"./current-time":25,"./duration":26,"./fullscreen-button":29,"./gradient-bottom":30,"./play-button":34,"./progress-bar":37,"./volume":40,"classnames":1}],24:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -8221,7 +8224,7 @@ if (_featureDetector2['default'].touch) {
     _component2['default'].register(ControlBar, { name: 'controlBar' });
 }
 
-},{"../plugin/component":16,"../utils/feature-detector":43,"./current-time":25,"./duration":26,"./fullscreen-button":29,"./progress-bar":37,"classnames":2}],25:[function(require,module,exports){
+},{"../plugin/component":16,"../utils/feature-detector":43,"./current-time":25,"./duration":26,"./fullscreen-button":29,"./progress-bar":37,"classnames":1}],25:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -8295,7 +8298,7 @@ var CurrentTime = function (_Component) {
 
 exports['default'] = CurrentTime;
 
-},{"../plugin/component":16,"../utils/dom":42,"../utils/time-format":49,"classnames":2}],26:[function(require,module,exports){
+},{"../plugin/component":16,"../utils/dom":42,"../utils/time-format":49,"classnames":1}],26:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -8367,7 +8370,7 @@ var Duration = function (_Component) {
 
 exports['default'] = Duration;
 
-},{"../plugin/component":16,"../utils/dom":42,"../utils/time-format":49,"classnames":2}],27:[function(require,module,exports){
+},{"../plugin/component":16,"../utils/dom":42,"../utils/time-format":49,"classnames":1}],27:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -8490,7 +8493,7 @@ if (!_featureDetector2['default'].touch) {
     _component2['default'].register(ErrorPc, { name: 'errorPc' });
 }
 
-},{"../plugin/component":16,"../utils/dom":42,"../utils/feature-detector":43,"./error":28,"classnames":2}],28:[function(require,module,exports){
+},{"../plugin/component":16,"../utils/dom":42,"../utils/feature-detector":43,"./error":28,"classnames":1}],28:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -8580,7 +8583,7 @@ if (_featureDetector2['default'].touch) {
     _component2['default'].register(Error, { name: 'error' });
 }
 
-},{"../plugin/component":16,"../utils/feature-detector":43,"classnames":2}],29:[function(require,module,exports){
+},{"../plugin/component":16,"../utils/feature-detector":43,"classnames":1}],29:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -8703,7 +8706,7 @@ var FullscreenButton = function (_Component) {
 
 exports['default'] = FullscreenButton;
 
-},{"../events/events":11,"../plugin/component":16,"../utils/dom":42,"../utils/feature-detector":43,"./tooltip":39,"classnames":2}],30:[function(require,module,exports){
+},{"../events/events":11,"../plugin/component":16,"../utils/dom":42,"../utils/feature-detector":43,"./tooltip":39,"classnames":1}],30:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -8746,7 +8749,7 @@ var GradientBottom = function (_Component) {
 
 exports['default'] = GradientBottom;
 
-},{"../plugin/component":16,"classnames":2}],31:[function(require,module,exports){
+},{"../plugin/component":16,"classnames":1}],31:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -8806,7 +8809,7 @@ if (!_featureDetector2['default'].touch) {
     _component2['default'].register(LoadingPc, { name: 'loadingPc' });
 }
 
-},{"../plugin/component":16,"../utils/feature-detector":43,"classnames":2}],32:[function(require,module,exports){
+},{"../plugin/component":16,"../utils/feature-detector":43,"classnames":1}],32:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -8871,7 +8874,7 @@ if (_featureDetector2['default'].touch) {
     _component2['default'].register(Loading, { name: 'loading' });
 }
 
-},{"../plugin/component":16,"../utils/feature-detector":43,"classnames":2}],33:[function(require,module,exports){
+},{"../plugin/component":16,"../utils/feature-detector":43,"classnames":1}],33:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -8925,7 +8928,7 @@ exports['default'] = NotSupport;
 
 _component2['default'].register(NotSupport, { name: 'notSupport' });
 
-},{"../plugin/component":16,"classnames":2}],34:[function(require,module,exports){
+},{"../plugin/component":16,"classnames":1}],34:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -9029,7 +9032,7 @@ if (_featureDetector2['default'].touch) {
     _component2['default'].register(PlayButton, { name: 'playButton' });
 }
 
-},{"../events/events":11,"../plugin/component":16,"../utils/dom":42,"../utils/feature-detector":43,"classnames":2}],35:[function(require,module,exports){
+},{"../events/events":11,"../plugin/component":16,"../utils/dom":42,"../utils/feature-detector":43,"classnames":1}],35:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -9097,7 +9100,7 @@ var ProgressBarExceptFill = function (_Component) {
 
 exports['default'] = ProgressBarExceptFill;
 
-},{"../plugin/component":16,"./buffer-bar":21,"classnames":2}],36:[function(require,module,exports){
+},{"../plugin/component":16,"./buffer-bar":21,"classnames":1}],36:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -9198,7 +9201,7 @@ if (_featureDetector2['default'].touch) {
     _component2['default'].register(ProgressBarSimple, { name: 'progressBarSimple' });
 }
 
-},{"../plugin/component":16,"../utils/dom":42,"../utils/feature-detector":43,"./buffer-bar":21,"classnames":2}],37:[function(require,module,exports){
+},{"../plugin/component":16,"../utils/dom":42,"../utils/feature-detector":43,"./buffer-bar":21,"classnames":1}],37:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -9418,7 +9421,7 @@ var ProgressBar = function (_Slider) {
 
 exports['default'] = ProgressBar;
 
-},{"../plugin/component":16,"../utils/dom":42,"../utils/feature-detector":43,"../utils/time-format":49,"./progress-bar-except-fill":35,"./slider":38,"./tooltip":39,"classnames":2}],38:[function(require,module,exports){
+},{"../plugin/component":16,"../utils/dom":42,"../utils/feature-detector":43,"../utils/time-format":49,"./progress-bar-except-fill":35,"./slider":38,"./tooltip":39,"classnames":1}],38:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -9693,6 +9696,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 * @file 音量 UI 组件
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 * @author yuhui06
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 * @date 2018/3/9
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                * @date 2018/4/25 现在通过 js 修改音量也会触发 UI 改变（yuhui06）
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 */
 
 /* eslint-disable no-unused-vars */
@@ -9708,6 +9712,11 @@ var Volume = function (_Slider) {
 
         var _this = _possibleConstructorReturn(this, _Slider.call(this, player, options));
 
+        _this.volumeRecord = {
+            last: _this.player.volume(),
+            current: _this.player.volume()
+        };
+
         _this.onSlideStart = _this.onSlideStart.bind(_this);
         _this.onSlideMove = _this.onSlideMove.bind(_this);
         _this.onSlideEnd = _this.onSlideEnd.bind(_this);
@@ -9718,6 +9727,7 @@ var Volume = function (_Slider) {
         _this.handleIconMouseOut = _this.handleIconMouseOut.bind(_this);
         _this.switchStatus = _this.switchStatus.bind(_this);
         _this.clearStatus = _this.clearStatus.bind(_this);
+        _this.handleVolumeChange = _this.handleVolumeChange.bind(_this);
 
         _this.line = DOM.$('.lark-volume-line__line', _this.el);
         _this.ball = DOM.$('.lark-volume-line__ball', _this.el);
@@ -9729,33 +9739,56 @@ var Volume = function (_Slider) {
         Events.on(_this.line, 'click', _this.handleClick);
         Events.on(_this.ball, 'mousedown', _this.handleSlideStart);
         Events.on(_this.ball, 'touchstart', _this.handleSlideStart);
+
+        _this.player.on('volumechange', _this.handleVolumeChange);
         return _this;
     }
 
     Volume.prototype.onSlideStart = function onSlideStart(event) {
-        this.lastVolume = this.player.volume();
+        this.isSliding = true;
     };
 
     Volume.prototype.onSlideMove = function onSlideMove(event) {
         event.preventDefault();
         var pos = DOM.getPointerPosition(this.line, event);
-        this.update(pos.x);
+        // this.update(pos.x);
+        this.player.volume(pos.x);
+
+        if (this.player.volume() !== 0) {
+            this.player.muted(false);
+        }
     };
 
     Volume.prototype.onSlideEnd = function onSlideEnd(event) {
-        if (this.player.volume() !== 0) {
-            this.lastVolume = null;
+        this.isSliding = false;
+        this.updateVolumeRecord();
+    };
+
+    Volume.prototype.updateVolumeRecord = function updateVolumeRecord() {
+        this.volumeRecord = {
+            last: this.volumeRecord.current,
+            current: this.player.volume()
+        };
+    };
+
+    Volume.prototype.handleVolumeChange = function handleVolumeChange() {
+        if (this.player.muted()) {
+            this.update(0);
+        } else {
+            this.update(this.player.volume());
+        }
+
+        if (!this.isSliding) {
+            this.updateVolumeRecord();
         }
     };
 
     Volume.prototype.onClick = function onClick(event) {
-        this.lastVolume = this.player.volume();
-
         var pos = DOM.getPointerPosition(this.line, event);
-        this.update(pos.x);
+        this.player.volume(pos.x);
 
         if (this.player.volume() !== 0) {
-            this.lastVolume = null;
+            this.player.muted(false);
         }
     };
 
@@ -9763,30 +9796,30 @@ var Volume = function (_Slider) {
         var lineWidth = this.line.offsetWidth;
 
         this.ball.style.left = percent * lineWidth + 'px';
-        this.player.volume(percent);
         this.switchStatus(percent);
     };
 
     Volume.prototype.iconClick = function iconClick(event) {
-        // 点击静音
-        if (this.lastVolume == null) {
-            this.lastVolume = this.player.volume();
-            this.update(0);
+        if (this.player.volume() && !this.player.muted()) {
+            this.player.volume(0);
         } else {
-            // 再次点击时恢复上次的声音
-            this.update(this.lastVolume);
-            this.lastVolume = null;
+            this.player.volume(this.volumeRecord.last);
+            this.player.muted(false);
         }
 
-        this.handleIconMouseOver();
+        this.showTooltip();
     };
 
-    Volume.prototype.handleIconMouseOver = function handleIconMouseOver() {
+    Volume.prototype.showTooltip = function showTooltip() {
         _tooltip2['default'].show({
             hostEl: this.icon,
             margin: 16,
-            content: this.lastVolume == null ? '静音' : '取消静音'
+            content: this.player.volume() && !this.player.muted() ? '静音' : '取消静音'
         });
+    };
+
+    Volume.prototype.handleIconMouseOver = function handleIconMouseOver() {
+        this.showTooltip();
     };
 
     Volume.prototype.handleIconMouseOut = function handleIconMouseOut(event) {
@@ -9818,9 +9851,9 @@ var Volume = function (_Slider) {
     };
 
     Volume.prototype.dispose = function dispose() {
-        Events.off(this.icon, 'click', this.iconClick);
-        Events.off(this.line, 'click', this.handleClick);
-        Events.off(this.ball, 'mousedown', this.handleSlideStart);
+        Events.off(this.icon, ['click', 'mouseover', 'mouseout']);
+        Events.off(this.line, 'click');
+        Events.off(this.ball, ['mousedown', 'touchstart']);
 
         this.icon = null;
         this.line = null;
@@ -9852,7 +9885,7 @@ var Volume = function (_Slider) {
 
 exports['default'] = Volume;
 
-},{"../events/events":11,"../plugin/component":16,"../utils/dom":42,"./slider":38,"./tooltip":39,"classnames":2}],41:[function(require,module,exports){
+},{"../events/events":11,"../plugin/component":16,"../utils/dom":42,"./slider":38,"./tooltip":39,"classnames":1}],41:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -9891,7 +9924,7 @@ function computedStyle(el, prop) {
    * @date 2017/11/3
    */
 
-},{"global/window":4}],42:[function(require,module,exports){
+},{"global/window":3}],42:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -10091,7 +10124,7 @@ function createEl() {
  * @todo 先写一个这个函数自己用，后面看有没有必要把 createEl 函数换掉
  *
  * @param {string} tagName DOM 元素标签名
- * @param {Object=} props 要到 DOM 元素上的属性。注意，这里直接是 el.propName = value 的形式，如果涉及到 attrs，建议后续用 setAttrbute 自己添加
+ * @param {Object=} props 属性
  * @param {...Element|string} child 元素的子元素，参数个数不限。可以没有，也可以有多个
  * @return {Element} el 创建的元素
  */
@@ -10105,6 +10138,7 @@ function createElement() {
         props = {};
     }
     Object.keys(props).forEach(function (propName) {
+        setAttribute(el, propName === 'className' ? 'class' : propName, props[propName]);
         el[propName] = props[propName];
     });
 
@@ -10649,7 +10683,7 @@ var $$ = exports.$$ = createQuerier('querySelectorAll');
 //     }
 // })();
 
-},{"./computed-style":41,"./obj":48,"global/document":3,"global/window":4,"lodash.includes":7}],43:[function(require,module,exports){
+},{"./computed-style":41,"./obj":48,"global/document":2,"global/window":3,"lodash.includes":7}],43:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -10668,7 +10702,7 @@ exports['default'] = {
     * @date 2018/3/8
     */
 
-},{"global/document":3}],44:[function(require,module,exports){
+},{"global/document":2}],44:[function(require,module,exports){
 "use strict";
 
 exports.__esModule = true;

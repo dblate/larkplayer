@@ -151,7 +151,7 @@ export function createEl(tagName = 'div', properties = {}, attributes = {}, cont
  * @todo 先写一个这个函数自己用，后面看有没有必要把 createEl 函数换掉
  *
  * @param {string} tagName DOM 元素标签名
- * @param {Object=} props 要到 DOM 元素上的属性。注意，这里直接是 el.propName = value 的形式，如果涉及到 attrs，建议后续用 setAttrbute 自己添加
+ * @param {Object=} props 属性
  * @param {...Element|string} child 元素的子元素，参数个数不限。可以没有，也可以有多个
  * @return {Element} el 创建的元素
  */
@@ -162,6 +162,7 @@ export function createElement(tagName = 'div', props = {}, ...child) {
         props = {};
     }
     Object.keys(props).forEach(propName => {
+        setAttribute(el, propName === 'className' ? 'class' : propName, props[propName]);
         el[propName] = props[propName];
     });
 

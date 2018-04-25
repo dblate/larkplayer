@@ -15,14 +15,16 @@ import toCamelCase from '../utils/to-camel-case';
 
 const {UI, MS, OTHERS} = PluginTypes;
 
-const initialStore = {
-    [UI]: {},
-    [MS]: {},
-    [OTHERS]: {}
-};
+function getInitialStore() {
+    return {
+        [UI]: {},
+        [MS]: {},
+        [OTHERS]: {}
+    }
+}
 
 export default {
-    store: initialStore,
+    store: getInitialStore(),
     validate(plugin, type) {
         switch (type) {
             case UI:
@@ -61,7 +63,7 @@ export default {
         }
     },
     clear() {
-        this.store = initialStore;
+        this.store = getInitialStore();
     },
     get(name, type) {
         if (this.has(name, type)) {

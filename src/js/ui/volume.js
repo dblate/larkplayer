@@ -2,6 +2,7 @@
  * @file 音量 UI 组件
  * @author yuhui06
  * @date 2018/3/9
+ * @date 2018/4/25 现在通过 js 修改音量也会触发 UI 改变（yuhui06）
  */
 
 
@@ -20,6 +21,11 @@ export default class Volume extends Slider {
     constructor(player, options) {
         super(player, options);
 
+        this.volumeRecord = {
+            last: this.player.volume(),
+            current: this.player.volume()
+        };
+
         this.onSlideStart = this.onSlideStart.bind(this);
         this.onSlideMove = this.onSlideMove.bind(this);
         this.onSlideEnd = this.onSlideEnd.bind(this);
@@ -30,6 +36,7 @@ export default class Volume extends Slider {
         this.handleIconMouseOut = this.handleIconMouseOut.bind(this);
         this.switchStatus = this.switchStatus.bind(this);
         this.clearStatus = this.clearStatus.bind(this);
+        this.handleVolumeChange = this.handleVolumeChange.bind(this);
 
         this.line = DOM.$('.lark-volume-line__line', this.el);
         this.ball = DOM.$('.lark-volume-line__ball', this.el);
@@ -41,32 +48,55 @@ export default class Volume extends Slider {
         Events.on(this.line, 'click', this.handleClick);
         Events.on(this.ball, 'mousedown', this.handleSlideStart);
         Events.on(this.ball, 'touchstart', this.handleSlideStart);
+
+        this.player.on('volumechange', this.handleVolumeChange);
     }
 
     onSlideStart(event) {
-        this.lastVolume = this.player.volume();
+        this.isSliding = true;
     }
 
     onSlideMove(event) {
         event.preventDefault();
         const pos = DOM.getPointerPosition(this.line, event);
-        this.update(pos.x);
+        // this.update(pos.x);
+        this.player.volume(pos.x);
+
+        if (this.player.volume() !== 0) {
+            this.player.muted(false);
+        }
     }
 
     onSlideEnd(event) {
-        if (this.player.volume() !== 0) {
-            this.lastVolume = null;
+        this.isSliding = false;
+        this.updateVolumeRecord();
+    }
+
+    updateVolumeRecord() {
+        this.volumeRecord = {
+            last: this.volumeRecord.current,
+            current: this.player.volume()
+        };
+    }
+
+    handleVolumeChange() {
+        if (this.player.muted()) {
+            this.update(0);
+        } else {
+            this.update(this.player.volume());
+        }
+
+        if (!this.isSliding) {
+            this.updateVolumeRecord();
         }
     }
 
     onClick(event) {
-        this.lastVolume = this.player.volume();
-
         const pos = DOM.getPointerPosition(this.line, event);
-        this.update(pos.x);
+        this.player.volume(pos.x);
 
         if (this.player.volume() !== 0) {
-            this.lastVolume = null;
+            this.player.muted(false);
         }
     }
 
@@ -74,30 +104,30 @@ export default class Volume extends Slider {
         const lineWidth = this.line.offsetWidth;
 
         this.ball.style.left = percent * lineWidth + 'px';
-        this.player.volume(percent);
         this.switchStatus(percent);
     }
 
     iconClick(event) {
-        // 点击静音
-        if (this.lastVolume == null) {
-            this.lastVolume = this.player.volume();
-            this.update(0);
+        if (this.player.volume() && !this.player.muted()) {
+            this.player.volume(0);
         } else {
-            // 再次点击时恢复上次的声音
-            this.update(this.lastVolume);
-            this.lastVolume = null;
+            this.player.volume(this.volumeRecord.last);
+            this.player.muted(false);
         }
 
-        this.handleIconMouseOver();
+        this.showTooltip();
     }
 
-    handleIconMouseOver() {
+    showTooltip() {
         tooltip.show({
             hostEl: this.icon,
             margin: 16,
-            content: this.lastVolume == null ? '静音' : '取消静音'
+            content: (this.player.volume() && !this.player.muted()) ? '静音' : '取消静音'
         });
+    }
+
+    handleIconMouseOver() {
+        this.showTooltip();
     }
 
     handleIconMouseOut(event) {
@@ -127,9 +157,9 @@ export default class Volume extends Slider {
     }
 
     dispose() {
-        Events.off(this.icon, 'click', this.iconClick);
-        Events.off(this.line, 'click', this.handleClick);
-        Events.off(this.ball, 'mousedown', this.handleSlideStart);
+        Events.off(this.icon, ['click', 'mouseover', 'mouseout']);
+        Events.off(this.line, 'click');
+        Events.off(this.ball, ['mousedown', 'touchstart']);
 
         this.icon = null;
         this.line = null;

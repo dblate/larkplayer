@@ -15,6 +15,9 @@ export default class Plugin {
     constructor(player, options = {}) {
         this.player = player;
         this.options = options;
+
+        this.dispose = this.dispose.bind(this);
+        this.player.on('dispose', this.dispose);
     }
 
     dispose() {
@@ -24,6 +27,10 @@ export default class Plugin {
 
     static register(plugin, options) {
         pluginStore.add(plugin, options, PluginTypes.OTHERS);
+    }
+
+    static unregister(name) {
+        pluginStore.delete(name, PluginTypes.OTHERS);
     }
 
     static get(name) {

@@ -5,10 +5,10 @@
 
 * [Player](#Player)
     * [.dispose()](#Player+dispose)
-    * [.width([value])](#Player+width) ⇒ <code>number</code>
-    * [.height([value])](#Player+height) ⇒ <code>number</code>
+    * [.width([value])](#Player+width) ⇒ <code>number</code> \| <code>NaN</code>
+    * [.height([value])](#Player+height) ⇒ <code>number</code> \| <code>NaN</code>
     * [.controls([bool])](#Player+controls) ⇒ <code>boolean</code>
-    * [.isFullscreen([isFs])](#Player+isFullscreen) ⇒ <code>boolean</code>
+    * [.isFullscreen()](#Player+isFullscreen) ⇒ <code>boolean</code>
     * [.requestFullscreen()](#Player+requestFullscreen)
     * [.exitFullscreen()](#Player+exitFullscreen)
     * [.play()](#Player+play)
@@ -71,11 +71,11 @@
 **Kind**: instance method of [<code>Player</code>](#Player)  
 <a name="Player+width"></a>
 
-### player.width([value]) ⇒ <code>number</code>
+### player.width([value]) ⇒ <code>number</code> \| <code>NaN</code>
 获取或设置播放器的宽度
 
 **Kind**: instance method of [<code>Player</code>](#Player)  
-**Returns**: <code>number</code> - 不传参数则返回播放器当前宽度  
+**Returns**: <code>number</code> \| <code>NaN</code> - 不传参数则返回播放器当前宽度  
 
 | Param | Type | Description |
 | --- | --- | --- |
@@ -83,11 +83,11 @@
 
 <a name="Player+height"></a>
 
-### player.height([value]) ⇒ <code>number</code>
+### player.height([value]) ⇒ <code>number</code> \| <code>NaN</code>
 获取或设置播放器的高度
 
 **Kind**: instance method of [<code>Player</code>](#Player)  
-**Returns**: <code>number</code> - 不传参数则返回播放器当前高度  
+**Returns**: <code>number</code> \| <code>NaN</code> - 不传参数则返回播放器当前高度  
 
 | Param | Type | Description |
 | --- | --- | --- |
@@ -107,16 +107,11 @@
 
 <a name="Player+isFullscreen"></a>
 
-### player.isFullscreen([isFs]) ⇒ <code>boolean</code>
-获取／设置当前全屏状态标志
+### player.isFullscreen() ⇒ <code>boolean</code>
+判断当前是否处于全屏状态
 
 **Kind**: instance method of [<code>Player</code>](#Player)  
-**Returns**: <code>boolean</code> - 不传参则返回当前全屏状态  
-
-| Param | Type | Description |
-| --- | --- | --- |
-| [isFs] | <code>boolean</code> | 全屏状态标志 |
-
+**Returns**: <code>boolean</code> - 返回当前全屏状态  
 <a name="Player+requestFullscreen"></a>
 
 ### player.requestFullscreen()
@@ -310,6 +305,10 @@
 
 **Kind**: instance method of [<code>Player</code>](#Player)  
 **Returns**: <code>number</code> - 不传参数则返回当前视频的默认播放速率  
+**Todo**
+
+- [ ] 确认是否有必要传参
+
 
 | Param | Type | Description |
 | --- | --- | --- |

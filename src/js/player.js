@@ -73,13 +73,13 @@ class Player {
      * @param {Function=} ready 播放器初始化完成后执行的函数，可选
      */
     /* eslint-disable fecs-max-statements */
-    constructor(tag, options, ready) {
+    constructor(tag, options, readyFn) {
         this.isReady = false;
         this.player = this;
         this.options = options;
         this.tag = tag;
-
         this.el = this.createEl();
+        this.ready(readyFn);
 
         // 使得 this 具有事件能力(on off one trigger)
         evented(this, {eventBusKey: this.el});
@@ -619,7 +619,7 @@ class Player {
      * 获取或设置播放器的宽度
      *
      * @param {number=} value 要设置的播放器宽度值，可选
-     * @return {number} 不传参数则返回播放器当前宽度
+     * @return {number|NaN} 不传参数则返回播放器当前宽度
      */
     width(value) {
         if (value !== undefined) {
@@ -629,7 +629,7 @@ class Player {
 
             this.el.style.width = value;
         } else {
-            return computedStyle(this.el, 'width');
+            return parseInt(computedStyle(this.el, 'width'), 0);
         }
     }
 
@@ -637,7 +637,7 @@ class Player {
      * 获取或设置播放器的高度
      *
      * @param {number=} value 要设置的播放器高度值，可选
-     * @return {number} 不传参数则返回播放器当前高度
+     * @return {number|NaN} 不传参数则返回播放器当前高度
      */
     height(value) {
         if (value !== undefined) {
@@ -647,7 +647,7 @@ class Player {
 
             this.el.style.height = value;
         } else {
-            return computedStyle(this.el, 'height');
+            return parseInt(computedStyle(this.el, 'height'), 0);
         }
     }
 
@@ -1094,10 +1094,10 @@ class Player {
 
         // 移动端的全屏事件会传 extData
         if (extData.isFullscreen !== undefined) {
-            this.isFullscreen(extData.isFullscreen);
+            this.fullscreenStatus = extData.isFullscreen;
         } else if (fullscreen.fullscreenEnabled()) {
             // pc 端 fullscreen 事件
-            this.isFullscreen(fullscreen.isFullscreen());
+            this.fullscreenStatus = fullscreen.isFullscreen();
         }
 
         if (this.isFullscreen()) {
@@ -1225,17 +1225,12 @@ class Player {
     // = = = func = = =
 
     /**
-     * 获取／设置当前全屏状态标志
+     * 判断当前是否处于全屏状态
      *
-     * @param {boolean=} isFs 全屏状态标志
-     * @return {boolean} 不传参则返回当前全屏状态
+     * @return {boolean} 返回当前全屏状态
      */
-    isFullscreen(isFs) {
-        if (isFs !== undefined) {
-            this.fullscreenStatus = isFs;
-        } else {
-            return this.fullscreenStatus;
-        }
+    isFullscreen() {
+        return this.fullscreenStatus || false;
     }
 
     /**
@@ -1243,19 +1238,17 @@ class Player {
      * 会先尝试浏览器提供的全屏方法，如果没有对应方法，则进入由 css 控制的全屏样式
      */
     requestFullscreen() {
-        this.isFullscreen(true);
+        this.fullscreenStatus = true;
 
         if (fullscreen.fullscreenEnabled()) {
             // 利用 css 强制设置 top right bottom left margin 的值为 0
             // 避免因为定位使得元素全屏时看不到
-            // 应该不会出现什么问题
             this.addClass('lark-fullscreen-adjust');
             fullscreen.requestFullscreen(this.el);
         } else if (this.tech.supportsFullScreen()) {
             this.techGet('enterFullScreen');
         } else {
             this.enterFullWindow();
-            this.trigger('fullscreenchange');
         }
     }
 
@@ -1263,7 +1256,7 @@ class Player {
      * 退出全屏
      */
     exitFullscreen() {
-        this.isFullscreen(false);
+        this.fullscreenStatus = false;
 
         if (fullscreen.fullscreenEnabled() && fullscreen.isFullscreen()) {
             this.removeClass('lark-fullscreen-adjust');
@@ -1272,7 +1265,6 @@ class Player {
             this.techGet('exitFullScreen');
         } else {
             this.exitFullWindow();
-            this.trigger('fullscreenchange');
         }
     }
 
@@ -1283,6 +1275,7 @@ class Player {
      */
     enterFullWindow() {
         this.addClass('lark-full-window');
+        this.trigger('fullscreenchange');
         Events.on(document, 'keydown', this.fullWindowOnEscKey);
     }
 
@@ -1301,34 +1294,28 @@ class Player {
      */
     exitFullWindow() {
         this.removeClass('lark-full-window');
+        this.trigger('fullscreenchange');
         Events.off(document, 'keydown', this.fullWindowOnEscKey);
+    }
+
+    internalPlay() {
+        const playReturn = this.techGet('play');
+        if (playReturn && playReturn.then) {
+            playReturn.then(null, err => {
+                // @todo 这里返回的 err 可以利用下？
+                log.error(err);
+            });
+        }  
     }
 
     /**
      * 播放视频
      */
     play() {
-        // changingSrc 现在用不上，后面支持 source 的时候可能会用上
-        // if (this.isReady && this.src()) {
-        if (this.isReady) {
-            // play 可能返回一个 Promise
-            const playReturn = this.techGet('play');
-            if (playReturn && playReturn.then) {
-                playReturn.then(null, err => {
-                    // @todo 这里返回的 err 可以利用下？
-                    log.error(err);
-                });
-            }
+        if (this.MSHandler) {
+            this.MSHandler.play();
         } else {
-            this.ready(() => {
-                const playReturn = this.techGet('play');
-                if (playReturn && playReturn.then) {
-                    playReturn.then(null, err => {
-                        // @todo 这里返回的 err 可以利用下？
-                        log.error(err);
-                    });
-                }
-            });
+            this.isReady ? this.internalPlay() : this.ready(this.internalPlay);
         }
     }
 
@@ -1590,6 +1577,8 @@ class Player {
 
     /**
      * 获取或设置当前视频的默认播放速率
+     *
+     * @todo 确认是否有必要传参
      *
      * @param {number=} defaultPlaybackRate 要设置的默认播放速率的值，可选
      * @return {number} 不传参数则返回当前视频的默认播放速率

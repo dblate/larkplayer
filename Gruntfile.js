@@ -3,14 +3,14 @@ module.exports = function (grunt) {
         pkg: grunt.file.readJSON('package.json'),
         babel: {
             options: {
-                    sourceMap: false,
-                    plugins: [
-                        ["transform-react-jsx", {
-                            "pragma": "Component.createElement"
-                        }]
-                    ],
-                    presets: ['env']
-                },
+                sourceMap: false,
+                plugins: [
+                    ["transform-react-jsx", {
+                        "pragma": "Component.createElement"
+                    }]
+                ],
+                presets: ['env']
+            },
             dist: {
                 files: [{
                     expand: true,
