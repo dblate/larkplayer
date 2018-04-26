@@ -8,7 +8,7 @@
 </head>
 <body>
     <video id="my-video" src="https://baikebcs.bdimg.com/baike-other/big-buck-bunny.mp4" width="400" height="300" controls></video>
-    <script type="text/javascript" src="../dist/larkplayer.min.js"></script>
+    <script type="text/javascript" src="../dist/larkplayer.js"></script>
     <script type="text/javascript">
         var width = Math.min(document.body.clientWidth, 640);
         var player = larkplayer('my-video', {
@@ -19,6 +19,10 @@
                     className: ''
                 }
             }
+        });
+
+        player.on('loadedmetadata', function () {
+            console.log('loadedmetadata');
         });
 
         var srcList = [
@@ -53,19 +57,19 @@
         });
 
 
-        player.on('click', function (event) {
-            console.log('player click',event);
-        });
+        // player.on('click', function (event) {
+        //     console.log('player click',event);
+        // });
 
-        var body = document.getElementsByTagName('body')[0];
+        // var body = document.getElementsByTagName('body')[0];
 
-        body.addEventListener('click', function (event) {
-            console.log('body click', event);
-        }, false);
+        // body.addEventListener('click', function (event) {
+        //     console.log('body click', event);
+        // }, false);
 
-        player.tech.el.addEventListener('play', function (event) {
-            console.log('video play', event);
-        });
+        // player.tech.el.addEventListener('play', function (event) {
+        //     console.log('video play', event);
+        // });
 
     </script>
 </body>
