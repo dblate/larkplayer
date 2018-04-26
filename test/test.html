@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <title>larkplayer test</title>
-    <link rel="stylesheet" type="text/css" href="../dist/larkplayer.min.css">
+    <link rel="stylesheet" type="text/css" href="../dist/larkplayer.css">
     <meta name="viewport" content="width=device-width,minimum-scale=1.0,maximum-scale=1.0,initial-scale=1.0,user-scalable=no">
 </head>
 <body>
@@ -44,8 +44,6 @@
 
         player.on('ended', function () {
             console.log('ended');
-            // player.src(srcList[Math.round(Math.random())]);
-            // player.play();
         });
 
         player.on('resize', function () {
@@ -55,21 +53,6 @@
         player.on('error', function (event, error) {
             console.log('error occured', event, error);
         });
-
-
-        // player.on('click', function (event) {
-        //     console.log('player click',event);
-        // });
-
-        // var body = document.getElementsByTagName('body')[0];
-
-        // body.addEventListener('click', function (event) {
-        //     console.log('body click', event);
-        // }, false);
-
-        // player.tech.el.addEventListener('play', function (event) {
-        //     console.log('video play', event);
-        // });
 
     </script>
 </body>
