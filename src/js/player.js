@@ -96,8 +96,6 @@ class Player {
         this.handleFirstplay = this.handleFirstplay.bind(this);
         this.handlePause = this.handlePause.bind(this);
         this.handleEnded = this.handleEnded.bind(this);
-        this.handleDurationchange = this.handleDurationchange.bind(this);
-        this.handleTimeupdate = this.handleTimeupdate.bind(this);
         this.handleTap = this.handleTap.bind(this);
         this.handleTouchStart = this.handleTouchStart.bind(this);
         this.handleTouchMove = this.handleTouchMove.bind(this);
@@ -250,7 +248,6 @@ class Player {
     dispose() {
         clearTimeout(this.activeTimeoutHandler);
         this.trigger('dispose');
-        this.off();
 
         // 注销全屏事件
         fullscreen.off();
@@ -510,8 +507,8 @@ class Player {
             // 'seeking',
             // 'seeked',
             // 'ended',
-            // 'durationchange',
-            // 'timeupdate',
+            'durationchange',
+            'timeupdate',
 
             /**
              * 浏览器获取数据的过程中触发
@@ -563,12 +560,10 @@ class Player {
             'canplaythrough',
             'error',
             'playing',
-            'timeupdate',
             'waiting',
             'seeking',
             'seeked',
             'ended',
-            'durationchange',
             'play',
             'pause'
         ].forEach(event => {
@@ -970,49 +965,6 @@ class Player {
         this.trigger('ended');
     }
 
-    /**
-     * 处理 durationchange 事件
-     *
-     * @private
-     * @fires Player#durationchange
-     */
-    handleDurationchange() {
-        let data = {
-            duration: this.techGet('duration')
-        };
-
-        /**
-         * 视频时长发生改变时触发
-         *
-         * @event Player#durationchange
-         * @param {Object} event 事件触发时浏览器自带的 event 对象
-         */
-        this.trigger('durationchange', data);
-    }
-
-    /**
-     * 处理 timeupdate 事件
-     *
-     * @private
-     * @fires Player#timeupdate
-     */
-    handleTimeupdate() {
-        let data = {
-            currentTime: this.techGet('currentTime')
-        };
-        // data.currentTime = this.techGet('currentTime');
-
-        /**
-         * 视频当前时刻更新时触发，一般 1s 内会触发好几次
-         *
-         * @event Player#timeupdate
-         * @param {Object} event 事件触发时浏览器自带的 event 对象
-         * @param {Object} data 友情附带的数据
-         * @param {number} data.currentTime 当前时刻
-         */
-        this.trigger('timeupdate', data);
-    }
-
     handleTap() {
 
     }
@@ -1093,8 +1045,8 @@ class Player {
         let data = {};
 
         // 移动端的全屏事件会传 extData
-        if (extData.isFullscreen !== undefined) {
-            this.fullscreenStatus = extData.isFullscreen;
+        if (event.detail && event.detail.isFullscreen !== undefined) {
+            this.fullscreenStatus = event.detail.isFullscreen;
         } else if (fullscreen.fullscreenEnabled()) {
             // pc 端 fullscreen 事件
             this.fullscreenStatus = fullscreen.isFullscreen();
@@ -1117,7 +1069,7 @@ class Player {
          * @param {Object} data 全屏相关的数据
          * @param {boolean} data.isFullscreen 当前是否是全屏状态
          */
-        this.trigger('fullscreenchange', data);
+        this.trigger('fullscreenchange', {detail: data});
     }
 
     /**
@@ -1161,7 +1113,7 @@ class Player {
          *                         - 4 MEDIA_ERR_SRC_NOT_SUPPORTED 视频资源问题，比如视频不存在
          * @param {string} error.message 错误信息
          */
-        this.trigger('error', this.techGet('error'));
+        this.trigger('error', {detail: this.techGet('error')});
     }
 
     /**
@@ -1531,7 +1483,7 @@ class Player {
              * @event Player#srcchange
              * @param {string} src 更换后的视频地址
              */
-            this.trigger('srcchange', src);
+            this.trigger('srcchange', {detail: src});
         } else {
             return this.techGet('src');
         }
@@ -1553,7 +1505,7 @@ class Player {
              * @event Player#srcchange
              * @param {string} src 更换后的视频地址
              */
-            this.trigger('srcchange', this.player.src());
+            this.trigger('srcchange', {detail: this.player.src()});
         } else {
             return this.techGet('source');
         }

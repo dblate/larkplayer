@@ -15,7 +15,6 @@ import * as Events from '../events/events';
 import evented from '../events/evented';
 import toCamelCase from '../utils/to-camel-case';
 
-
 export default class Component {
     constructor(player, options = {}) {
         this.player = player;
@@ -35,8 +34,9 @@ export default class Component {
     // 2. remove Events for memory
     // 3. remove reference for GC
     dispose() {
+        this.player.off('dispose', this.dispose);
+
         if (DOM.isEl(this.el) && this.el.parentNode) {
-            Events.off(this.el);
             this.el.parentNode.removeChild(this.el);
         }
         this.player = null;

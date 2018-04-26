@@ -56,7 +56,7 @@ export default class Html5 {
         }
 
         let endFn = function () {
-            this.trigger('fullscreenchange', {isFullscreen: false});
+            this.trigger('fullscreenchange', {detail: {isFullscreen: false}});
         };
 
         let beginFn = function () {
@@ -64,7 +64,7 @@ export default class Html5 {
                 && this.el.webkitPresentationMode !== 'picture-in-picture') {
 
                 this.one('webkitendfullscreen', endFn);
-                this.trigger('fullscreenchange', {isFullscreen: true});
+                this.trigger('fullscreenchange', {detail: {isFullscreen: true}});
             }
         };
 
