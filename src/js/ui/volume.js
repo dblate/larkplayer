@@ -157,13 +157,18 @@ export default class Volume extends Slider {
     }
 
     dispose() {
-        Events.off(this.icon, ['click', 'mouseover', 'mouseout']);
-        Events.off(this.line, 'click');
-        Events.off(this.ball, ['mousedown', 'touchstart']);
+        Events.off(this.icon, 'click', this.iconClick);
+        Events.off(this.icon, 'mouseover', this.handleIconMouseOver);
+        Events.off(this.icon, 'mouseout', this.handleIconMouseOut);
+        Events.off(this.line, 'click', this.handleClick);
+        Events.off(this.ball, 'mousedown', this.handleSlideStart);
+        Events.off(this.ball, 'touchstart', this.handleSlideStart);
 
         this.icon = null;
         this.line = null;
         this.ball = null;
+
+        this.player.off('volumechange', this.handleVolumeChange);
 
         super.dispose();
     }

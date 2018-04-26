@@ -27,16 +27,8 @@ export default class FullscreenButton extends Component {
             this.fullscreenButton = DOM.$('.lark-request-fullscreen', this.el);
             this.exitFullscreenButton = DOM.$('.lark-exit-fullscreen', this.el);
 
-            Events.on(
-                this.fullscreenButton,
-                'mouseover',
-                () => this.handleMouseOver(this.fullscreenButton, '全屏')
-            );
-            Events.on(
-                this.exitFullscreenButton,
-                'mouseover',
-                () => this.handleMouseOver(this.exitFullscreenButton, '退出全屏')
-            );
+            Events.on(this.fullscreenButton, 'mouseover', this.handleMouseOver);
+            Events.on(this.exitFullscreenButton, 'mouseover', this.handleMouseOver);
 
             this.on('mouseout', this.handleMouseOut);
         }
@@ -52,12 +44,12 @@ export default class FullscreenButton extends Component {
         tooltip.hide();
     }
 
-    handleMouseOver(el, content) {
+    handleMouseOver(event) {
         tooltip.show({
-            hostEl: el,
+            hostEl: event.target,
             placement: 'top',
             margin: 16,
-            content: content
+            content: event.target.title
         });
     }
 
@@ -66,23 +58,25 @@ export default class FullscreenButton extends Component {
     }
 
     dispose() {
+        this.off('click', this.handleClick);
+
         if (!featureDetector.touch) {
-            Events.off(this.fullscreenButton);
-            Events.off(this.exitFullscreenButton);
+            Events.off(this.fullscreenButton, 'mouseover', this.handleMouseOver);
+            Events.off(this.exitFullscreenButton, 'mouseover', this.handleMouseOver);
             this.fullscreenButton = null;
             this.exitFullscreenButton = null;
+
+            this.off('mouseout', this.handleMouseOut);
         }
 
         super.dispose();
     }
 
     createEl() {
-        // @todo 将两个 icon 分别放到两个类中，这样可以确定他们每个的 click 的事件一定跟自己的名称是相符的
-        // @todo 需要一个非全屏的按钮 sueb
         return (
             <div className={classnames('lark-fullscreen-button', this.options.className)}>
-                <div className="lark-request-fullscreen lark-icon-request-fullscreen"></div>
-                <div className="lark-exit-fullscreen"></div>
+                <div className="lark-request-fullscreen lark-icon-request-fullscreen" title="全屏"></div>
+                <div className="lark-exit-fullscreen" title="退出全屏"></div>
             </div>
         );
     }

@@ -40,7 +40,7 @@ export default class ProgressBar extends Slider {
         this.hoverLight = DOM.$('.lark-progress-bar-hover-light', this.el);
         this.paddingEl = DOM.$('.lark-progress-bar-padding', this.el);
 
-        player.on('timeupdate', this.handleTimeUpdate);
+        this.player.on('timeupdate', this.handleTimeUpdate);
         this.on('click', this.handleClick);
         this.on('touchstart', this.handleSlideStart);
 
@@ -157,6 +157,16 @@ export default class ProgressBar extends Slider {
     }
 
     dispose() {
+        this.player.off('timeupdate', this.handleTimeUpdate);
+        this.off('click', this.handleClick);
+        this.off('touchstart', this.handleSlideStart);
+        if (!featureDetector.touch) {
+            this.off('mousedown', this.handleSlideStart);
+            this.off('mouseover', this.handleMouseOver);
+            this.off('mousemove', this.handleMouseMove);
+            this.off('mouseout', this.handleMouseOut);
+        }
+
         this.line = null;
         this.lineHandle = null;
         this.hoverLight = null;

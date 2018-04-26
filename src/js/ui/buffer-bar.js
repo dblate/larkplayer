@@ -55,6 +55,9 @@ export default class BufferBar extends Component {
     }
 
     dispose() {
+        this.player.off('progress', this.handleProgress);
+        this.player.off('canplay', this.handleProgress);
+
         this.line = null;
 
         super.dispose();

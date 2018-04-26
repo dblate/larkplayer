@@ -18,13 +18,12 @@ export default class Error extends Component {
         this.handleClick = this.handleClick.bind(this);
 
         this.player.on('error', this.handleError);
-
         this.on('click', this.handleClick);
     }
 
-    handleError(event, data) {
+    handleError(event) {
         /* eslint-disable no-console */
-        console.log(event, data);
+        console.log(event, event.detail);
         /* eslint-enable no-console */
     }
 
@@ -35,6 +34,13 @@ export default class Error extends Component {
             this.player.src(src);
             this.player.play();
         }, 0);
+    }
+
+    dispose() {
+        this.player.off('error', this.handleError);
+        this.off('click', this.handleClick);
+
+        super.dispose();
     }
 
     createEl() {

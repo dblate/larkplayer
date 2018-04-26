@@ -35,7 +35,8 @@ export default class ErrorPc extends Component {
         }, 0);
     }
 
-    handleError(event, error) {
+    handleError(event) {
+        const error = event.detail || {};
         let text;
         switch (parseInt(error.code, 10)) {
             // MEDIA_ERR_ABORTED
@@ -62,6 +63,9 @@ export default class ErrorPc extends Component {
     }
 
     dispose() {
+        this.player.off('error', this.handleError);
+        this.off('click', this.handleClick);
+
         this.textEl = null;
         super.dispose();
     }

@@ -16,11 +16,11 @@ export default class CurrentTime extends Component {
 
         this.handleTimeupdate = this.handleTimeupdate.bind(this);
 
-        player.on('timeupdate', this.handleTimeupdate);
+        this.player.on('timeupdate', this.handleTimeupdate);
     }
 
-    handleTimeupdate(event, data) {
-        this.render(data.currentTime);
+    handleTimeupdate(event) {
+        this.render(this.player.currentTime());
     }
 
     render(time) {
@@ -29,6 +29,12 @@ export default class CurrentTime extends Component {
 
     reset() {
         this.render(0);
+    }
+
+    dispose() {
+        this.player.off('timeupdate', this.handleTimeupdate);
+
+        super.dispose();
     }
 
     createEl() {

@@ -17,8 +17,8 @@ export default class Duration extends Component {
 
         this.handleLoadedMetaData = this.handleLoadedMetaData.bind(this);
 
-        player.on('durationchange', this.handleLoadedMetaData);
-        player.on('loadedmetadata', this.handleLoadedMetaData);
+        this.player.on('durationchange', this.handleLoadedMetaData);
+        this.player.on('loadedmetadata', this.handleLoadedMetaData);
     }
 
     handleLoadedMetaData(event) {
@@ -27,6 +27,13 @@ export default class Duration extends Component {
 
     reset() {
         DOM.textContent(this.el, '');
+    }
+
+    dispose() {
+        this.player.off('durationchange', this.handleLoadedMetaData);
+        this.player.off('loadedmetadata', this.handleLoadedMetaData);
+
+        super.dispose();
     }
 
     createEl() {
