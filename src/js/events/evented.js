@@ -1,53 +1,29 @@
 /**
- * @file 给一个对象添加事件方面的 api
- * @author yuhui<yuhui06@baidu.com>
- * @date 2017/11/7
+ * @file Events
+ * @author yuhui06
+ * @date 2017/11/3
+ *       2018/4/27 简化代码
  */
 
-import * as Events from './events';
 import * as DOM from '../utils/dom';
+import * as Events from './events';
 
-/**
- * 使一个对象具有直接使用 on off one trigger 的能力
- *
- * @param {Object} target 要具有事件能力的对象
- * @param {Object} options 配置项
- * @param {string=} options.eventBusKey 一个 DOM 元素，事件绑定在该元素上
- */
-export default function evented(target, options = {}) {
-    if (target.isEvented && target.eventBusEl === options.eventBusKey) {
-        return;
-    } else {
-        target.isEvented = true;
+export default function evented(target = {}) {
+    const eventBusKey = DOM.isEl(target.el) ? target.el : DOM.createElement('div');
+
+    target.on = function (eventName, fn) {
+        Events.on(eventBusKey, eventName, fn);
     }
 
-    // @todo normalize args
-    const eventBusKey = options.eventBusKey;
-    if (eventBusKey && eventBusKey.nodeType === 1) {
-        target.eventBusEl = eventBusKey;
-    } else {
-        target.eventBusEl = DOM.createEl('div');
+    target.off = function (eventName, fn) {
+        Events.off(eventBusKey, eventName, fn);
     }
 
-    // if (target[eventBusKey] && target[eventBusKey]['nodeType'] === 1) {
-    //     target.eventBusEl = target[eventBusKey];
-    // } else {
-    //     target.eventBusEl = DOM.createEl('div');
-    // }
+    target.one = function (eventName, fn) {
+        Events.one(eventBusKey, eventName, fn);
+    }
 
-    target.on = function (type, fn) {
-        Events.on(target.eventBusEl, type, fn);
-    };
-
-    target.off = function (type, fn) {
-        Events.off(target.eventBusEl, type, fn);
-    };
-
-    target.one = function (type, fn) {
-        Events.one(target.eventBusEl, type, fn);
-    };
-
-    target.trigger = function (type, data) {
-        Events.trigger(target.eventBusEl, type, data);
-    };
+    target.trigger = function (eventName, initialDict) {
+        Events.trigger(eventBusKey, eventName, initialDict);
+    }
 }
