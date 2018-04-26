@@ -5294,6 +5294,8 @@ var Player = function () {
             this.tech = this.loadTech();
         }
 
+        this.addClass('lark-paused');
+
         var src = this.src();
         if (src) {
             // 如果视频已经存在，看下是不是错过了 loadstart 事件
@@ -8437,9 +8439,11 @@ var PlayButton = function (_Component) {
     function PlayButton(player, options) {
         _classCallCheck(this, PlayButton);
 
-        // 注意 这里需要将 context（第二个参数） 设置为 this.el，因为这时 DOM 元素还没有插入到 document 里，所以在 document 里是查不到这个元素的
         var _this = _possibleConstructorReturn(this, _Component.call(this, player, options));
 
+        _this.togglePlay = _this.togglePlay.bind(_this);
+
+        // 注意 这里需要将 context（第二个参数） 设置为 this.el，因为这时 DOM 元素还没有插入到 document 里，所以在 document 里是查不到这个元素的
         _this.playBtn = DOM.$('.lark-play-button__play', _this.el);
         _this.pauseBtn = DOM.$('.lark-play-button__pause', _this.el);
         _this.eventName = _featureDetector2['default'].touch ? 'touchend' : 'click';
