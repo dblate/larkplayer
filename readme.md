@@ -114,5 +114,8 @@ __API__
 * support flv format
 * support vr
 
+## Change Log
+[CHANGELOG](./CHANGELOG.md)
+
 ## License
 larkplayer is [MIT licensed](./LICENSE)
