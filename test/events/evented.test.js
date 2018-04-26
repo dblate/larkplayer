@@ -1,3 +1,9 @@
+/**
+ * @file evented test
+ * @author yuhui06
+ * @date 2018/4/27
+ */
+
 import evented from '../../src/js/events/evented';
 
 describe('evented', function () {
@@ -6,38 +12,28 @@ describe('evented', function () {
         this.callback = jasmine.createSpy('callback');
     });
 
-    it('evented with eventBusKey', function () {
-        var o = {};
-        evented(o, {eventBusKey: this.el});
-        expect(o.on).toEqual(jasmine.any(Function));
-        expect(o.off).toEqual(jasmine.any(Function));
-        expect(o.one).toEqual(jasmine.any(Function));
-        expect(o.trigger).toEqual(jasmine.any(Function));
+    it('all methods', function () {
+        const obj1 = {};
+        let invoked = 0;
 
-        o.on('click', this.callback);
-        triggerEvent(this.el, 'click');
-        o.trigger('click', this.callback);
-        expect(this.callback).toHaveBeenCalledTimes(2);
+        function callback() {
+            invoked++;
+        }
 
-        o.off('click');
-        triggerEvent(this.el, 'click');
-        o.trigger('click');
-        expect(this.callback).toHaveBeenCalledTimes(2);
-    });
+        evented(obj1);
+        obj1.on('something', callback);
+        obj1.trigger('something');
+        expect(invoked).toBe(1);
+        obj1.off('something', callback);
+        obj1.trigger('something');
+        expect(invoked).toBe(1);
 
-    it('evented without eventBusKey', function () {
-        var o = {};
-        evented(o);
-        expect(o.on).toEqual(jasmine.any(Function));
-        expect(o.off).toEqual(jasmine.any(Function));
-        expect(o.one).toEqual(jasmine.any(Function));
-        expect(o.trigger).toEqual(jasmine.any(Function));
-
-        o.on('click', this.callback);
-        o.trigger('click');
-        expect(this.callback).toHaveBeenCalledTimes(1);
-        o.off('click');
-        o.trigger('click');
-        expect(this.callback).toHaveBeenCalledTimes(1);
+        obj1.one('another_thing', callback);
+        obj1.trigger('another_thing');
+        expect(invoked).toBe(2);
+        obj1.trigger('another_thing');
+        expect(invoked).toBe(2);
     });
 });
+
+
