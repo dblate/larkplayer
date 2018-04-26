@@ -121,7 +121,7 @@ __API__
 * ~~支持 hls(m3u8) 格式~~ √（[larkplayer-hls](https://github.com/dblate/larkplayer-hls)）
 * 支持 flv 格式
 * ~~同步支持 pc 与移动端的使用~~ √
-* 添加单测
+* ~~添加测试代码~~ √
 
 ## License
 larkplayer is [MIT licensed](./LICENSE)
