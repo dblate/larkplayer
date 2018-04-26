@@ -126,6 +126,8 @@ class Player {
             this.tech = this.loadTech();
         }
 
+        this.addClass('lark-paused');
+
         const src = this.src();
         if (src) {
             // 如果视频已经存在，看下是不是错过了 loadstart 事件
