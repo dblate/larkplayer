@@ -16,6 +16,8 @@ export default class PlayButton extends Component {
     constructor(player, options) {
         super(player, options);
 
+        this.togglePlay = this.togglePlay.bind(this);
+
         // 注意 这里需要将 context（第二个参数） 设置为 this.el，因为这时 DOM 元素还没有插入到 document 里，所以在 document 里是查不到这个元素的
         this.playBtn = DOM.$('.lark-play-button__play', this.el);
         this.pauseBtn = DOM.$('.lark-play-button__pause', this.el);
