@@ -124,5 +124,8 @@ __API__
 * ~~同步支持 pc 与移动端的使用~~ √
 * ~~添加测试代码~~ √
 
+## Change Log
+[CHANGELOG](./CHANGELOG.md)
+
 ## License
 larkplayer is [MIT licensed](./LICENSE)
