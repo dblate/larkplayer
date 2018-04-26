@@ -4404,624 +4404,114 @@ module.exports = values;
 'use strict';
 
 exports.__esModule = true;
-exports.getData = getData;
-exports.hasData = hasData;
-exports.removeData = removeData;
-
-var _guid = require('../utils/guid');
-
-// 所有的数据会存在这里
-// 我们可以将数据与 DOM 元素绑定，但又不是直接将数据放在它上面
-// eg. Event listeners 是通过这种方式绑定的
-var elData = {}; /**
-                  * @file dom-data.js
-                  * @author yuhui06@baidu.com
-                  * @date 2017/11/3
-                  */
-
-var elIdAttr = 'larkplayer_data_' + Date.now();
-
-/**
- * 获取 DOM 元素上的数据
- *
- * @param {Element} el 获取该元素上的数据
- * @return {Object} 想要的数据
- */
-function getData(el) {
-    var id = el[elIdAttr];
-
-    if (!id) {
-        id = el[elIdAttr] = (0, _guid.newGUID)();
-    }
-
-    if (!elData[id]) {
-        elData[id] = {};
-    }
-
-    return elData[id];
-}
-
-/**
- * 判断一个元素上是否有我们存的数据
- *
- * @param {Element} el 就是要看这个元素上有没有我们之前存的数据
- * @return {boolean} 元素上是否存有数据
- */
-function hasData(el) {
-    var id = el[elIdAttr];
-
-    if (!id || !elData[id]) {
-        return false;
-    }
-
-    return !!Object.keys(elData[id]).length;
-}
-
-/**
- * 删除我们之前在元素上存放的数据
- *
- * @param {Element} el 宿主元素
- */
-function removeData(el) {
-    var id = el[elIdAttr];
-
-    if (!id) {
-        return;
-    }
-
-    // 删除存放的数据
-    delete elData[id];
-
-    // 同时删除 DOM 上的对应属性
-    try {
-        delete el[elIdAttr];
-    } catch (e) {
-        if (el.removeAttribute) {
-            el.removeAttribute(elIdAttr);
-        } else {
-            // IE document 节点似乎不支持 removeAttribute 方法
-            el[elIdAttr] = null;
-        }
-    }
-}
-
-},{"../utils/guid":44}],10:[function(require,module,exports){
-'use strict';
-
-exports.__esModule = true;
 exports['default'] = evented;
-
-var _events = require('./events');
-
-var Events = _interopRequireWildcard(_events);
 
 var _dom = require('../utils/dom');
 
 var DOM = _interopRequireWildcard(_dom);
 
+var _events = require('./events');
+
+var Events = _interopRequireWildcard(_events);
+
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj['default'] = obj; return newObj; } }
 
 /**
- * 使一个对象具有直接使用 on off one trigger 的能力
- *
- * @param {Object} target 要具有事件能力的对象
- * @param {Object} options 配置项
- * @param {string=} options.eventBusKey 一个 DOM 元素，事件绑定在该元素上
- */
-/**
- * @file 给一个对象添加事件方面的 api
- * @author yuhui<yuhui06@baidu.com>
- * @date 2017/11/7
+ * @file Events
+ * @author yuhui06
+ * @date 2017/11/3
+ *       2018/4/27 简化代码
  */
 
-function evented(target) {
-    var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+function evented() {
+    var target = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
 
-    if (target.isEvented && target.eventBusEl === options.eventBusKey) {
-        return;
-    } else {
-        target.isEvented = true;
-    }
+    var eventBusKey = DOM.isEl(target.el) ? target.el : DOM.createElement('div');
 
-    // @todo normalize args
-    var eventBusKey = options.eventBusKey;
-    if (eventBusKey && eventBusKey.nodeType === 1) {
-        target.eventBusEl = eventBusKey;
-    } else {
-        target.eventBusEl = DOM.createEl('div');
-    }
-
-    // if (target[eventBusKey] && target[eventBusKey]['nodeType'] === 1) {
-    //     target.eventBusEl = target[eventBusKey];
-    // } else {
-    //     target.eventBusEl = DOM.createEl('div');
-    // }
-
-    target.on = function (type, fn) {
-        Events.on(target.eventBusEl, type, fn);
+    target.on = function (eventName, fn) {
+        Events.on(eventBusKey, eventName, fn);
     };
 
-    target.off = function (type, fn) {
-        Events.off(target.eventBusEl, type, fn);
+    target.off = function (eventName, fn) {
+        Events.off(eventBusKey, eventName, fn);
     };
 
-    target.one = function (type, fn) {
-        Events.one(target.eventBusEl, type, fn);
+    target.one = function (eventName, fn) {
+        Events.one(eventBusKey, eventName, fn);
     };
 
-    target.trigger = function (type, data) {
-        Events.trigger(target.eventBusEl, type, data);
+    target.trigger = function (eventName, initialDict) {
+        Events.trigger(eventBusKey, eventName, initialDict);
     };
 }
 
-},{"../utils/dom":42,"./events":11}],11:[function(require,module,exports){
+},{"../utils/dom":41,"./events":10}],10:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
-exports.isPassiveSupported = undefined;
-exports.fixEvent = fixEvent;
 exports.on = on;
-exports.trigger = trigger;
 exports.off = off;
 exports.one = one;
-
-var _lodash = require('lodash.includes');
-
-var _lodash2 = _interopRequireDefault(_lodash);
-
-var _window = require('global/window');
-
-var _window2 = _interopRequireDefault(_window);
+exports.trigger = trigger;
 
 var _document = require('global/document');
 
 var _document2 = _interopRequireDefault(_document);
 
-var _domData = require('./dom-data');
+var _lodash = require('lodash.assign');
 
-var DomData = _interopRequireWildcard(_domData);
-
-var _guid = require('../utils/guid');
-
-function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj['default'] = obj; return newObj; } }
+var _lodash2 = _interopRequireDefault(_lodash);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
 
 /**
- * 清理事件相关的数据(Clean up the listener cache and dispatchers)
- *
- * @inner
- *
- * @param {Element} elem 待清理的元素
- * @param {string} type 待清理的事件类型
- */
-function cleanUpEvents(elem, type) {
-    var data = DomData.getData(elem);
-
-    // 如果该 type 下已经没有回调函数，那就取消掉之前注册的事件并且删除不必要的属性
-    if (data.handlers && data.handlers[type] && data.handlers[type]['length'] === 0) {
-        // 删除不必要的属性
-        delete data.handlers[type];
-
-        // 删除之前注册的事件
-        if (elem.removeEventListener) {
-            elem.removeEventListener(type, data.dispatcher, false);
-        } else if (elem.detachEvent) {
-            elem.detachEvent('on' + type, data.dispatcher);
-        }
-    }
-
-    // 如果 hanlders 下已经没有 type，那可以清除 data 下的所有属性了
-    if (Object.getOwnPropertyNames(data.handlers).length === 0) {
-        delete data.handlers;
-        delete data.dispatcher;
-        delete data.disabled;
-    }
-
-    // 如果 data 的属性已经被清空，那么对应 DOM 上的数据相关的属性也可以清除了
-    if (Object.getOwnPropertyNames(data).length === 0) {
-        DomData.removeData(elem);
-    }
-}
-
-/**
- * 循环 types 数组，给每个 type 都执行指定的方法
- *
- * 将需要在不同函数里执行的循环操作抽离出来
- *
- * @inner
- *
- * @param {Function} func 要循环执行的函数
- * @param {Element} elem 宿主元素
- * @param {Array} types 类型数组
- * @param {Function} callback 要注册的回调函数
- */
-/**
- * @file 事件系统，借用系统事件能力的同时，能添加自定义事件
- * @author yuhui06@baidu.com
+ * @file Events
+ * @author yuhui06
  * @date 2017/11/3
+ *       2018/4/27 使用 CustomEvent 重构 Events 模块
  */
 
-function handleMultipleEvents(func, elem, types, callback) {
-    if (types && types.length) {
-        types.forEach(function (type) {
-            return func(elem, type, callback);
-        });
-    }
+function on(el, eventName, fn) {
+    var options = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : false;
+
+    el.addEventListener(eventName, fn, options);
 }
 
-/**
- * 修复事件，使其具有标准的属性
- *
- * @param {Event|Object} event 待修复的事件
- * @return {Object} 修复后的事件
- */
-function fixEvent(event) {
-    function returnTure() {
-        return true;
-    }
+function off(el, eventName, fn) {
+    var options = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : false;
 
-    function returnFalse() {
-        return false;
-    }
-
-    // Test if fixing up is needed
-    // Used to check if !event.stopPropagation instead of isPropagationStopped
-    // But native events return true for stopPropagation, but don't have
-    // other expected methods like isPropagationStopped. Seems to be a problem
-    // with the Javascript Ninja code. So we're just overriding all events now.
-    if (!event || !event.isPropagationStopped) {
-        var old = event || _window2['default'].event;
-
-        event = {};
-
-        // Clone the old object so that we can modify the values event = {};
-        // IE8 Doesn't like when you mess with native event properties
-        // Firefox returns false for event.hasOwnProperty('type') and other props
-        //  which makes copying more difficult.
-        // TODO: Probably best to create a whitelist of event props
-        for (var key in old) {
-            // Safari 6.0.3 warns you if you try to copy deprecated layerX/Y
-            // Chrome warns you if you try to copy deprecated keyboardEvent.keyLocation
-            // and webkitMovementX/Y
-            if (key !== 'layerX' && key !== 'layerY' && key !== 'keyLocation' && key !== 'webkitMovementX' && key !== 'webkitMovementY') {
-                // Chrome 32+ warns if you try to copy deprecated returnValue, but
-                // we still want to if preventDefault isn't supported (IE8).
-                if (!(key === 'returnValue' && old.preventDefault)) {
-                    event[key] = old[key];
-                }
-            }
-        }
-
-        // 事件发生在此元素上
-        if (!event.target) {
-            event.target = event.srcElement || _document2['default'];
-        }
-
-        // 跟事件发生元素有关联的元素
-        if (!event.relatedTarget) {
-            event.relatedTarget = event.fromElement === event.target ? event.toElement : event.fromElement;
-        }
-
-        // 阻止默认事件
-        event.preventDefault = function () {
-            if (old.preventDefault) {
-                old.preventDefault();
-            }
-
-            event.returnValue = false;
-            old.returnValue = false;
-            event.defaultPrevented = true;
-        };
-
-        event.defaultPrevented = false;
-
-        // 阻止事件冒泡
-        event.stopPropagation = function () {
-            if (old.stopPropagation) {
-                old.stopPropagation();
-            }
-
-            event.cancelBubble = true;
-            old.cancelBubble = true;
-            event.isPropagationStopped = returnTure;
-        };
-
-        event.isPropagationStopped = returnFalse;
-
-        // 阻止事件冒泡，并且当前阶段的事件也不执行
-        event.stopImmediatePropagation = function () {
-            if (old.stopImmediatePropagation) {
-                old.stopImmediatePropagation();
-            }
-
-            event.isImmediatePropagationStopped = returnTure;
-            event.stopPropagation();
-        };
-
-        event.isImmediatePropagationStopped = returnFalse;
-
-        // 鼠标位置
-        if (event.clientX != null) {
-            var doc = _document2['default'].documentElement;
-            var body = _document2['default'].body;
-
-            // clientX 代表与窗口左边的距离，根据页面滚动不同，是可变的
-            // pageX 代表相对于文档左边的距离，是个常量
-            event.pageX = event.clientX + (doc && doc.scrollLeft || body && body.scrollLeft || 0) - (doc && doc.clientLeft || body && body.clientLeft || 0);
-
-            event.pageY = event.clientY + (doc && doc.scrollTop || body && body.scrollTop || 0) - (doc && doc.clientTop || body && body.clientTop || 0);
-        }
-
-        // 键盘按键
-        event.which = event.charCode || event.keyCode;
-
-        // 鼠标按键
-        // 0: 左键
-        // 1: 中间按钮
-        // 2: 右键
-        if (event.button != null) {
-            // em... 这里应该是 与运算，就没去细究了
-            /* eslint-disable */
-            event.button = event.button & 1 ? 0 : event.button & 4 ? 1 : event.button & 2 ? 2 : 0;
-            /* eslint-disable */
-        }
-    }
-
-    return event;
+    el.removeEventListener(eventName, fn, options);
 }
 
-// https://github.com/WICG/EventListenerOptions/blob/gh-pages/explainer.md
-var isPassiveSupported = exports.isPassiveSupported = false;
-(function () {
-    try {
-        var opts = Object.defineProperty({}, 'passive', {
-            get: function get() {
-                // 如果浏览器会来读取这个属性，说明支持该功能
-                exports.isPassiveSupported = isPassiveSupported = true;
-            }
-        });
+// @todo 感觉实现方式有问题
+function one(el, eventName, fn) {
+    var options = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : false;
 
-        _window2['default'].addEventListener('test', null, opts);
-    } catch (ex) {}
-})();
-
-var passiveEvents = ['touchstart', 'touchmove'];
-
-/**
- * 向元素注册监听函数
- *
- * @param {Element|Object} elem 要绑定事件的元素
- * @param {string|Array} type 事件类型，可以是数组的形式
- * @param {Function} fn 要注册的回调函数
- */
-function on(elem, type, fn) {
-    if (Array.isArray(type)) {
-        return handleMultipleEvents(on, elem, type, fn);
+    function wrapper() {
+        fn();
+        off(el, eventName, wrapper, options);
     }
 
-    var data = DomData.getData(elem);
-    if (!data.handlers) {
-        data.handlers = {};
-    }
-
-    if (!data.handlers[type]) {
-        data.handlers[type] = [];
-    }
-
-    if (!fn.guid) {
-        fn.guid = (0, _guid.newGUID)();
-    }
-
-    // 我们往 handlers[type] 里面存函数，然后通过 dispatcher 调用
-    data.handlers[type].push(fn);
-
-    if (!data.dispatcher) {
-        /**
-         * trigger 的时候，我们通过调用这个函数，来调用注册在对应 elem 的对应 type 上的所有函数
-         *
-         * @param {Event} event 事件
-         * @param {Mixed} extraData 传入函数的数据
-         */
-        data.dispatcher = function (event, extraData) {
-            if (data.disabled) {
-                return;
-            }
-
-            // 通过 event.type 找到之前注册的回调函数
-            var handlers = data.handlers[event.type];
-
-            event = fixEvent(event);
-
-            if (handlers) {
-                // 鲁棒性。如果事件在执行过程中发生变动，不至于影响原来注册的事件，从而影响下次执行
-                var handlersClone = handlers.slice(0);
-
-                for (var i = 0; i < handlersClone.length; i++) {
-                    // 如果执行了 stopImmediatePropagation，那我们应该立即停止
-                    if (event.isImmediatePropagationStopped()) {
-                        break;
-                    } else {
-                        try {
-                            // 在当前 elem 上调用，同时将 event extraData 传过去当参数
-                            handlersClone[i].call(elem, event, extraData);
-                        } catch (ex) {
-                            console.log(ex);
-                        }
-                    }
-                }
-            }
-        };
-    }
-
-    // 只注册一次
-    if (data.handlers[type]['length'] === 1) {
-        // 系统事件，借用系统的能力调起
-        // 注意 这里注册的是 dispatcher 函数，通过 dispatcher 来统一地管理 fn
-        if (elem.addEventListener) {
-            // passive event listener
-            var options = false;
-            if (isPassiveSupported && (0, _lodash2['default'])(passiveEvents, type)) {
-                options = { passive: true };
-            }
-
-            elem.addEventListener(type, data.dispatcher, options);
-        } else if (elem.attachEvent) {
-            elem.attachEvent('on' + type, data.dispatcher);
-        }
-    }
+    on(el, eventName, wrapper, options);
 }
 
-/**
- * 触发事件
- *
- * @param {Element} elem 宿主元素
- * @param {string} event 事件类型
- * @param {Mixed} hash 事件触发时，传入的数据
- */
-function trigger(elem, event, hash) {
-    // 先判断 hasData，避免直接用 getData 给 elem 添加额外的数据（具体可参见 DomData:getData）
-    var data = DomData.hasData(elem) ? DomData.getData(elem) : {};
-    // 事件冒泡
-    var parent = elem.parentNode || elem.ownerDocument;
+function trigger(el, eventName) {
+    var initialDict = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
 
-    // 将 string 包装成正常的事件类型
-    if (typeof event === 'string') {
-        event = { type: event, target: elem };
-    }
+    initialDict = (0, _lodash2['default'])({
+        bubbles: false,
+        cancelable: false,
+        detail: null
+    }, initialDict);
 
-    // 标准化
-    event = fixEvent(event);
+    // for IE9/10/11
+    var event = _document2['default'].createEvent('CustomEvent');
+    event.initCustomEvent(eventName, initialDict.bubbles, initialDict.cancelable, initialDict.detail);
 
-    // 如果有事件调度函数，那我们可以通过这个函数去调用注册在这个元素上的对应类型的事件
-    // 理论上注册过事件后就会有这个函数
-    if (data.dispatcher) {
-        data.dispatcher.call(elem, event, hash);
-    }
-
-    // 冒泡吧
-    // 如果还有父元素，并且没有手动阻止事件冒泡，且这个事件本身支持冒泡（media events 不支持），那我们继续
-    if (parent && !event.isPropagationStopped() && event.bubbles === true) {
-        // 注意 这里就直接传我们标准化过的 event 了，不用再传 type
-        trigger.call(null, parent, event, hash);
-        // 如果已经到最上层的元素，并且没有被阻止事件的默认行为，那我们看看有没有系统对这种事件有没有默认行为要执行
-    } else if (!parent && !event.defaultPrevented) {
-        var targetData = DomData.getData(event.target);
-        // 如果系统也在这个事件上注册有函数
-        if (event.target[event.type]) {
-            // 在执行系统的事件函数前，先关闭我们自己的事件分发，因为已经执行过一次了（否则之前的那些事件有会被执行一次）
-            targetData.disabled = true;
-
-            // 执行系统默认事件
-            if (typeof event.target[event.type] === 'function') {
-                event.target[event.type]();
-            }
-
-            // 恢复 disable 参数，避免对下次事件造成影响
-            targetData.disabled = false;
-        }
-    }
-
-    // 告知调用者这个事件的默认行为是否被阻止了
-    // @see https://www.w3.org/TR/DOM-Level-3-Events/#event-flow-default-cancel
-    return !event.defaultPrevented;
+    el.dispatchEvent(event);
 }
 
-/**
- * 移除已注册的事件
- *
- * @param {Element} elem 要移除事件的元素
- * @param {string|Array=} type 事件类型。可选，如果没有 type 参数，则移除该元素上所有的事件
- * @param {Function=} fn 要移除的指定的函数。可选，如果没有此参数，则移除该 type 上的所有事件
- *
- * @desc
- *    1) 请按照参数顺序传参数
- */
-function off(elem, type, fn) {
-    if (!DomData.hasData(elem)) {
-        return;
-    }
-
-    var data = DomData.getData(elem);
-
-    if (!data.handlers) {
-        return;
-    }
-
-    if (Array.isArray(type)) {
-        return handleMultipleEvents(off, elem, type, fn);
-    }
-
-    function removeType(curType) {
-        data.handlers[curType] = [];
-        cleanUpEvents(elem, curType);
-    }
-
-    // 避免不传 type，直接传 fn 的情况
-    if (typeof type === 'function') {
-        throw new Error('注销指定事件函数前，先指定事件类型');
-    }
-
-    // 没有传 type，则移除所有事件
-    if (!type) {
-        for (var i in data.handlers) {
-            removeType(i);
-        }
-
-        return;
-    }
-
-    // 传了 type
-    var handlers = data.handlers[type];
-
-    if (!handlers) {
-        return;
-    }
-
-    // 传了 type，但没传 fn，则移除该 type 下的所有事件
-    if (type && !fn) {
-        removeType(type);
-        return;
-    }
-
-    // 传了 type 且传了 fn，则移除 type 下的 fn
-    // 如果这个函数之前注册过，就会有 guid 属性
-    if (fn.guid) {
-        if (handlers && handlers.length) {
-            data.handlers[type] = handlers.filter(function (value) {
-                return value.guid !== fn.guid;
-            });
-        }
-    }
-
-    // 最后需要再扫描下，有没有刚好被移除了所有函数的 type 或者 handlers
-    cleanUpEvents(elem, type);
-}
-
-/**
- * 在指定事件下，只触发指定函数一次
- *
- * @param {Element} elem 要绑定事件的元素
- * @param {string|Array} type 绑定的事件类型
- * @param {Function} fn 注册的回调函数
- */
-function one(elem, type, fn) {
-    if (Array.isArray(type)) {
-        return handleMultipleEvents(one, elem, type, fn);
-    }
-
-    function executeOnlyOnce() {
-        off(elem, type, executeOnlyOnce);
-        fn.apply(this, arguments);
-    }
-
-    // 移除函数需要 guid 属性
-    executeOnlyOnce.guid = fn.guid = fn.guid || (0, _guid.newGUID)();
-
-    on(elem, type, executeOnlyOnce);
-}
-
-},{"../utils/guid":44,"./dom-data":9,"global/document":2,"global/window":3,"lodash.includes":7}],12:[function(require,module,exports){
+},{"global/document":2,"lodash.assign":5}],11:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -5110,7 +4600,7 @@ exports['default'] = {
     }
 };
 
-},{"../events/events":11,"global/document":2}],13:[function(require,module,exports){
+},{"../events/events":10,"global/document":2}],12:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -5195,14 +4685,14 @@ var Html5 = function () {
         }
 
         var endFn = function endFn() {
-            this.trigger('fullscreenchange', { isFullscreen: false });
+            this.trigger('fullscreenchange', { detail: { isFullscreen: false } });
         };
 
         var beginFn = function beginFn() {
             if ('webkitPresentationMode' in this.el && this.el.webkitPresentationMode !== 'picture-in-picture') {
 
                 this.one('webkitendfullscreen', endFn);
-                this.trigger('fullscreenchange', { isFullscreen: true });
+                this.trigger('fullscreenchange', { detail: { isFullscreen: true } });
             }
         };
 
@@ -5504,7 +4994,7 @@ Html5.resetMediaElement = function (el) {
     };
 });
 
-},{"../events/evented":10,"../utils/dom":42,"../utils/normalize-source":47,"../utils/to-title-case":51,"global/document":2,"global/window":3}],14:[function(require,module,exports){
+},{"../events/evented":9,"../utils/dom":41,"../utils/normalize-source":46,"../utils/to-title-case":50,"global/document":2,"global/window":3}],13:[function(require,module,exports){
 'use strict';
 
 var _lodash = require('lodash.assign');
@@ -5604,7 +5094,7 @@ function larkplayer(el, options, readyFn) {
 // @see https://github.com/babel/babel/issues/2724
 module.exports = larkplayer;
 
-},{"./events/events":11,"./html5/html5":13,"./player":15,"./plugin/component":16,"./plugin/media-source-handler":17,"./plugin/plugin":20,"./utils/dom":42,"lodash.assign":5}],15:[function(require,module,exports){
+},{"./events/events":10,"./html5/html5":12,"./player":14,"./plugin/component":15,"./plugin/media-source-handler":16,"./plugin/plugin":19,"./utils/dom":41,"lodash.assign":5}],14:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -5774,8 +5264,6 @@ var Player = function () {
         this.handleFirstplay = this.handleFirstplay.bind(this);
         this.handlePause = this.handlePause.bind(this);
         this.handleEnded = this.handleEnded.bind(this);
-        this.handleDurationchange = this.handleDurationchange.bind(this);
-        this.handleTimeupdate = this.handleTimeupdate.bind(this);
         this.handleTap = this.handleTap.bind(this);
         this.handleTouchStart = this.handleTouchStart.bind(this);
         this.handleTouchMove = this.handleTouchMove.bind(this);
@@ -5938,7 +5426,6 @@ var Player = function () {
     Player.prototype.dispose = function dispose() {
         clearTimeout(this.activeTimeoutHandler);
         this.trigger('dispose');
-        this.off();
 
         // 注销全屏事件
         _fullscreen2['default'].off();
@@ -6197,8 +5684,7 @@ var Player = function () {
         // 'seeking',
         // 'seeked',
         // 'ended',
-        // 'durationchange',
-        // 'timeupdate',
+        'durationchange', 'timeupdate',
 
         /**
          * 浏览器获取数据的过程中触发
@@ -6243,7 +5729,7 @@ var Player = function () {
         });
 
         // 如果我们要先对事件做处理，那先走我们自己的 handlexxx 函数
-        ['loadstart', 'canplay', 'canplaythrough', 'error', 'playing', 'timeupdate', 'waiting', 'seeking', 'seeked', 'ended', 'durationchange', 'play', 'pause'].forEach(function (event) {
+        ['loadstart', 'canplay', 'canplaythrough', 'error', 'playing', 'waiting', 'seeking', 'seeked', 'ended', 'play', 'pause'].forEach(function (event) {
             Events.on(tech.el, event, _this7['handle' + (0, _toTitleCase2['default'])(event)]);
         });
 
@@ -6681,53 +6167,6 @@ var Player = function () {
         this.trigger('ended');
     };
 
-    /**
-     * 处理 durationchange 事件
-     *
-     * @private
-     * @fires Player#durationchange
-     */
-
-
-    Player.prototype.handleDurationchange = function handleDurationchange() {
-        var data = {
-            duration: this.techGet('duration')
-        };
-
-        /**
-         * 视频时长发生改变时触发
-         *
-         * @event Player#durationchange
-         * @param {Object} event 事件触发时浏览器自带的 event 对象
-         */
-        this.trigger('durationchange', data);
-    };
-
-    /**
-     * 处理 timeupdate 事件
-     *
-     * @private
-     * @fires Player#timeupdate
-     */
-
-
-    Player.prototype.handleTimeupdate = function handleTimeupdate() {
-        var data = {
-            currentTime: this.techGet('currentTime')
-        };
-        // data.currentTime = this.techGet('currentTime');
-
-        /**
-         * 视频当前时刻更新时触发，一般 1s 内会触发好几次
-         *
-         * @event Player#timeupdate
-         * @param {Object} event 事件触发时浏览器自带的 event 对象
-         * @param {Object} data 友情附带的数据
-         * @param {number} data.currentTime 当前时刻
-         */
-        this.trigger('timeupdate', data);
-    };
-
     Player.prototype.handleTap = function handleTap() {};
 
     /**
@@ -6814,8 +6253,8 @@ var Player = function () {
         var data = {};
 
         // 移动端的全屏事件会传 extData
-        if (extData.isFullscreen !== undefined) {
-            this.fullscreenStatus = extData.isFullscreen;
+        if (event.detail && event.detail.isFullscreen !== undefined) {
+            this.fullscreenStatus = event.detail.isFullscreen;
         } else if (_fullscreen2['default'].fullscreenEnabled()) {
             // pc 端 fullscreen 事件
             this.fullscreenStatus = _fullscreen2['default'].isFullscreen();
@@ -6838,7 +6277,7 @@ var Player = function () {
          * @param {Object} data 全屏相关的数据
          * @param {boolean} data.isFullscreen 当前是否是全屏状态
          */
-        this.trigger('fullscreenchange', data);
+        this.trigger('fullscreenchange', { detail: data });
     };
 
     /**
@@ -6886,7 +6325,7 @@ var Player = function () {
          *                         - 4 MEDIA_ERR_SRC_NOT_SUPPORTED 视频资源问题，比如视频不存在
          * @param {string} error.message 错误信息
          */
-        this.trigger('error', this.techGet('error'));
+        this.trigger('error', { detail: this.techGet('error') });
     };
 
     /**
@@ -7302,7 +6741,7 @@ var Player = function () {
              * @event Player#srcchange
              * @param {string} src 更换后的视频地址
              */
-            this.trigger('srcchange', _src);
+            this.trigger('srcchange', { detail: _src });
         } else {
             return this.techGet('src');
         }
@@ -7326,7 +6765,7 @@ var Player = function () {
              * @event Player#srcchange
              * @param {string} src 更换后的视频地址
              */
-            this.trigger('srcchange', this.player.src());
+            this.trigger('srcchange', { detail: this.player.src() });
         } else {
             return this.techGet('source');
         }
@@ -7467,7 +6906,7 @@ if (_featureDetector2['default'].touch) {
 
 exports['default'] = Player;
 
-},{"./events/evented":10,"./events/events":11,"./html5/fullscreen":12,"./html5/html5":13,"./plugin/component":16,"./plugin/media-source-handler":17,"./plugin/plugin":20,"./plugin/plugin-types":19,"./ui/buffer-bar":21,"./ui/complete":22,"./ui/control-bar":24,"./ui/control-bar-pc":23,"./ui/current-time":25,"./ui/duration":26,"./ui/error":28,"./ui/error-pc":27,"./ui/fullscreen-button":29,"./ui/gradient-bottom":30,"./ui/loading":32,"./ui/loading-pc":31,"./ui/not-support":33,"./ui/play-button":34,"./ui/progress-bar":37,"./ui/progress-bar-except-fill":35,"./ui/progress-bar-simple":36,"./ui/slider":38,"./ui/volume":40,"./utils/computed-style":41,"./utils/dom":42,"./utils/feature-detector":43,"./utils/log":45,"./utils/obj":48,"./utils/to-title-case":51,"global/document":2,"lodash.includes":7}],16:[function(require,module,exports){
+},{"./events/evented":9,"./events/events":10,"./html5/fullscreen":11,"./html5/html5":12,"./plugin/component":15,"./plugin/media-source-handler":16,"./plugin/plugin":19,"./plugin/plugin-types":18,"./ui/buffer-bar":20,"./ui/complete":21,"./ui/control-bar":23,"./ui/control-bar-pc":22,"./ui/current-time":24,"./ui/duration":25,"./ui/error":27,"./ui/error-pc":26,"./ui/fullscreen-button":28,"./ui/gradient-bottom":29,"./ui/loading":31,"./ui/loading-pc":30,"./ui/not-support":32,"./ui/play-button":33,"./ui/progress-bar":36,"./ui/progress-bar-except-fill":34,"./ui/progress-bar-simple":35,"./ui/slider":37,"./ui/volume":39,"./utils/computed-style":40,"./utils/dom":41,"./utils/feature-detector":42,"./utils/log":44,"./utils/obj":47,"./utils/to-title-case":50,"global/document":2,"lodash.includes":7}],15:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -7535,8 +6974,9 @@ var Component = function () {
 
 
     Component.prototype.dispose = function dispose() {
+        this.player.off('dispose', this.dispose);
+
         if (DOM.isEl(this.el) && this.el.parentNode) {
-            Events.off(this.el);
             this.el.parentNode.removeChild(this.el);
         }
         this.player = null;
@@ -7599,7 +7039,7 @@ var Component = function () {
 
 exports['default'] = Component;
 
-},{"../events/evented":10,"../events/events":11,"../utils/dom":42,"../utils/to-camel-case":50,"./plugin-store":18,"./plugin-types":19}],17:[function(require,module,exports){
+},{"../events/evented":9,"../events/events":10,"../utils/dom":41,"../utils/to-camel-case":49,"./plugin-store":17,"./plugin-types":18}],16:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -7677,7 +7117,7 @@ var MediaSourceHandler = function () {
 
 exports['default'] = MediaSourceHandler;
 
-},{"./plugin-store":18,"./plugin-types":19,"lodash.find":6}],18:[function(require,module,exports){
+},{"./plugin-store":17,"./plugin-types":18,"lodash.find":6}],17:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -7794,7 +7234,7 @@ exports['default'] = {
     }
 };
 
-},{"../utils/guid":44,"../utils/to-camel-case":50,"./component":16,"./media-source-handler":17,"./plugin":20,"./plugin-types":19,"lodash.values":8}],19:[function(require,module,exports){
+},{"../utils/guid":43,"../utils/to-camel-case":49,"./component":15,"./media-source-handler":16,"./plugin":19,"./plugin-types":18,"lodash.values":8}],18:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -7810,7 +7250,7 @@ exports['default'] = {
   OTHERS: 'plugin'
 };
 
-},{}],20:[function(require,module,exports){
+},{}],19:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -7873,7 +7313,7 @@ var Plugin = function () {
 
 exports['default'] = Plugin;
 
-},{"./plugin-store":18,"./plugin-types":19}],21:[function(require,module,exports){
+},{"./plugin-store":17,"./plugin-types":18}],20:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -7955,6 +7395,9 @@ var BufferBar = function (_Component) {
     };
 
     BufferBar.prototype.dispose = function dispose() {
+        this.player.off('progress', this.handleProgress);
+        this.player.off('canplay', this.handleProgress);
+
         this.line = null;
 
         _Component.prototype.dispose.call(this);
@@ -7973,7 +7416,7 @@ var BufferBar = function (_Component) {
 
 exports['default'] = BufferBar;
 
-},{"../plugin/component":16,"../utils/dom":42,"classnames":1}],22:[function(require,module,exports){
+},{"../plugin/component":15,"../utils/dom":41,"classnames":1}],21:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -8030,7 +7473,7 @@ if (!_featureDetector2['default'].touch) {
     _component2['default'].register(Complete, { name: 'complete' });
 }
 
-},{"../plugin/component":16,"../utils/feature-detector":43,"classnames":1}],23:[function(require,module,exports){
+},{"../plugin/component":15,"../utils/feature-detector":42,"classnames":1}],22:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -8143,7 +7586,7 @@ if (!_featureDetector2['default'].touch) {
     _component2['default'].register(ControlBarPc, { name: 'controlBarPc' });
 }
 
-},{"../plugin/component":16,"../utils/feature-detector":43,"./current-time":25,"./duration":26,"./fullscreen-button":29,"./gradient-bottom":30,"./play-button":34,"./progress-bar":37,"./volume":40,"classnames":1}],24:[function(require,module,exports){
+},{"../plugin/component":15,"../utils/feature-detector":42,"./current-time":24,"./duration":25,"./fullscreen-button":28,"./gradient-bottom":29,"./play-button":33,"./progress-bar":36,"./volume":39,"classnames":1}],23:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -8224,7 +7667,7 @@ if (_featureDetector2['default'].touch) {
     _component2['default'].register(ControlBar, { name: 'controlBar' });
 }
 
-},{"../plugin/component":16,"../utils/feature-detector":43,"./current-time":25,"./duration":26,"./fullscreen-button":29,"./progress-bar":37,"classnames":1}],25:[function(require,module,exports){
+},{"../plugin/component":15,"../utils/feature-detector":42,"./current-time":24,"./duration":25,"./fullscreen-button":28,"./progress-bar":36,"classnames":1}],24:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -8267,12 +7710,12 @@ var CurrentTime = function (_Component) {
 
         _this.handleTimeupdate = _this.handleTimeupdate.bind(_this);
 
-        player.on('timeupdate', _this.handleTimeupdate);
+        _this.player.on('timeupdate', _this.handleTimeupdate);
         return _this;
     }
 
-    CurrentTime.prototype.handleTimeupdate = function handleTimeupdate(event, data) {
-        this.render(data.currentTime);
+    CurrentTime.prototype.handleTimeupdate = function handleTimeupdate(event) {
+        this.render(this.player.currentTime());
     };
 
     CurrentTime.prototype.render = function render(time) {
@@ -8281,6 +7724,12 @@ var CurrentTime = function (_Component) {
 
     CurrentTime.prototype.reset = function reset() {
         this.render(0);
+    };
+
+    CurrentTime.prototype.dispose = function dispose() {
+        this.player.off('timeupdate', this.handleTimeupdate);
+
+        _Component.prototype.dispose.call(this);
     };
 
     CurrentTime.prototype.createEl = function createEl() {
@@ -8298,7 +7747,7 @@ var CurrentTime = function (_Component) {
 
 exports['default'] = CurrentTime;
 
-},{"../plugin/component":16,"../utils/dom":42,"../utils/time-format":49,"classnames":1}],26:[function(require,module,exports){
+},{"../plugin/component":15,"../utils/dom":41,"../utils/time-format":48,"classnames":1}],25:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -8341,8 +7790,8 @@ var Duration = function (_Component) {
 
         _this.handleLoadedMetaData = _this.handleLoadedMetaData.bind(_this);
 
-        player.on('durationchange', _this.handleLoadedMetaData);
-        player.on('loadedmetadata', _this.handleLoadedMetaData);
+        _this.player.on('durationchange', _this.handleLoadedMetaData);
+        _this.player.on('loadedmetadata', _this.handleLoadedMetaData);
         return _this;
     }
 
@@ -8352,6 +7801,13 @@ var Duration = function (_Component) {
 
     Duration.prototype.reset = function reset() {
         DOM.textContent(this.el, '');
+    };
+
+    Duration.prototype.dispose = function dispose() {
+        this.player.off('durationchange', this.handleLoadedMetaData);
+        this.player.off('loadedmetadata', this.handleLoadedMetaData);
+
+        _Component.prototype.dispose.call(this);
     };
 
     Duration.prototype.createEl = function createEl() {
@@ -8370,7 +7826,7 @@ var Duration = function (_Component) {
 
 exports['default'] = Duration;
 
-},{"../plugin/component":16,"../utils/dom":42,"../utils/time-format":49,"classnames":1}],27:[function(require,module,exports){
+},{"../plugin/component":15,"../utils/dom":41,"../utils/time-format":48,"classnames":1}],26:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -8436,7 +7892,8 @@ var ErrorPc = function (_Component) {
         }, 0);
     };
 
-    ErrorPc.prototype.handleError = function handleError(event, error) {
+    ErrorPc.prototype.handleError = function handleError(event) {
+        var error = event.detail || {};
         var text = void 0;
         switch (parseInt(error.code, 10)) {
             // MEDIA_ERR_ABORTED
@@ -8463,6 +7920,9 @@ var ErrorPc = function (_Component) {
     };
 
     ErrorPc.prototype.dispose = function dispose() {
+        this.player.off('error', this.handleError);
+        this.off('click', this.handleClick);
+
         this.textEl = null;
         _Component.prototype.dispose.call(this);
     };
@@ -8493,7 +7953,7 @@ if (!_featureDetector2['default'].touch) {
     _component2['default'].register(ErrorPc, { name: 'errorPc' });
 }
 
-},{"../plugin/component":16,"../utils/dom":42,"../utils/feature-detector":43,"./error":28,"classnames":1}],28:[function(require,module,exports){
+},{"../plugin/component":15,"../utils/dom":41,"../utils/feature-detector":42,"./error":27,"classnames":1}],27:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -8534,14 +7994,13 @@ var Error = function (_Component) {
         _this.handleClick = _this.handleClick.bind(_this);
 
         _this.player.on('error', _this.handleError);
-
         _this.on('click', _this.handleClick);
         return _this;
     }
 
-    Error.prototype.handleError = function handleError(event, data) {
+    Error.prototype.handleError = function handleError(event) {
         /* eslint-disable no-console */
-        console.log(event, data);
+        console.log(event, event.detail);
         /* eslint-enable no-console */
     };
 
@@ -8554,6 +8013,13 @@ var Error = function (_Component) {
             _this2.player.src(src);
             _this2.player.play();
         }, 0);
+    };
+
+    Error.prototype.dispose = function dispose() {
+        this.player.off('error', this.handleError);
+        this.off('click', this.handleClick);
+
+        _Component.prototype.dispose.call(this);
     };
 
     Error.prototype.createEl = function createEl() {
@@ -8583,7 +8049,7 @@ if (_featureDetector2['default'].touch) {
     _component2['default'].register(Error, { name: 'error' });
 }
 
-},{"../plugin/component":16,"../utils/feature-detector":43,"classnames":1}],29:[function(require,module,exports){
+},{"../plugin/component":15,"../utils/feature-detector":42,"classnames":1}],28:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -8644,12 +8110,8 @@ var FullscreenButton = function (_Component) {
             _this.fullscreenButton = DOM.$('.lark-request-fullscreen', _this.el);
             _this.exitFullscreenButton = DOM.$('.lark-exit-fullscreen', _this.el);
 
-            Events.on(_this.fullscreenButton, 'mouseover', function () {
-                return _this.handleMouseOver(_this.fullscreenButton, '全屏');
-            });
-            Events.on(_this.exitFullscreenButton, 'mouseover', function () {
-                return _this.handleMouseOver(_this.exitFullscreenButton, '退出全屏');
-            });
+            Events.on(_this.fullscreenButton, 'mouseover', _this.handleMouseOver);
+            Events.on(_this.exitFullscreenButton, 'mouseover', _this.handleMouseOver);
 
             _this.on('mouseout', _this.handleMouseOut);
         }
@@ -8666,12 +8128,12 @@ var FullscreenButton = function (_Component) {
         _tooltip2['default'].hide();
     };
 
-    FullscreenButton.prototype.handleMouseOver = function handleMouseOver(el, content) {
+    FullscreenButton.prototype.handleMouseOver = function handleMouseOver(event) {
         _tooltip2['default'].show({
-            hostEl: el,
+            hostEl: event.target,
             placement: 'top',
             margin: 16,
-            content: content
+            content: event.target.title
         });
     };
 
@@ -8680,24 +8142,26 @@ var FullscreenButton = function (_Component) {
     };
 
     FullscreenButton.prototype.dispose = function dispose() {
+        this.off('click', this.handleClick);
+
         if (!_featureDetector2['default'].touch) {
-            Events.off(this.fullscreenButton);
-            Events.off(this.exitFullscreenButton);
+            Events.off(this.fullscreenButton, 'mouseover', this.handleMouseOver);
+            Events.off(this.exitFullscreenButton, 'mouseover', this.handleMouseOver);
             this.fullscreenButton = null;
             this.exitFullscreenButton = null;
+
+            this.off('mouseout', this.handleMouseOut);
         }
 
         _Component.prototype.dispose.call(this);
     };
 
     FullscreenButton.prototype.createEl = function createEl() {
-        // @todo 将两个 icon 分别放到两个类中，这样可以确定他们每个的 click 的事件一定跟自己的名称是相符的
-        // @todo 需要一个非全屏的按钮 sueb
         return _component2['default'].createElement(
             'div',
             { className: (0, _classnames2['default'])('lark-fullscreen-button', this.options.className) },
-            _component2['default'].createElement('div', { className: 'lark-request-fullscreen lark-icon-request-fullscreen' }),
-            _component2['default'].createElement('div', { className: 'lark-exit-fullscreen' })
+            _component2['default'].createElement('div', { className: 'lark-request-fullscreen lark-icon-request-fullscreen', title: '\u5168\u5C4F' }),
+            _component2['default'].createElement('div', { className: 'lark-exit-fullscreen', title: '\u9000\u51FA\u5168\u5C4F' })
         );
     };
 
@@ -8706,7 +8170,7 @@ var FullscreenButton = function (_Component) {
 
 exports['default'] = FullscreenButton;
 
-},{"../events/events":11,"../plugin/component":16,"../utils/dom":42,"../utils/feature-detector":43,"./tooltip":39,"classnames":1}],30:[function(require,module,exports){
+},{"../events/events":10,"../plugin/component":15,"../utils/dom":41,"../utils/feature-detector":42,"./tooltip":38,"classnames":1}],29:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -8749,7 +8213,7 @@ var GradientBottom = function (_Component) {
 
 exports['default'] = GradientBottom;
 
-},{"../plugin/component":16,"classnames":1}],31:[function(require,module,exports){
+},{"../plugin/component":15,"classnames":1}],30:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -8809,7 +8273,7 @@ if (!_featureDetector2['default'].touch) {
     _component2['default'].register(LoadingPc, { name: 'loadingPc' });
 }
 
-},{"../plugin/component":16,"../utils/feature-detector":43,"classnames":1}],32:[function(require,module,exports){
+},{"../plugin/component":15,"../utils/feature-detector":42,"classnames":1}],31:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -8874,7 +8338,7 @@ if (_featureDetector2['default'].touch) {
     _component2['default'].register(Loading, { name: 'loading' });
 }
 
-},{"../plugin/component":16,"../utils/feature-detector":43,"classnames":1}],33:[function(require,module,exports){
+},{"../plugin/component":15,"../utils/feature-detector":42,"classnames":1}],32:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -8928,7 +8392,7 @@ exports['default'] = NotSupport;
 
 _component2['default'].register(NotSupport, { name: 'notSupport' });
 
-},{"../plugin/component":16,"classnames":1}],34:[function(require,module,exports){
+},{"../plugin/component":15,"classnames":1}],33:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -8978,33 +8442,24 @@ var PlayButton = function (_Component) {
 
         _this.playBtn = DOM.$('.lark-play-button__play', _this.el);
         _this.pauseBtn = DOM.$('.lark-play-button__pause', _this.el);
+        _this.eventName = _featureDetector2['default'].touch ? 'touchend' : 'click';
 
-        var eventName = _featureDetector2['default'].touch ? 'touchend' : 'click';
-
-        Events.on(_this.playBtn, eventName, function (event) {
-            return _this.togglePlay(event, true);
-        });
-        Events.on(_this.pauseBtn, eventName, function (event) {
-            return _this.togglePlay(event, false);
-        });
+        Events.on(_this.playBtn, _this.eventName, _this.togglePlay);
+        Events.on(_this.pauseBtn, _this.eventName, _this.togglePlay);
         return _this;
     }
 
     PlayButton.prototype.togglePlay = function togglePlay(event, isPlay) {
-        if (isPlay) {
-            if (this.player.paused()) {
-                this.player.play();
-            }
+        if (this.player.paused()) {
+            this.player.play();
         } else {
-            if (!this.player.paused()) {
-                this.player.pause();
-            }
+            this.player.pause();
         }
     };
 
     PlayButton.prototype.dispose = function dispose() {
-        Events.off(this.playBtn);
-        Events.off(this.pauseBtn);
+        Events.off(this.playBtn, this.eventName, this.togglePlay);
+        Events.off(this.pauseBtn, this.eventName, this.togglePlay);
         this.playBtn = null;
         this.pauseBtn = null;
 
@@ -9032,7 +8487,7 @@ if (_featureDetector2['default'].touch) {
     _component2['default'].register(PlayButton, { name: 'playButton' });
 }
 
-},{"../events/events":11,"../plugin/component":16,"../utils/dom":42,"../utils/feature-detector":43,"classnames":1}],35:[function(require,module,exports){
+},{"../events/events":10,"../plugin/component":15,"../utils/dom":41,"../utils/feature-detector":42,"classnames":1}],34:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -9100,7 +8555,7 @@ var ProgressBarExceptFill = function (_Component) {
 
 exports['default'] = ProgressBarExceptFill;
 
-},{"../plugin/component":16,"./buffer-bar":21,"classnames":1}],36:[function(require,module,exports){
+},{"../plugin/component":15,"./buffer-bar":20,"classnames":1}],35:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -9176,8 +8631,8 @@ var ProgressBarSimple = function (_Component) {
     };
 
     ProgressBarSimple.prototype.dispose = function dispose() {
+        player.off('timeupdate', this.handleTimeUpdate);
         this.line = null;
-
         _Component.prototype.dispose.call(this);
     };
 
@@ -9201,7 +8656,7 @@ if (_featureDetector2['default'].touch) {
     _component2['default'].register(ProgressBarSimple, { name: 'progressBarSimple' });
 }
 
-},{"../plugin/component":16,"../utils/dom":42,"../utils/feature-detector":43,"./buffer-bar":21,"classnames":1}],37:[function(require,module,exports){
+},{"../plugin/component":15,"../utils/dom":41,"../utils/feature-detector":42,"./buffer-bar":20,"classnames":1}],36:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -9280,7 +8735,7 @@ var ProgressBar = function (_Slider) {
         _this.hoverLight = DOM.$('.lark-progress-bar-hover-light', _this.el);
         _this.paddingEl = DOM.$('.lark-progress-bar-padding', _this.el);
 
-        player.on('timeupdate', _this.handleTimeUpdate);
+        _this.player.on('timeupdate', _this.handleTimeUpdate);
         _this.on('click', _this.handleClick);
         _this.on('touchstart', _this.handleSlideStart);
 
@@ -9398,6 +8853,16 @@ var ProgressBar = function (_Slider) {
     };
 
     ProgressBar.prototype.dispose = function dispose() {
+        this.player.off('timeupdate', this.handleTimeUpdate);
+        this.off('click', this.handleClick);
+        this.off('touchstart', this.handleSlideStart);
+        if (!_featureDetector2['default'].touch) {
+            this.off('mousedown', this.handleSlideStart);
+            this.off('mouseover', this.handleMouseOver);
+            this.off('mousemove', this.handleMouseMove);
+            this.off('mouseout', this.handleMouseOut);
+        }
+
         this.line = null;
         this.lineHandle = null;
         this.hoverLight = null;
@@ -9421,7 +8886,7 @@ var ProgressBar = function (_Slider) {
 
 exports['default'] = ProgressBar;
 
-},{"../plugin/component":16,"../utils/dom":42,"../utils/feature-detector":43,"../utils/time-format":49,"./progress-bar-except-fill":35,"./slider":38,"./tooltip":39,"classnames":1}],38:[function(require,module,exports){
+},{"../plugin/component":15,"../utils/dom":41,"../utils/feature-detector":42,"../utils/time-format":48,"./progress-bar-except-fill":34,"./slider":37,"./tooltip":38,"classnames":1}],37:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -9514,7 +8979,7 @@ var Slider = function (_Component) {
 
 exports['default'] = Slider;
 
-},{"../events/events":11,"../plugin/component":16,"../utils/dom":42}],39:[function(require,module,exports){
+},{"../events/events":10,"../plugin/component":15,"../utils/dom":41}],38:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -9655,7 +9120,7 @@ exports['default'] = {
     }
 };
 
-},{"../utils/dom":42,"lodash.assign":5}],40:[function(require,module,exports){
+},{"../utils/dom":41,"lodash.assign":5}],39:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -9851,13 +9316,18 @@ var Volume = function (_Slider) {
     };
 
     Volume.prototype.dispose = function dispose() {
-        Events.off(this.icon, ['click', 'mouseover', 'mouseout']);
-        Events.off(this.line, 'click');
-        Events.off(this.ball, ['mousedown', 'touchstart']);
+        Events.off(this.icon, 'click', this.iconClick);
+        Events.off(this.icon, 'mouseover', this.handleIconMouseOver);
+        Events.off(this.icon, 'mouseout', this.handleIconMouseOut);
+        Events.off(this.line, 'click', this.handleClick);
+        Events.off(this.ball, 'mousedown', this.handleSlideStart);
+        Events.off(this.ball, 'touchstart', this.handleSlideStart);
 
         this.icon = null;
         this.line = null;
         this.ball = null;
+
+        this.player.off('volumechange', this.handleVolumeChange);
 
         _Slider.prototype.dispose.call(this);
     };
@@ -9885,7 +9355,7 @@ var Volume = function (_Slider) {
 
 exports['default'] = Volume;
 
-},{"../events/events":11,"../plugin/component":16,"../utils/dom":42,"./slider":38,"./tooltip":39,"classnames":1}],41:[function(require,module,exports){
+},{"../events/events":10,"../plugin/component":15,"../utils/dom":41,"./slider":37,"./tooltip":38,"classnames":1}],40:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -9924,7 +9394,7 @@ function computedStyle(el, prop) {
    * @date 2017/11/3
    */
 
-},{"global/window":3}],42:[function(require,module,exports){
+},{"global/window":3}],41:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -10683,7 +10153,7 @@ var $$ = exports.$$ = createQuerier('querySelectorAll');
 //     }
 // })();
 
-},{"./computed-style":41,"./obj":48,"global/document":2,"global/window":3,"lodash.includes":7}],43:[function(require,module,exports){
+},{"./computed-style":40,"./obj":47,"global/document":2,"global/window":3,"lodash.includes":7}],42:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -10702,7 +10172,7 @@ exports['default'] = {
     * @date 2018/3/8
     */
 
-},{"global/document":2}],44:[function(require,module,exports){
+},{"global/document":2}],43:[function(require,module,exports){
 "use strict";
 
 exports.__esModule = true;
@@ -10725,7 +10195,7 @@ function newGUID() {
   return guid++;
 }
 
-},{}],45:[function(require,module,exports){
+},{}],44:[function(require,module,exports){
 "use strict";
 
 exports.__esModule = true;
@@ -10770,7 +10240,7 @@ log.error = console.error;
 
 log.clear = console.clear;
 
-},{}],46:[function(require,module,exports){
+},{}],45:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -10793,7 +10263,7 @@ exports['default'] = {
     'wmv': 'video/x-ms-wmv'
 };
 
-},{}],47:[function(require,module,exports){
+},{}],46:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -10883,7 +10353,7 @@ function nomalizeSource(source) {
     }
 }
 
-},{"./mime-type-map":46,"./obj":48}],48:[function(require,module,exports){
+},{"./mime-type-map":45,"./obj":47}],47:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -10941,7 +10411,7 @@ function each(obj, fn) {
   });
 }
 
-},{}],49:[function(require,module,exports){
+},{}],48:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -11000,7 +10470,7 @@ function timeFormat(seconds) {
     }
 }
 
-},{}],50:[function(require,module,exports){
+},{}],49:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -11020,7 +10490,7 @@ function toCamelCase(str) {
     return str.charAt(0).toLowerCase() + str.slice(1);
 }
 
-},{}],51:[function(require,module,exports){
+},{}],50:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -11061,5 +10531,5 @@ function titleCaseEquals(str1, str2) {
   return toTitleCase(str1) === toTitleCase(str2);
 }
 
-},{}]},{},[14])(14)
+},{}]},{},[13])(13)
 });
