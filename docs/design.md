@@ -132,7 +132,7 @@ Event 算是比较核心的一个模块。由于涉及到对原生事件的代�
 
 下面是 Events.trigger 的流程图
 
-<img alt="event trigger" src="http://baikebcs.bdimg.com/front-end/larkplayer/event-on.png" >
+<img alt="event trigger" src="http://baikebcs.bdimg.com/front-end/larkplayer/event-trigger.png" >
 
 
 由于 off 与 on 类似，one 可以经由 on 与 off 简单组合实现，故不予详述
