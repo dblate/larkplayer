@@ -11,7 +11,7 @@ An extensible html5 video player, supports mp4 m3u8 vr and other formats.
 </p>
 
 <p align="left">
-    English | <a href="./readme.md">中文</a>
+    English | <a href="https://github.com/dblate/larkplayer">中文</a>
 </p>
 
 ## Overview
