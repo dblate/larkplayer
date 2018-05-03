@@ -45,23 +45,6 @@ module.exports = function(config) {
         }]]
     },
 
-    // babelPreprocessor: {
-    //     options: {
-    //         plugins: [
-    //             ["transform-react-jsx", {
-    //                 "pragma": "Component.createElement"
-    //             }]
-    //         ],
-    //         presets: ['env']
-    //     }
-    // },
-
-    // browserify: {
-    //     debug: true,
-    //     transform: ['babelify']
-    // },
-
-
     // test results reporter to use
     // possible values: 'dots', 'progress'
     // available reporters: https://npmjs.org/browse/keyword/karma-reporter
