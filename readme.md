@@ -1,7 +1,7 @@
 <h1 align="left">larkplayer</h1>
 
 <p align="left">
-一款可扩展的 html5 播放器，支持 mp4 m3u8 vr 等类型的视频播放
+一款可扩展的 html5 播放器，支持 mp4 m3u8 vr 等类型
 </p>
 
 <p align="left">
@@ -11,7 +11,7 @@
 </p>
 
 <p align="left">
-    <a href="./readme-en.md">English</a> | 中文
+    中文｜<a href="./readme-en.md">English</a>
 </p>
 
 ## 简介
