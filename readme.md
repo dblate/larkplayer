@@ -1,20 +1,19 @@
 <h1 align="left">larkplayer</h1>
 
 <p align="left">
-一款可扩展的 html5 播放器，支持 mp4 m3u8 vr 等类型
-</p>
-
-<p align="left">
   <a href="https://www.npmjs.com/package/larkplayer"><img src="https://img.shields.io/npm/v/larkplayer.svg?style=flat-square" alt="NPM version"></a>
   <a href="https://www.npmjs.com/package/larkplayer"><img src="https://img.shields.io/npm/dm/larkplayer.svg?style=flat-square" alt="Downloads"></a>
   <a href="https://www.npmjs.com/package/larkplayer"><img src="https://img.shields.io/github/license/dblate/larkplayer.svg?style=flat-square" alt="License"></a>
 </p>
 
-<p align="left">
-    中文｜<a href="./readme-en.md">English</a>
-</p>
+
+<img src="./screenshots/larkplayer-pc.png" width="640" height="360" align="center" >
 
 ## 简介
+
+中文｜[English](./readme-en.md)
+
+一款可扩展的 html5 播放器，支持 mp4 m3u8 vr 等类型
 
 * 解决大部分兼容性问题，如全屏、移动端内联播放等
 * 提供事件机制，代理原生事件并允许自定义事件
