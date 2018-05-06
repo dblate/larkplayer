@@ -4994,7 +4994,7 @@ Html5.resetMediaElement = function (el) {
     };
 });
 
-},{"../events/evented":9,"../utils/dom":41,"../utils/normalize-source":46,"../utils/to-title-case":50,"global/document":2,"global/window":3}],13:[function(require,module,exports){
+},{"../events/evented":9,"../utils/dom":41,"../utils/normalize-source":47,"../utils/to-title-case":51,"global/document":2,"global/window":3}],13:[function(require,module,exports){
 'use strict';
 
 var _lodash = require('lodash.assign');
@@ -5029,15 +5029,13 @@ var _plugin = require('./plugin/plugin');
 
 var _plugin2 = _interopRequireDefault(_plugin);
 
+var _utils = require('./utils/utils');
+
+var _utils2 = _interopRequireDefault(_utils);
+
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj['default'] = obj; return newObj; } }
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
-
-/**
- * @file larkplayer.js larkplayer 入口函数
- * @author yuhui<yuhui06@baidu.com>
- * @date 2017/11/7
- */
 
 function normalize(el) {
     var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
@@ -5066,7 +5064,11 @@ function normalize(el) {
     }
 
     return { el: el, options: options, readyFn: readyFn };
-}
+} /**
+   * @file larkplayer.js larkplayer 入口函数
+   * @author yuhui<yuhui06@baidu.com>
+   * @date 2017/11/7
+   */
 
 function larkplayer(el, options, readyFn) {
     // @todo 优化不支持 html5 video 标签时的展示
@@ -5088,13 +5090,20 @@ function larkplayer(el, options, readyFn) {
     return player;
 }
 
-(0, _lodash2['default'])(larkplayer, { Events: Events, DOM: DOM, Component: _component2['default'], MediaSourceHandler: _mediaSourceHandler2['default'], Plugin: _plugin2['default'] });
+(0, _lodash2['default'])(larkplayer, {
+    Events: Events,
+    DOM: DOM,
+    Component: _component2['default'],
+    MediaSourceHandler: _mediaSourceHandler2['default'],
+    Plugin: _plugin2['default'],
+    util: _utils2['default']
+});
 
 // for babel es6
 // @see https://github.com/babel/babel/issues/2724
 module.exports = larkplayer;
 
-},{"./events/events":10,"./html5/html5":12,"./player":14,"./plugin/component":15,"./plugin/media-source-handler":16,"./plugin/plugin":19,"./utils/dom":41,"lodash.assign":5}],14:[function(require,module,exports){
+},{"./events/events":10,"./html5/html5":12,"./player":14,"./plugin/component":15,"./plugin/media-source-handler":16,"./plugin/plugin":19,"./utils/dom":41,"./utils/utils":52,"lodash.assign":5}],14:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -6908,7 +6917,7 @@ if (_featureDetector2['default'].touch) {
 
 exports['default'] = Player;
 
-},{"./events/evented":9,"./events/events":10,"./html5/fullscreen":11,"./html5/html5":12,"./plugin/component":15,"./plugin/media-source-handler":16,"./plugin/plugin":19,"./plugin/plugin-types":18,"./ui/buffer-bar":20,"./ui/complete":21,"./ui/control-bar":23,"./ui/control-bar-pc":22,"./ui/current-time":24,"./ui/duration":25,"./ui/error":27,"./ui/error-pc":26,"./ui/fullscreen-button":28,"./ui/gradient-bottom":29,"./ui/loading":31,"./ui/loading-pc":30,"./ui/not-support":32,"./ui/play-button":33,"./ui/progress-bar":36,"./ui/progress-bar-except-fill":34,"./ui/progress-bar-simple":35,"./ui/slider":37,"./ui/volume":39,"./utils/computed-style":40,"./utils/dom":41,"./utils/feature-detector":42,"./utils/log":44,"./utils/obj":47,"./utils/to-title-case":50,"global/document":2,"lodash.includes":7}],15:[function(require,module,exports){
+},{"./events/evented":9,"./events/events":10,"./html5/fullscreen":11,"./html5/html5":12,"./plugin/component":15,"./plugin/media-source-handler":16,"./plugin/plugin":19,"./plugin/plugin-types":18,"./ui/buffer-bar":20,"./ui/complete":21,"./ui/control-bar":23,"./ui/control-bar-pc":22,"./ui/current-time":24,"./ui/duration":25,"./ui/error":27,"./ui/error-pc":26,"./ui/fullscreen-button":28,"./ui/gradient-bottom":29,"./ui/loading":31,"./ui/loading-pc":30,"./ui/not-support":32,"./ui/play-button":33,"./ui/progress-bar":36,"./ui/progress-bar-except-fill":34,"./ui/progress-bar-simple":35,"./ui/slider":37,"./ui/volume":39,"./utils/computed-style":40,"./utils/dom":41,"./utils/feature-detector":42,"./utils/log":45,"./utils/obj":48,"./utils/to-title-case":51,"global/document":2,"lodash.includes":7}],15:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -7041,7 +7050,7 @@ var Component = function () {
 
 exports['default'] = Component;
 
-},{"../events/evented":9,"../events/events":10,"../utils/dom":41,"../utils/to-camel-case":49,"./plugin-store":17,"./plugin-types":18}],16:[function(require,module,exports){
+},{"../events/evented":9,"../events/events":10,"../utils/dom":41,"../utils/to-camel-case":50,"./plugin-store":17,"./plugin-types":18}],16:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -7236,7 +7245,7 @@ exports['default'] = {
     }
 };
 
-},{"../utils/guid":43,"../utils/to-camel-case":49,"./component":15,"./media-source-handler":16,"./plugin":19,"./plugin-types":18,"lodash.values":8}],18:[function(require,module,exports){
+},{"../utils/guid":44,"../utils/to-camel-case":50,"./component":15,"./media-source-handler":16,"./plugin":19,"./plugin-types":18,"lodash.values":8}],18:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -7749,7 +7758,7 @@ var CurrentTime = function (_Component) {
 
 exports['default'] = CurrentTime;
 
-},{"../plugin/component":15,"../utils/dom":41,"../utils/time-format":48,"classnames":1}],25:[function(require,module,exports){
+},{"../plugin/component":15,"../utils/dom":41,"../utils/time-format":49,"classnames":1}],25:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -7828,7 +7837,7 @@ var Duration = function (_Component) {
 
 exports['default'] = Duration;
 
-},{"../plugin/component":15,"../utils/dom":41,"../utils/time-format":48,"classnames":1}],26:[function(require,module,exports){
+},{"../plugin/component":15,"../utils/dom":41,"../utils/time-format":49,"classnames":1}],26:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -8890,7 +8899,7 @@ var ProgressBar = function (_Slider) {
 
 exports['default'] = ProgressBar;
 
-},{"../plugin/component":15,"../utils/dom":41,"../utils/feature-detector":42,"../utils/time-format":48,"./progress-bar-except-fill":34,"./slider":37,"./tooltip":38,"classnames":1}],37:[function(require,module,exports){
+},{"../plugin/component":15,"../utils/dom":41,"../utils/feature-detector":42,"../utils/time-format":49,"./progress-bar-except-fill":34,"./slider":37,"./tooltip":38,"classnames":1}],37:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -10157,7 +10166,7 @@ var $$ = exports.$$ = createQuerier('querySelectorAll');
 //     }
 // })();
 
-},{"./computed-style":40,"./obj":47,"global/document":2,"global/window":3,"lodash.includes":7}],42:[function(require,module,exports){
+},{"./computed-style":40,"./obj":48,"global/document":2,"global/window":3,"lodash.includes":7}],42:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -10177,6 +10186,62 @@ exports['default'] = {
     */
 
 },{"global/document":2}],43:[function(require,module,exports){
+'use strict';
+
+exports.__esModule = true;
+exports.bind = bind;
+exports.throttle = throttle;
+
+var _guid = require('./guid');
+
+/**
+ * 绑定函数到指定的上下文
+ *
+ * @todo videojs 在返回的函数上还加了 guid 做更加个性化的处理，目前暂时用不上就没写
+ *
+ * @param {Funtion} fn 要绑定上下文的函数
+ * @param {Object} thisArg 函数要绑定的上下文
+ * @return {Function} 该函数会在指定的上下文中执行
+ */
+function bind(fn, thisArg) {
+    if (!fn.guid) {
+        fn.guid = (0, _guid.newGUID)();
+    }
+
+    return function () {
+        for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
+            args[_key] = arguments[_key];
+        }
+
+        return fn.apply(thisArg, args);
+    };
+}
+
+/**
+ * 限制函数的执行的频率
+ *
+ * @param {Function} fn 要控制执行频率的函数
+ * @param {number} wait 函数的执行间隔大于等于此数值（单位：ms）
+ * @return {Funtion} 限制了执行频率的函数
+ */
+/**
+ * @file fn.js 函数相关的一些方法
+ * @author yuhui06@baidu.com
+ * @date 2017/11/3
+ */
+
+function throttle(fn, wait) {
+    var lastTimestamp = Date.now();
+    return function () {
+        var now = Date.now();
+        if (now - lastTimestamp >= wait) {
+            fn.apply(undefined, arguments);
+            lastTimestamp = now;
+        }
+    };
+}
+
+},{"./guid":44}],44:[function(require,module,exports){
 "use strict";
 
 exports.__esModule = true;
@@ -10199,7 +10264,7 @@ function newGUID() {
   return guid++;
 }
 
-},{}],44:[function(require,module,exports){
+},{}],45:[function(require,module,exports){
 "use strict";
 
 exports.__esModule = true;
@@ -10244,7 +10309,7 @@ log.error = console.error;
 
 log.clear = console.clear;
 
-},{}],45:[function(require,module,exports){
+},{}],46:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -10267,7 +10332,7 @@ exports['default'] = {
     'wmv': 'video/x-ms-wmv'
 };
 
-},{}],46:[function(require,module,exports){
+},{}],47:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -10357,7 +10422,7 @@ function nomalizeSource(source) {
     }
 }
 
-},{"./mime-type-map":45,"./obj":47}],47:[function(require,module,exports){
+},{"./mime-type-map":46,"./obj":48}],48:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -10415,7 +10480,7 @@ function each(obj, fn) {
   });
 }
 
-},{}],48:[function(require,module,exports){
+},{}],49:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -10474,7 +10539,7 @@ function timeFormat(seconds) {
     }
 }
 
-},{}],49:[function(require,module,exports){
+},{}],50:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -10494,7 +10559,7 @@ function toCamelCase(str) {
     return str.charAt(0).toLowerCase() + str.slice(1);
 }
 
-},{}],50:[function(require,module,exports){
+},{}],51:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -10535,5 +10600,66 @@ function titleCaseEquals(str1, str2) {
   return toTitleCase(str1) === toTitleCase(str2);
 }
 
-},{}]},{},[13])(13)
+},{}],52:[function(require,module,exports){
+'use strict';
+
+exports.__esModule = true;
+
+var _computedStyle = require('./computed-style');
+
+var _computedStyle2 = _interopRequireDefault(_computedStyle);
+
+var _featureDetector = require('./feature-detector');
+
+var _featureDetector2 = _interopRequireDefault(_featureDetector);
+
+var _fn = require('./fn');
+
+var fn = _interopRequireWildcard(_fn);
+
+var _guid = require('./guid');
+
+var guid = _interopRequireWildcard(_guid);
+
+var _mimeTypeMap = require('./mime-type-map');
+
+var _mimeTypeMap2 = _interopRequireDefault(_mimeTypeMap);
+
+var _obj = require('./obj');
+
+var obj = _interopRequireWildcard(_obj);
+
+var _timeFormat = require('./time-format');
+
+var _timeFormat2 = _interopRequireDefault(_timeFormat);
+
+var _toCamelCase = require('./to-camel-case');
+
+var _toCamelCase2 = _interopRequireDefault(_toCamelCase);
+
+var _toTitleCase = require('./to-title-case');
+
+var _toTitleCase2 = _interopRequireDefault(_toTitleCase);
+
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj['default'] = obj; return newObj; } }
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
+
+exports['default'] = {
+    computedStyle: _computedStyle2['default'],
+    featureDetector: _featureDetector2['default'],
+    fn: fn,
+    guid: guid,
+    mimeTypeMap: _mimeTypeMap2['default'],
+    obj: obj,
+    timeFormat: _timeFormat2['default'],
+    toCamelCase: _toCamelCase2['default'],
+    toTitleCase: _toTitleCase2['default']
+}; /**
+    * @file 整合 utils 各方法，方便对外输出
+    * @author yuhui06
+    * @date 2018/5/6
+    */
+
+},{"./computed-style":40,"./feature-detector":42,"./fn":43,"./guid":44,"./mime-type-map":46,"./obj":48,"./time-format":49,"./to-camel-case":50,"./to-title-case":51}]},{},[13])(13)
 });
