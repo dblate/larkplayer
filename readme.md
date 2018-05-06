@@ -6,23 +6,31 @@
   <a href="https://www.npmjs.com/package/larkplayer"><img src="https://img.shields.io/github/license/dblate/larkplayer.svg?style=flat-square" alt="License"></a>
 </p>
 
+中文｜[English](./readme-en.md)
 
-<img src="./screenshots/larkplayer-pc.png" width="640" height="360" align="center" >
+轻量级、可扩展的 html5 播放器
 
 ## 简介
 
-中文｜[English](./readme-en.md)
+larkplayer 以插件化的思想编写，对于整个视频业务而言，它本身是一个精巧的核心，许多复杂或定制化的功能均由插件实现。
 
-一款可扩展的 html5 播放器，支持 mp4 m3u8 vr 等类型
+它本身有如下特点：
 
+* 体积小巧，gzip 压缩后小于 18KB
 * 解决大部分兼容性问题，如全屏、移动端内联播放等
-* 提供事件机制，代理原生事件并允许自定义事件
+* 提供事件机制，支持自定义事件
 * 提供插件机制，支持多种插件类型
-* 提供自定义样式，自适应 pc 与移动端
 * 原生 javascript 编写，无特定框架依赖
 
-可通过 [截图](https://github.com/dblate/larkplayer/tree/master/screenshots) 或 [在线示例](https://s.codepen.io/dblate/debug/qojzZZ/ZoMBajEzGyDk) 体验
+通过插件可以：
 
+* 支持 hls vr 等其他类型
+* 拥有自定义的样式
+* ...
+
+更多插件请访问[插件列表](./docs/plugin/plugin-list) ，同时你也可以[编写自定义插件](./docs/plugin)
+
+[在线示例](https://s.codepen.io/dblate/debug/qojzZZ/ZoMBajEzGyDk)
 
 ## 下载
 
@@ -33,7 +41,6 @@ npm install larkplayer
 
 CDN
 ```
-<link rel="stylesheet" href="https://unpkg.com/larkplayer@latest/dist/larkplayer.css" />
 <script src="https://unpkg.com/larkplayer@latest/dist/larkplayer.js"></script>
 ```
 
@@ -46,7 +53,6 @@ CDN
 <html>
 <head>
     <title>larkplayer quick start</title>
-    <link rel="stylesheet" type="text/css" href="https://unpkg.com/larkplayer@latest/dist/larkplayer.css">
 </head>
 <body>
     <video id="my-video" src="https://baikebcs.bdimg.com/baike-other/big-buck-bunny.mp4" width="400" height="300" controls>
