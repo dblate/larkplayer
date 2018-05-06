@@ -56,6 +56,27 @@ function larkplayer(el, options, readyFn) {
 
 assign(larkplayer, {Events, DOM, Component, MediaSourceHandler, Plugin});
 
+// assign(larkplayer, {
+//     Events,
+//     DOM,
+//     Component,
+//     MediaSourceHandler,
+//     Plugin,
+//     util: {
+//         computedStyle,
+//         featureDetector,
+//         fn,
+//         guid,
+//         log,
+//         mimeTypeMap,
+//         normalizeSource,
+//         obj,
+//         timeFormat,
+//         toCamelCase,
+//         toTitleCase
+//     }
+// });
+
 
 // for babel es6
 // @see https://github.com/babel/babel/issues/2724
