@@ -5350,9 +5350,7 @@ var Player = function () {
         var tag = this.tag;
 
         // 处理 options 中的 html5 标准属性
-        var html5StandardOptions = ['autoplay',
-        // 'controls',
-        'height', 'loop', 'muted', 'poster', 'preload', 'auto', 'metadata', 'none', 'src', 'width', 'playsinline'];
+        var html5StandardOptions = ['autoplay', 'controls', 'height', 'loop', 'muted', 'poster', 'preload', 'auto', 'metadata', 'none', 'src', 'width', 'playsinline'];
         (0, _obj.each)(this.options, function (value, key) {
             if ((0, _lodash2['default'])(html5StandardOptions, key) && value) {
                 DOM.setAttribute(tag, key, value);
@@ -5376,7 +5374,7 @@ var Player = function () {
 
         // 将原生控制条移除
         // 目前只支持使用自定义的控制条
-        tag.removeAttribute('controls');
+        // tag.removeAttribute('controls');
 
         // 将 el 插入到 DOM 中
         if (tag.parentNode) {
@@ -5400,6 +5398,9 @@ var Player = function () {
             el.style.height = tagHeight + 'px';
             tag.removeAttribute('height');
         }
+
+        tag.setAttribute('width', '100%');
+        tag.setAttribute('height', '100%');
 
         // @todo safari 好像不支持移动 video DOM?
         // 将 video 插入到 el 中
@@ -5687,32 +5688,6 @@ var Player = function () {
         } else {
             return parseInt((0, _computedStyle2['default'])(this.el, 'height'), 0);
         }
-    };
-
-    /**
-     * 显示或隐藏控制条
-     *
-     * @param {boolean=} bool 显示或隐藏控制条，如果不传任何参数，则单纯返回当前控制条状态
-     * @return {boolean} 当前控制条状态（显示或隐藏）
-     */
-
-
-    Player.prototype.controls = function controls(bool) {
-        if (bool === undefined) {
-            return this.getControlsStatus();
-        }
-
-        if (bool) {
-            this.removeClass('lark-controls-hide');
-        } else {
-            this.addClass('lark-controls-hide');
-        }
-
-        return this.getControlsStatus();
-    };
-
-    Player.prototype.getControlsStatus = function getControlsStatus() {
-        return !this.hasClass('lark-controls-hide');
     };
 
     /**
@@ -6378,7 +6353,7 @@ var Player = function () {
  * @param {string=} preload 可选。设置 preload 属性的值（none、auto、metadata）
  * @return {undefined|string} undefined 或 当前 preload 值
  */
-'preload'].forEach(function (prop) {
+'preload', 'controls'].forEach(function (prop) {
     // 这里别用箭头函数，不然 this 就指不到 Player.prototype 了
     Player.prototype[prop] = function (val) {
         if (val !== undefined) {

@@ -228,7 +228,7 @@ class Player {
         // 处理 options 中的 html5 标准属性
         const html5StandardOptions = [
             'autoplay',
-            // 'controls',
+            'controls',
             'height',
             'loop',
             'muted',
@@ -264,7 +264,7 @@ class Player {
 
         // 将原生控制条移除
         // 目前只支持使用自定义的控制条
-        tag.removeAttribute('controls');
+        // tag.removeAttribute('controls');
 
         // 将 el 插入到 DOM 中
         if (tag.parentNode) {
@@ -289,6 +289,8 @@ class Player {
             tag.removeAttribute('height');
         }
 
+        tag.setAttribute('width', '100%');
+        tag.setAttribute('height', '100%');
 
         // @todo safari 好像不支持移动 video DOM?
         // 将 video 插入到 el 中
@@ -574,30 +576,6 @@ class Player {
         } else {
             return parseInt(computedStyle(this.el, 'height'), 0);
         }
-    }
-
-    /**
-     * 显示或隐藏控制条
-     *
-     * @param {boolean=} bool 显示或隐藏控制条，如果不传任何参数，则单纯返回当前控制条状态
-     * @return {boolean} 当前控制条状态（显示或隐藏）
-     */
-    controls(bool) {
-        if (bool === undefined) {
-            return this.getControlsStatus();
-        }
-
-        if (bool) {
-            this.removeClass('lark-controls-hide');
-        } else {
-            this.addClass('lark-controls-hide');
-        }
-
-        return this.getControlsStatus();
-    }
-
-    getControlsStatus() {
-        return !this.hasClass('lark-controls-hide');
     }
 
     /**
@@ -1198,7 +1176,8 @@ class Player {
      * @param {string=} preload 可选。设置 preload 属性的值（none、auto、metadata）
      * @return {undefined|string} undefined 或 当前 preload 值
      */
-    'preload'
+    'preload',
+    'controls'
 ].forEach(prop => {
     // 这里别用箭头函数，不然 this 就指不到 Player.prototype 了
     Player.prototype[prop] = function (val) {
