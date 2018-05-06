@@ -5,7 +5,6 @@
  * @todo 对于 Player 构造函数的特殊照顾需要理一下，可能没必要
  */
 
-
 import includes from 'lodash.includes';
 import document from 'global/document';
 
@@ -24,32 +23,6 @@ import log from './utils/log';
 import computedStyle from './utils/computed-style';
 import featureDetector from './utils/feature-detector';
 
-import './ui/buffer-bar';
-import './ui/complete';
-import './ui/control-bar-pc';
-import './ui/control-bar';
-import './ui/current-time';
-import './ui/duration';
-import './ui/error-pc';
-import './ui/error';
-import './ui/fullscreen-button';
-import './ui/gradient-bottom';
-import './ui/loading-pc';
-import './ui/loading';
-import './ui/not-support';
-import './ui/play-button';
-import './ui/progress-bar-except-fill';
-import './ui/progress-bar-simple';
-import './ui/progress-bar';
-import './ui/slider';
-import './ui/volume';
-
-
-const activeClass = 'lark-user-active';
-
-/**
- * @class Player
- */
 class Player {
 
     /**
@@ -85,48 +58,22 @@ class Player {
         evented(this, {eventBusKey: this.el});
 
         // 需放在 this.loadTech 方法前面
-        this.handleLoadstart = this.handleLoadstart.bind(this);
-        this.handlePlay = this.handlePlay.bind(this);
-        this.handleWaiting = this.handleWaiting.bind(this);
-        this.handleCanplay = this.handleCanplay.bind(this);
-        this.handleCanplaythrough = this.handleCanplaythrough.bind(this);
-        this.handlePlaying = this.handlePlaying.bind(this);
-        this.handleSeeking = this.handleSeeking.bind(this);
-        this.handleSeeked = this.handleSeeked.bind(this);
         this.handleFirstplay = this.handleFirstplay.bind(this);
-        this.handlePause = this.handlePause.bind(this);
-        this.handleEnded = this.handleEnded.bind(this);
-        this.handleTap = this.handleTap.bind(this);
-        this.handleTouchStart = this.handleTouchStart.bind(this);
-        this.handleTouchMove = this.handleTouchMove.bind(this);
         this.handleTouchEnd = this.handleTouchEnd.bind(this);
         this.handleFullscreenChange = this.handleFullscreenChange.bind(this);
         this.handleFullscreenError = this.handleFullscreenError.bind(this);
-        this.handleError = this.handleError.bind(this);
         this.handleClick = this.handleClick.bind(this);
-        this.handleMouseEnter = this.handleMouseEnter.bind(this);
-        this.handleMouseMove = this.handleMouseMove.bind(this);
-        this.handleMouseLeave = this.handleMouseLeave.bind(this);
         this.fullWindowOnEscKey = this.fullWindowOnEscKey.bind(this);
 
-        // 3000ms 后自动隐藏播放器控制条
-        this.activeTimeout = 3000;
-
         if (featureDetector.touch) {
-            this.on('touchstart', this.handleTouchStart);
             this.on('touchend', this.handleTouchEnd);
         } else {
             this.on('click', this.handleClick);
-            this.on('mouseenter', this.handleMouseEnter);
-            this.on('mousemove', this.handleMouseMove);
-            this.on('mouseleave', this.handleMouseLeave);
         }
 
         if (!this.tech) {
             this.tech = this.loadTech();
         }
-
-        this.addClass('lark-paused');
 
         const src = this.src();
         if (src) {
@@ -248,7 +195,6 @@ class Player {
      *
      */
     dispose() {
-        clearTimeout(this.activeTimeoutHandler);
         this.trigger('dispose');
 
         // 注销全屏事件
@@ -451,7 +397,7 @@ class Player {
 
         // 注册 video 的各个事件
         [
-            // 'loadstart',
+            'loadstart',
 
             /**
              * 浏览器停止获取数据时触发
@@ -469,7 +415,7 @@ class Player {
              * @param {Object} event 事件触发时浏览器自带的 event 对象
              */
             'abort',
-            // 'error',
+            'error',
 
             /**
              * 视频被清空时触发
@@ -502,13 +448,13 @@ class Player {
              * @param {Object} event 事件触发时浏览器自带的 event 对象
              */
             'loadeddata',
-            // 'canplay',
-            // 'canplaythrough',
-            // 'playing',
-            // 'waiting',
-            // 'seeking',
-            // 'seeked',
-            // 'ended',
+            'canplay',
+            'canplaythrough',
+            'playing',
+            'waiting',
+            'seeking',
+            'seeked',
+            'ended',
             'durationchange',
             'timeupdate',
 
@@ -519,8 +465,8 @@ class Player {
              * @param {Object} event 事件触发时浏览器自带的 event 对象
              */
             'progress',
-            // 'play',
-            // 'pause',
+            'play',
+            'pause',
 
             /**
              * 视频播放速率改变时触发
@@ -554,24 +500,6 @@ class Player {
                 this.trigger(event);
             });
         });
-
-        // 如果我们要先对事件做处理，那先走我们自己的 handlexxx 函数
-        [
-            'loadstart',
-            'canplay',
-            'canplaythrough',
-            'error',
-            'playing',
-            'waiting',
-            'seeking',
-            'seeked',
-            'ended',
-            'play',
-            'pause'
-        ].forEach(event => {
-            Events.on(tech.el, event, this[`handle${toTitleCase(event)}`]);
-        });
-
 
         // 绑定 firstPlay 事件
         // 先 off 确保只绑定一次
@@ -702,199 +630,7 @@ class Player {
         // this.updateStyleEl_();
     }
 
-    // @dprecated
-    // videojs 中的方法，目前没用到
-    hasStart(hasStarted) {
-        if (hasStarted !== undefined) {
-            if (this.hasStarted !== hasStarted) {
-                this.hasStarted = hasStarted;
-                if (hasStarted) {
-                    this.addClass('lark-has-started');
-                    this.trigger('firstplay');
-                } else {
-                    this.removeClass('lark-has-started');
-                }
-            }
-            return;
-        }
-
-        return !!this.hasStarted;
-    }
-
     // = = = = = = = = = = = = = 事件处理 = = = = = = = = = = = = = =
-
-    /**
-     * 处理 loadstart 事件
-     *
-     * @private
-     * @fires Player#loadstart
-     * @listens Html5#loadstart
-     * @see https://html.spec.whatwg.org/#mediaevents
-     */
-    handleLoadstart() {
-        this.addClass('lark-loadstart');
-
-        /**
-         * loadstart 时触发
-         *
-         * @event Player#loadstart
-         * @param {Object} event 事件触发时浏览器自带的 event 对象
-         */
-        this.trigger('loadstart');
-    }
-
-    /**
-     * 处理 play 事件
-     *
-     * @private
-     * @fires Player#play
-     * @see https://html.spec.whatwg.org/#mediaevents
-     */
-    handlePlay() {
-        // @todo removeClass 支持一次 remove 多个 class
-        this.removeClass('lark-loadstart');
-        this.removeClass('lark-ended');
-        this.removeClass('lark-paused');
-        this.removeClass('lark-error');
-        this.removeClass('lark-seeking');
-        this.removeClass('lark-waiting');
-        this.addClass('lark-playing');
-
-        clearTimeout(this.activeTimeoutHandler);
-        this.addClass(activeClass);
-        this.activeTimeoutHandler = setTimeout(() => {
-            this.removeClass(activeClass);
-        }, this.activeTimeout);
-
-        /**
-         * 视频播放时触发，无论是第一次播放还是暂停、卡顿后恢复播放
-         *
-         * @event Player#play
-         * @param {Object} event 事件触发时浏览器自带的 event 对象
-         */
-        this.trigger('play');
-    }
-
-    /**
-     * 处理 waiting 事件
-     *
-     * @private
-     * @fires Player#waiting
-     * @see https://html.spec.whatwg.org/#mediaevents
-     */
-    handleWaiting() {
-        this.addClass('lark-waiting');
-
-        /**
-         * 视频播放因为下一帧没准备好而暂时停止，但是客户端正在努力缓冲中时触发
-         * 简单来讲，在视频卡顿或视频跳转到指定位置时触发，在暂停、视频播放完成、视频播放出错时不会触发
-         *
-         * @event Player#waiting
-         * @param {Object} event 事件触发时浏览器自带的 event 对象
-         */
-        this.trigger('waiting');
-        // 处于 waiting 状态后一般都会伴随一次 timeupdate，即使那之后视频还是处于卡顿状态
-        // this.one('timeupdate', () => this.removeClass('lark-waiting'));
-    }
-
-    /**
-     * 处理 canplay 事件
-     *
-     * @private
-     * @fires Player#canplay
-     */
-    handleCanplay() {
-        this.removeClass('lark-waiting');
-        this.removeClass('lark-loadstart');
-
-        if (this.paused()) {
-            this.removeClass('lark-playing');
-            this.addClass('lark-paused');
-        }
-
-        /**
-         * 视频能开始播发时触发，并不保证能流畅的播完
-         *
-         * @event Player#canplay
-         * @param {Object} event 事件触发时浏览器自带的 event 对象
-         */
-        this.trigger('canplay');
-    }
-
-    /**
-     * 处理 canplaythrough 事件
-     *
-     * @private
-     * @fires Player#canplaythrough
-     */
-    handleCanplaythrough() {
-        this.removeClass('lark-waiting');
-
-        /**
-         * 如果从当前开始播放，视频估计能流畅的播完时触发此事件
-         *
-         * @event Player#canplaythrough
-         * @param {Object} event 事件触发时浏览器自带的 event 对象
-         */
-        this.trigger('canplaythrough');
-    }
-
-    /**
-     * 处理 playing 事件
-     *
-     * @private
-     * @fires Player#playing
-     */
-    handlePlaying() {
-        this.removeClass('lark-waiting');
-        this.removeClass('lark-loadstart');
-
-        /**
-         * Playback is ready to start after having been paused or delayed due to lack of media data.
-         *
-         * @event Player#playing
-         * @param {Object} event 事件触发时浏览器自带的 event 对象
-         * @see https://html.spec.whatwg.org/#mediaevents
-         */
-        this.trigger('playing');
-    }
-
-    /**
-     * 处理 seeking 事件
-     *
-     * @private
-     * @fires Player#seeking
-     */
-    handleSeeking() {
-        this.addClass('lark-seeking');
-
-        /**
-         * 视频跳转到指定时刻时触发
-         *
-         * @event Player#seeking
-         * @param {Object} event 事件触发时浏览器自带的 event 对象
-         */
-        this.trigger('seeking');
-    }
-
-    /**
-     * 处理 seeked 事件
-     *
-     * @private
-     * @fires Player#seeked
-     */
-    handleSeeked() {
-        this.removeClass('lark-seeking');
-        this.removeClass('lark-waiting');
-
-        /**
-         * 视频跳转到某一时刻完成后触发
-         *
-         * @event Player#seeked
-         * @param {Object} event 事件触发时浏览器自带的 event 对象
-         */
-        this.trigger('seeked');
-    }
 
     /**
      * 处理自定义的 firstplay 事件
@@ -904,100 +640,12 @@ class Player {
      * @fires Player#firstplay
      */
     handleFirstplay() {
-        // @todo 不清楚有什么用
-        this.addClass('lark-has-started');
-
-        clearTimeout(this.activeTimeoutHandler);
-        this.addClass(activeClass);
-        this.activeTimeoutHandler = setTimeout(() => {
-            this.removeClass(activeClass);
-        }, this.activeTimeout);
-
         /**
          * 在视频第一次播放时触发，只会触发一次
          *
          * @event Player#firstplay
          */
         this.trigger('firstplay');
-    }
-
-    /**
-     * 处理 pause 事件
-     *
-     * @private
-     * @fires Player#pause
-     */
-    handlePause() {
-        this.removeClass('lark-playing');
-        this.addClass('lark-paused');
-
-        /**
-         * 视频暂停时触发
-         *
-         * @event Player#pause
-         * @param {Object} event 事件触发时浏览器自带的 event 对象
-         */
-        this.trigger('pause');
-    }
-
-    /**
-     * 处理 ended 事件
-     *
-     * @private
-     * @fires Player#ended
-     */
-    handleEnded() {
-        this.addClass('lark-ended');
-
-        // 如果播放器自动循环了，在 chrome 上不会触发 ended 事件
-        // @todo 待验证其他浏览器
-        if (this.options.loop) {
-            this.currentTime(0);
-            this.play();
-        } else if (!this.paused()) {
-            this.pause();
-        }
-
-        /**
-         * 视频播放完成时触发，如果设置了 loop 属性为 true，播放完成后可能不触发此事件
-         *
-         * @event Player#ended
-         * @param {Object} event 事件触发时浏览器自带的 event 对象
-         */
-        this.trigger('ended');
-    }
-
-    handleTap() {
-
-    }
-
-    /**
-     * 处理 touchstart 事件，主要用于控制控制条的显隐
-     *
-     * @param {Object} event 事件发生时，浏览器给的 event
-     *
-     * @private
-     */
-    handleTouchStart(event) {
-        // 当控制条显示并且手指放在控制条上时
-        if (this.hasClass(activeClass)) {
-            if (DOM.parent(event.target, 'lark-play-button')
-                || DOM.parent(event.target, 'lark-control-bar')) {
-
-                clearTimeout(this.activeTimeoutHandler);
-            }
-        }
-    }
-
-    /**
-     * 处理 touchmove 事件
-     *
-     * @param {Object} event 事件发生时，浏览器给的 event
-     *
-     * @private
-     */
-    handleTouchMove(event) {
-
     }
 
     /**
@@ -1008,13 +656,7 @@ class Player {
      * @private
      */
     handleTouchEnd(event) {
-        clearTimeout(this.activeTimeoutHandler);
-
-        const activeClass = 'lark-user-active';
-
-        // 点在播放按钮或者控制条上，（继续）展现控制条
         let clickOnControls = false;
-        // @todo 处理得不够优雅
         if (DOM.parent(event.target, 'lark-play-button')
             || DOM.parent(event.target, 'lark-control-bar')) {
 
@@ -1022,17 +664,9 @@ class Player {
         }
 
         if (!clickOnControls) {
-            this.toggleClass(activeClass);
-
             if (this.paused()) {
                 this.play();
             }
-        }
-
-        if (this.hasClass(activeClass)) {
-            this.activeTimeoutHandler = setTimeout(() => {
-                this.removeClass(activeClass);
-            }, this.activeTimeout);
         }
     }
 
@@ -1090,35 +724,6 @@ class Player {
     }
 
     /**
-     * 处理 error 事件
-     *
-     * @param {Object} event 事件发生时，浏览器给的 event
-     *
-     * @fires Player#error
-     * @private
-     */
-    handleError(event) {
-        this.removeClass('lark-playing');
-        // this.removeClass('lark-seeking');
-        this.addClass('lark-error');
-
-        /**
-         * 视频播放出错时触发
-         *
-         * @event Player#error
-         * @param {Object} event 事件触发时浏览器自带的 event 对象
-         * @param {MediaError} error MediaError 对象
-         * @param {number} error.code 错误编号
-         *                         - 1 MEDIA_ERR_ABORTED 视频加载被浏览器（用户）中断
-         *                         - 2 MEDIA_ERR_NETWORK 浏览器与视频资源已经建立连接，但是由于网络问题停止下载
-         *                         - 3 MEDIA_ERR_DECODE 视频解码失败
-         *                         - 4 MEDIA_ERR_SRC_NOT_SUPPORTED 视频资源问题，比如视频不存在
-         * @param {string} error.message 错误信息
-         */
-        this.trigger('error', {detail: this.techGet('error')});
-    }
-
-    /**
      * 处理播放器 click 事件，主要用于控制控制条显隐
      *
      * pc 上用 click 事件，移动端用 touchend
@@ -1129,8 +734,6 @@ class Player {
      * @param {Object} event 事件发生时，浏览器给的 event
      */
     handleClick(event) {
-        // clearTimeout(this.activeTimeoutHandler);
-
         // 点在播放按钮或者控制条上，（继续）展现控制条
         let clickOnControls = false;
         // @todo 处理得不够优雅
@@ -1151,28 +754,6 @@ class Player {
             }
         }
     }
-
-    handleMouseEnter(event) {
-        clearTimeout(this.activeTimeoutHandler);
-
-        if (!this.hasClass(activeClass)) {
-            this.addClass(activeClass);
-        }
-
-        this.activeTimeoutHandler = setTimeout(() => {
-            this.removeClass(activeClass);
-        }, this.activeTimeout);
-    }
-
-    handleMouseMove(event) {
-        this.handleMouseEnter(event);
-    }
-
-    handleMouseLeave(event) {
-        clearTimeout(this.activeTimeoutHandler);
-        this.removeClass(activeClass);
-    }
-
 
     // = = = = = = = = = = = = = 对外 api = = = = = = = = = = = = = =
 
@@ -1259,7 +840,7 @@ class Player {
                 // @todo 这里返回的 err 可以利用下？
                 log.error(err);
             });
-        }  
+        }
     }
 
     /**
