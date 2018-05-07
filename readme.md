@@ -119,16 +119,6 @@ __API__
     * 建议修复所有级别为 WARN 的提示
 * 提交 pull request
 
-
-## 后续规划
-
-~~2018/3/7 前增加以下功能~~
-* ~~支持 vr 视频~~ √（[larkplayer-vr](https://github.com/dblate/larkplayer-vr)）
-* ~~支持 hls(m3u8) 格式~~ √（[larkplayer-hls](https://github.com/dblate/larkplayer-hls)）
-* 支持 flv 格式
-* ~~同步支持 pc 与移动端的使用~~ √
-* ~~添加测试代码~~ √
-
 ## Change Log
 [CHANGELOG](./CHANGELOG.md)
 
