@@ -23,6 +23,9 @@ import log from './utils/log';
 import computedStyle from './utils/computed-style';
 import featureDetector from './utils/feature-detector';
 
+/**
+ * @class Player
+ */
 class Player {
 
     /**
