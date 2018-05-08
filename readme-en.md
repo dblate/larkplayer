@@ -1,10 +1,6 @@
 <h1 align="left">larkplayer</h1>
 
 <p align="left">
-An extensible html5 video player, supports mp4 m3u8 vr and other formats.
-</p>
-
-<p align="left">
   <a href="https://www.npmjs.com/package/larkplayer"><img src="https://img.shields.io/npm/v/larkplayer.svg?style=flat-square" alt="NPM version"></a>
   <a href="https://www.npmjs.com/package/larkplayer"><img src="https://img.shields.io/npm/dm/larkplayer.svg?style=flat-square" alt="Downloads"></a>
   <a href="https://www.npmjs.com/package/larkplayer"><img src="https://img.shields.io/github/license/dblate/larkplayer.svg?style=flat-square" alt="License"></a>
@@ -16,15 +12,17 @@ An extensible html5 video player, supports mp4 m3u8 vr and other formats.
 
 ## Overview
 
+larkplayer is a light and flexible web player
+
+* Lightweight
 * Solve most compatibility issues, such as full screen, mobile inline playback, etc
 * Provide an event mechanism to proxy native events and allow custom events
 * Provide plugin mechanism to support multiple plugin types
-* Provide custom style, adaptive pc and mobile
 * Pure javascript, no specific framework dependencies
 
-You can experience it through [screenshots](https://github.com/dblate/larkplayer/tree/master/screenshots) or [online example](https://s.codepen.io/dblate/debug/qojzZZ/ZoMBajEzGyDk) 
+We separate many functions into [plugins](./docs/plugins/plugin-list), also you can [build your own plugin](./docs/plugins)
 
-
+Check out [live examples](./examples)
 
 ## Download
 
@@ -35,7 +33,6 @@ npm install larkplayer
 
 CDN
 ```
-<link rel="stylesheet" href="https://unpkg.com/larkplayer@latest/dist/larkplayer.css" />
 <script src="https://unpkg.com/larkplayer@latest/dist/larkplayer.js"></script>
 ```
 
@@ -48,7 +45,6 @@ CDN
 <html>
 <head>
     <title>larkplayer quick start</title>
-    <link rel="stylesheet" type="text/css" href="https://unpkg.com/larkplayer@latest/dist/larkplayer.css">
 </head>
 <body>
     <video id="my-video" src="https://baikebcs.bdimg.com/baike-other/big-buck-bunny.mp4" width="400" height="300" controls>
@@ -104,15 +100,6 @@ __API__
 * [Events](./docs/api/events.md)
 * [DOM](./docs/api/dom.md)
 
-
-
-## Future Work
-
-* ~~support both pc and mobile~~
-* ~~support hls(m3u8) format([larkplayer-hls](https://github.com/dblate/larkplayer-hls))~~
-* ~~add unit test~~
-* support flv format
-* ~~support vr([larkplayer-vr](https://github.com/dblate/larkplayer-vr))~~
 
 ## Change Log
 [CHANGELOG](./CHANGELOG.md)

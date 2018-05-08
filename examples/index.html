@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>larkplayer example</title>
+    <meta name="viewport" content="width=device-width,minimum-scale=1.0,maximum-scale=1.0,initial-scale=1.0,user-scalable=no">
+    <link rel="stylesheet" type="text/css" href="./index.css">
+</head>
+<body>
+    <div class="container">
+        <div class="notice">此页面用于展示 <a href="https://github.com/dblate/larkplayer">larkplayer</a> 及其各项插件，请在 chrome 浏览器下访问，其他浏览器未经过测试</div>
+
+        <h3>插件</h3>
+        <div class="plugin-list">
+            <p>勾选下列插件来加载或移除相应的插件：</p>
+            <div>
+                <label>
+                    <input class="plugin-list__plugin" type="checkbox" id="plugin-ui" name="ui" value="ui" script-url="https://unpkg.com/larkplayer-ui@latest/dist/larkplayer-ui.js,https://unpkg.com/larkplayer-ui@latest/dist/larkplayer-ui.css">
+                    larkplayer-ui
+                </label>
+            </div>
+            <div>
+                <label>
+                    <input class="plugin-list__plugin" type="checkbox" id="plugin-hls" name="hls" value="hls" script-url="https://cdn.jsdelivr.net/npm/hls.js@latest,https://unpkg.com/larkplayer-hls@latest/dist/larkplayer-hls-script.js">
+                    larkplayer-hls
+                </label>
+            </div>
+            <div>
+                <label>
+                    <input class="plugin-list__plugin" type="checkbox" id="plugin-vr" name="vr" value="vr" script-url="https://unpkg.com/larkplayer-vr@latest/dist/larkplayer-vr.js">
+                    larkplayer-vr
+                </label>
+            </div>
+        </div>
+
+        <h3>LOG</h3>
+        <div class="log" id="log">
+        </div>
+
+        <h3>PLAY URL</h3>
+        <div class="plau-url-list">
+            <div>
+                <input type="text" name="play-url" id="play-url" class="play-url" value="https://baikebcs.bdimg.com/baike-other/big-buck-bunny.mp4" />
+            </div>
+            <div class="play-url-text">test url</div>
+            <ul class="play-url-ul">
+                <li>mp4: https://baikebcs.bdimg.com/baike-other/big-buck-bunny.mp4</li>
+                <li>m3u8: https://video-dev.github.io/streams/x36xhzz/x36xhzz.m3u8</li>
+                <li>vr: https://dblate.github.io/larkplayer-vr/examples/mp4</li>
+                <li>vr: https://bitmovin-a.akamaihd.net/content/playhouse-vr/m3u8s/105560.m3u8</li>
+            </ul>
+        </div>
+        <div class="player" id="player"></div>
+    </div>
+
+    <script type="text/javascript" src="../dist/larkplayer.js"></script>
+    <script type="text/javascript" src="./index.js"></script>
+</body>
+</html>

@@ -17,14 +17,12 @@ module.exports = function(config) {
     files: [
         'dist/larkplayer.js',
         'dist/larkplayer.css',
-        // 'src/js/**/*.js',
         'test/**/*.js'
     ],
 
 
     // list of files / patterns to exclude
-    exclude: [
-    ],
+    exclude: [],
 
 
     // preprocess matching files before serving them to the browser

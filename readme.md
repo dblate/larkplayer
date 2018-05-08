@@ -6,23 +6,36 @@
   <a href="https://www.npmjs.com/package/larkplayer"><img src="https://img.shields.io/github/license/dblate/larkplayer.svg?style=flat-square" alt="License"></a>
 </p>
 
-
-<img src="./screenshots/larkplayer-pc.png" width="640" height="360" align="center" >
+中文｜[English](./readme-en.md)
 
 ## 简介
 
-中文｜[English](./readme-en.md)
+larkplayer 是一款轻量级、可扩展的 html5 播放器
 
-一款可扩展的 html5 播放器，支持 mp4 m3u8 vr 等类型
+有如下特点：
 
+* 体积小巧
 * 解决大部分兼容性问题，如全屏、移动端内联播放等
-* 提供事件机制，代理原生事件并允许自定义事件
+* 提供事件机制，支持自定义事件
 * 提供插件机制，支持多种插件类型
-* 提供自定义样式，自适应 pc 与移动端
 * 原生 javascript 编写，无特定框架依赖
 
-可通过 [截图](https://github.com/dblate/larkplayer/tree/master/screenshots) 或 [在线示例](https://s.codepen.io/dblate/debug/qojzZZ/ZoMBajEzGyDk) 体验
 
+通过将非必需的功能转化为插件，从而实现不同场景的灵活切换并且尽量减少文件大小
+
+不同功能间的解耦也为后续的扩展和维护带来便利
+
+通过插件可以：
+
+* 支持 hls vr 等其他类型
+* 自定义的样式
+* ...
+
+更多插件请访问[插件列表](./docs/plugin/plugin-list) ，或者[编写自定义插件](./docs/plugin)
+
+更多细节请查看[设计文档](./docs/design.md)
+
+说了那么多可能不如一个[在线示例](./examples)来的实在~
 
 ## 下载
 
@@ -33,7 +46,6 @@ npm install larkplayer
 
 CDN
 ```
-<link rel="stylesheet" href="https://unpkg.com/larkplayer@latest/dist/larkplayer.css" />
 <script src="https://unpkg.com/larkplayer@latest/dist/larkplayer.js"></script>
 ```
 
@@ -46,7 +58,6 @@ CDN
 <html>
 <head>
     <title>larkplayer quick start</title>
-    <link rel="stylesheet" type="text/css" href="https://unpkg.com/larkplayer@latest/dist/larkplayer.css">
 </head>
 <body>
     <video id="my-video" src="https://baikebcs.bdimg.com/baike-other/big-buck-bunny.mp4" width="400" height="300" controls>
@@ -93,11 +104,6 @@ const player = larkplayer('video-el');
 
 ## 文档
 
-* [设计文档](./docs/design.md)
-* [插件编写](./docs/plugin)
-
-__API__
-
 * [Player](./docs/api/player.md)
 * [Events](./docs/api/events.md)
 * [DOM](./docs/api/dom.md)
@@ -112,16 +118,6 @@ __API__
     * 修复所有级别为 ERROR 的提示
     * 建议修复所有级别为 WARN 的提示
 * 提交 pull request
-
-
-## 后续规划
-
-~~2018/3/7 前增加以下功能~~
-* ~~支持 vr 视频~~ √（[larkplayer-vr](https://github.com/dblate/larkplayer-vr)）
-* ~~支持 hls(m3u8) 格式~~ √（[larkplayer-hls](https://github.com/dblate/larkplayer-hls)）
-* 支持 flv 格式
-* ~~同步支持 pc 与移动端的使用~~ √
-* ~~添加测试代码~~ √
 
 ## Change Log
 [CHANGELOG](./CHANGELOG.md)
