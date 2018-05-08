@@ -21,7 +21,9 @@ larkplayer 是一款轻量级、可扩展的 html5 播放器
 * 原生 javascript 编写，无特定框架依赖
 
 
-通过将非必需的功能转化为插件，从而实现不同场景的灵活切换以及尽量减少文件大小
+通过将非必需的功能转化为插件，从而实现不同场景的灵活切换并且尽量减少文件大小
+
+不同功能间的解耦也为后续的扩展和维护带来便利
 
 通过插件可以：
 
@@ -30,6 +32,8 @@ larkplayer 是一款轻量级、可扩展的 html5 播放器
 * ...
 
 更多插件请访问[插件列表](./docs/plugin/plugin-list) ，或者[编写自定义插件](./docs/plugin)
+
+更多细节请查看[设计文档](./docs/design.md)
 
 说了那么多可能不如一个[在线示例](./examples)来的实在~
 
@@ -99,11 +103,6 @@ const player = larkplayer('video-el');
 ```
 
 ## 文档
-
-* [设计文档](./docs/design.md)
-* [插件编写](./docs/plugin)
-
-__API__
 
 * [Player](./docs/api/player.md)
 * [Events](./docs/api/events.md)
