@@ -10,24 +10,28 @@
 
 ## 简介
 
-larkplayer 以插件化的思想编写，对于整个视频业务而言，它本身是一个精巧的核心，许多复杂或定制化的功能均由插件实现。
+larkplayer 是一款轻量级、可扩展的 html5 播放器
 
-它本身有如下特点：
+有如下特点：
 
+* 体积小巧
 * 解决大部分兼容性问题，如全屏、移动端内联播放等
 * 提供事件机制，支持自定义事件
 * 提供插件机制，支持多种插件类型
 * 原生 javascript 编写，无特定框架依赖
 
+
+通过将非必需的功能转化为插件，从而实现不同场景的灵活切换以及尽量减少文件大小
+
 通过插件可以：
 
 * 支持 hls vr 等其他类型
-* 拥有自定义的样式
+* 自定义的样式
 * ...
 
-更多插件请访问[插件列表](./docs/plugin/plugin-list) ，同时你也可以[编写自定义插件](./docs/plugin)
+更多插件请访问[插件列表](./docs/plugin/plugin-list) ，或者[编写自定义插件](./docs/plugin)
 
-[在线示例](https://s.codepen.io/dblate/debug/qojzZZ/ZoMBajEzGyDk)
+说了那么多可能不如一个[在线示例](https://s.codepen.io/dblate/debug/qojzZZ/ZoMBajEzGyDk)来的实在~
 
 ## 下载
 
