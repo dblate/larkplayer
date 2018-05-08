@@ -35,7 +35,7 @@ larkplayer 是一款轻量级、可扩展的 html5 播放器
 
 更多细节请查看[设计文档](./docs/design.md)
 
-说了那么多可能不如一个[在线示例](./examples)来的实在~
+说了那么多可能不如一个[在线示例](https://dblate.github.io/larkplayer/examples/)来的实在~
 
 ## 下载
 
