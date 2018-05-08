@@ -34,7 +34,7 @@ function pad(val) {
  * @param {number} seconds 总秒数
  * @return {string} 格式化后的时间串
  */
-export function timeFormat(seconds) {
+export default function timeFormat(seconds) {
     seconds = parseInt(seconds, 10);
     if (!isNaN(seconds)) {
         let hour = Math.floor(seconds / 3600);

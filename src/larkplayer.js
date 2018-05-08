@@ -13,6 +13,7 @@ import Html5 from './html5/html5';
 import Component from './plugin/component';
 import MediaSourceHandler from './plugin/media-source-handler';
 import Plugin from './plugin/plugin';
+import util from './utils/utils';
 
 function normalize(el, options = {}, readyFn = function () {}) {
     options = assign({playsinline: true}, options);
@@ -54,7 +55,14 @@ function larkplayer(el, options, readyFn) {
     return player;
 }
 
-assign(larkplayer, {Events, DOM, Component, MediaSourceHandler, Plugin});
+assign(larkplayer, {
+    Events,
+    DOM,
+    Component,
+    MediaSourceHandler,
+    Plugin,
+    util
+});
 
 // assign(larkplayer, {
 //     Events,

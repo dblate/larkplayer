@@ -7,7 +7,6 @@
     * [.dispose()](#Player+dispose)
     * [.width([value])](#Player+width) ⇒ <code>number</code> \| <code>NaN</code>
     * [.height([value])](#Player+height) ⇒ <code>number</code> \| <code>NaN</code>
-    * [.controls([bool])](#Player+controls) ⇒ <code>boolean</code>
     * [.isFullscreen()](#Player+isFullscreen) ⇒ <code>boolean</code>
     * [.requestFullscreen()](#Player+requestFullscreen)
     * [.exitFullscreen()](#Player+exitFullscreen)
@@ -44,22 +43,9 @@
     * ["ratechange" (event)](#Player+event_ratechange)
     * ["resize" (event)](#Player+event_resize)
     * ["volumechange" (event)](#Player+event_volumechange)
-    * ["loadstart" (event)](#Player+event_loadstart)
-    * ["play" (event)](#Player+event_play)
-    * ["waiting" (event)](#Player+event_waiting)
-    * ["canplay" (event)](#Player+event_canplay)
-    * ["canplaythrough" (event)](#Player+event_canplaythrough)
-    * ["playing" (event)](#Player+event_playing)
-    * ["seeking" (event)](#Player+event_seeking)
-    * ["seeked" (event)](#Player+event_seeked)
     * ["firstplay"](#Player+event_firstplay)
-    * ["pause" (event)](#Player+event_pause)
-    * ["ended" (event)](#Player+event_ended)
-    * ["durationchange" (event)](#Player+event_durationchange)
-    * ["timeupdate" (event, data)](#Player+event_timeupdate)
     * ["fullscreenchange" (data)](#Player+event_fullscreenchange)
     * ["fullscreenerror"](#Player+event_fullscreenerror)
-    * ["error" (event, error)](#Player+event_error)
     * ["srcchange" (src)](#Player+event_srcchange)
     * ["srcchange" (src)](#Player+event_srcchange)
 
@@ -92,18 +78,6 @@
 | Param | Type | Description |
 | --- | --- | --- |
 | [value] | <code>number</code> | 要设置的播放器高度值，可选 |
-
-<a name="Player+controls"></a>
-
-### player.controls([bool]) ⇒ <code>boolean</code>
-显示或隐藏控制条
-
-**Kind**: instance method of [<code>Player</code>](#Player)  
-**Returns**: <code>boolean</code> - 当前控制条状态（显示或隐藏）  
-
-| Param | Type | Description |
-| --- | --- | --- |
-| [bool] | <code>boolean</code> | 显示或隐藏控制条，如果不传任何参数，则单纯返回当前控制条状态 |
 
 <a name="Player+isFullscreen"></a>
 
@@ -440,148 +414,12 @@
 | --- | --- | --- |
 | event | <code>Object</code> | 事件触发时浏览器自带的 event 对象 |
 
-<a name="Player+event_loadstart"></a>
-
-### "loadstart" (event)
-loadstart 时触发
-
-**Kind**: event emitted by [<code>Player</code>](#Player)  
-
-| Param | Type | Description |
-| --- | --- | --- |
-| event | <code>Object</code> | 事件触发时浏览器自带的 event 对象 |
-
-<a name="Player+event_play"></a>
-
-### "play" (event)
-视频播放时触发，无论是第一次播放还是暂停、卡顿后恢复播放
-
-**Kind**: event emitted by [<code>Player</code>](#Player)  
-
-| Param | Type | Description |
-| --- | --- | --- |
-| event | <code>Object</code> | 事件触发时浏览器自带的 event 对象 |
-
-<a name="Player+event_waiting"></a>
-
-### "waiting" (event)
-视频播放因为下一帧没准备好而暂时停止，但是客户端正在努力缓冲中时触发
-简单来讲，在视频卡顿或视频跳转到指定位置时触发，在暂停、视频播放完成、视频播放出错时不会触发
-
-**Kind**: event emitted by [<code>Player</code>](#Player)  
-
-| Param | Type | Description |
-| --- | --- | --- |
-| event | <code>Object</code> | 事件触发时浏览器自带的 event 对象 |
-
-<a name="Player+event_canplay"></a>
-
-### "canplay" (event)
-视频能开始播发时触发，并不保证能流畅的播完
-
-**Kind**: event emitted by [<code>Player</code>](#Player)  
-
-| Param | Type | Description |
-| --- | --- | --- |
-| event | <code>Object</code> | 事件触发时浏览器自带的 event 对象 |
-
-<a name="Player+event_canplaythrough"></a>
-
-### "canplaythrough" (event)
-如果从当前开始播放，视频估计能流畅的播完时触发此事件
-
-**Kind**: event emitted by [<code>Player</code>](#Player)  
-
-| Param | Type | Description |
-| --- | --- | --- |
-| event | <code>Object</code> | 事件触发时浏览器自带的 event 对象 |
-
-<a name="Player+event_playing"></a>
-
-### "playing" (event)
-Playback is ready to start after having been paused or delayed due to lack of media data.
-
-**Kind**: event emitted by [<code>Player</code>](#Player)  
-**See**: https://html.spec.whatwg.org/#mediaevents  
-
-| Param | Type | Description |
-| --- | --- | --- |
-| event | <code>Object</code> | 事件触发时浏览器自带的 event 对象 |
-
-<a name="Player+event_seeking"></a>
-
-### "seeking" (event)
-视频跳转到指定时刻时触发
-
-**Kind**: event emitted by [<code>Player</code>](#Player)  
-
-| Param | Type | Description |
-| --- | --- | --- |
-| event | <code>Object</code> | 事件触发时浏览器自带的 event 对象 |
-
-<a name="Player+event_seeked"></a>
-
-### "seeked" (event)
-视频跳转到某一时刻完成后触发
-
-**Kind**: event emitted by [<code>Player</code>](#Player)  
-
-| Param | Type | Description |
-| --- | --- | --- |
-| event | <code>Object</code> | 事件触发时浏览器自带的 event 对象 |
-
 <a name="Player+event_firstplay"></a>
 
 ### "firstplay"
 在视频第一次播放时触发，只会触发一次
 
 **Kind**: event emitted by [<code>Player</code>](#Player)  
-<a name="Player+event_pause"></a>
-
-### "pause" (event)
-视频暂停时触发
-
-**Kind**: event emitted by [<code>Player</code>](#Player)  
-
-| Param | Type | Description |
-| --- | --- | --- |
-| event | <code>Object</code> | 事件触发时浏览器自带的 event 对象 |
-
-<a name="Player+event_ended"></a>
-
-### "ended" (event)
-视频播放完成时触发，如果设置了 loop 属性为 true，播放完成后可能不触发此事件
-
-**Kind**: event emitted by [<code>Player</code>](#Player)  
-
-| Param | Type | Description |
-| --- | --- | --- |
-| event | <code>Object</code> | 事件触发时浏览器自带的 event 对象 |
-
-<a name="Player+event_durationchange"></a>
-
-### "durationchange" (event)
-视频时长发生改变时触发
-
-**Kind**: event emitted by [<code>Player</code>](#Player)  
-
-| Param | Type | Description |
-| --- | --- | --- |
-| event | <code>Object</code> | 事件触发时浏览器自带的 event 对象 |
-
-<a name="Player+event_timeupdate"></a>
-
-### "timeupdate" (event, data)
-视频当前时刻更新时触发，一般 1s 内会触发好几次
-
-**Kind**: event emitted by [<code>Player</code>](#Player)  
-
-| Param | Type | Description |
-| --- | --- | --- |
-| event | <code>Object</code> | 事件触发时浏览器自带的 event 对象 |
-| data | <code>Object</code> | 友情附带的数据 |
-| data.currentTime | <code>number</code> | 当前时刻 |
-
 <a name="Player+event_fullscreenchange"></a>
 
 ### "fullscreenchange" (data)
@@ -600,20 +438,6 @@ Playback is ready to start after having been paused or delayed due to lack of me
 在全屏时出错时触发
 
 **Kind**: event emitted by [<code>Player</code>](#Player)  
-<a name="Player+event_error"></a>
-
-### "error" (event, error)
-视频播放出错时触发
-
-**Kind**: event emitted by [<code>Player</code>](#Player)  
-
-| Param | Type | Description |
-| --- | --- | --- |
-| event | <code>Object</code> | 事件触发时浏览器自带的 event 对象 |
-| error | <code>MediaError</code> | MediaError 对象 |
-| error.code | <code>number</code> | 错误编号                         - 1 MEDIA_ERR_ABORTED 视频加载被浏览器（用户）中断                         - 2 MEDIA_ERR_NETWORK 浏览器与视频资源已经建立连接，但是由于网络问题停止下载                         - 3 MEDIA_ERR_DECODE 视频解码失败                         - 4 MEDIA_ERR_SRC_NOT_SUPPORTED 视频资源问题，比如视频不存在 |
-| error.message | <code>string</code> | 错误信息 |
-
 <a name="Player+event_srcchange"></a>
 
 ### "srcchange" (src)

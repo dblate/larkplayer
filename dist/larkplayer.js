@@ -4415,6 +4415,15 @@ var _lodash2 = _interopRequireDefault(_lodash);
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
 
 /**
+ * 绑定事件
+ *
+ * @param {Element} el 要绑定事件的 DOM 元素
+ * @param {string} eventName 事件名
+ * @param {Function} fn 回调函数
+ * @param {(Object|boolean)=} options 事件触发方式设置。可选，默认为 false
+ *                   @https://dom.spec.whatwg.org/#dictdef-eventlisteneroptions 查看其他可选项
+ */
+/**
  * @file Events
  * @author yuhui06
  * @date 2017/11/3
@@ -4427,13 +4436,28 @@ function on(el, eventName, fn) {
     el.addEventListener(eventName, fn, options);
 }
 
+/**
+ * 注销事件
+ *
+ * @param {Element} el 要注销事件的 DOM 元素
+ * @param {string} eventName 事件名
+ * @param {Function} fn 要注销的函数名
+ * @param {(Object|boolean)=} options 事件触发方式设置
+ */
 function off(el, eventName, fn) {
     var options = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : false;
 
     el.removeEventListener(eventName, fn, options);
 }
 
-// @todo 感觉实现方式有问题
+/**
+ * 绑定事件且该事件只执行一次
+ *
+ * @param {Element} el 要绑定事件的 DOM 元素
+ * @param {string} eventName 事件名
+ * @param {Function} fn 回调函数
+ * @param {(Object|boolean)=} options 事件触发方式设置。可选，默认为 false
+ */
 function one(el, eventName, fn) {
     var options = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : false;
 
@@ -4445,6 +4469,16 @@ function one(el, eventName, fn) {
     on(el, eventName, wrapper, options);
 }
 
+/**
+ * 触发事件
+ *
+ * @param {Element} el 触发事件的元素
+ * @param {string} eventName 事件名
+ * @param {Object=} initialDict 一些其他设置，可选
+ * @param {boolean} initialDict.bubbles 是否冒泡，默认 false
+ * @param {boolean} initialDict.cancelable 是否可取消，默认 false
+ * @param {Mixed} initialDict.detail 随事件传递的自定义数据，默认 null 
+ */
 function trigger(el, eventName) {
     var initialDict = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
 
@@ -4944,7 +4978,7 @@ Html5.resetMediaElement = function (el) {
     };
 });
 
-},{"../events/evented":8,"../utils/dom":20,"../utils/normalize-source":25,"../utils/to-title-case":28,"global/document":1,"global/window":2}],12:[function(require,module,exports){
+},{"../events/evented":8,"../utils/dom":20,"../utils/normalize-source":26,"../utils/to-title-case":30,"global/document":1,"global/window":2}],12:[function(require,module,exports){
 'use strict';
 
 var _lodash = require('lodash.assign');
@@ -4979,15 +5013,13 @@ var _plugin = require('./plugin/plugin');
 
 var _plugin2 = _interopRequireDefault(_plugin);
 
+var _utils = require('./utils/utils');
+
+var _utils2 = _interopRequireDefault(_utils);
+
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj['default'] = obj; return newObj; } }
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
-
-/**
- * @file larkplayer.js larkplayer 入口函数
- * @author yuhui<yuhui06@baidu.com>
- * @date 2017/11/7
- */
 
 function normalize(el) {
     var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
@@ -5016,7 +5048,11 @@ function normalize(el) {
     }
 
     return { el: el, options: options, readyFn: readyFn };
-}
+} /**
+   * @file larkplayer.js larkplayer 入口函数
+   * @author yuhui<yuhui06@baidu.com>
+   * @date 2017/11/7
+   */
 
 function larkplayer(el, options, readyFn) {
     // @todo 优化不支持 html5 video 标签时的展示
@@ -5038,7 +5074,14 @@ function larkplayer(el, options, readyFn) {
     return player;
 }
 
-(0, _lodash2['default'])(larkplayer, { Events: Events, DOM: DOM, Component: _component2['default'], MediaSourceHandler: _mediaSourceHandler2['default'], Plugin: _plugin2['default'] });
+(0, _lodash2['default'])(larkplayer, {
+    Events: Events,
+    DOM: DOM,
+    Component: _component2['default'],
+    MediaSourceHandler: _mediaSourceHandler2['default'],
+    Plugin: _plugin2['default'],
+    util: _utils2['default']
+});
 
 // assign(larkplayer, {
 //     Events,
@@ -5066,7 +5109,7 @@ function larkplayer(el, options, readyFn) {
 // @see https://github.com/babel/babel/issues/2724
 module.exports = larkplayer;
 
-},{"./events/events":9,"./html5/html5":11,"./player":13,"./plugin/component":14,"./plugin/media-source-handler":15,"./plugin/plugin":18,"./utils/dom":20,"lodash.assign":4}],13:[function(require,module,exports){
+},{"./events/events":9,"./html5/html5":11,"./player":13,"./plugin/component":14,"./plugin/media-source-handler":15,"./plugin/plugin":18,"./utils/dom":20,"./utils/utils":31,"lodash.assign":4}],13:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -5144,12 +5187,9 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
                                                                                                                                                            * @todo 对于 Player 构造函数的特殊照顾需要理一下，可能没必要
                                                                                                                                                            */
 
-var activeClass = 'lark-user-active';
-
 /**
  * @class Player
  */
-
 var Player = function () {
 
     /**
@@ -5194,9 +5234,6 @@ var Player = function () {
         this.handleClick = this.handleClick.bind(this);
         this.fullWindowOnEscKey = this.fullWindowOnEscKey.bind(this);
 
-        // 3000ms 后自动隐藏播放器控制条
-        this.activeTimeout = 3000;
-
         if (_featureDetector2['default'].touch) {
             this.on('touchend', this.handleTouchEnd);
         } else {
@@ -5206,8 +5243,6 @@ var Player = function () {
         if (!this.tech) {
             this.tech = this.loadTech();
         }
-
-        this.addClass('lark-paused');
 
         var src = this.src();
         if (src) {
@@ -5339,7 +5374,6 @@ var Player = function () {
 
 
     Player.prototype.dispose = function dispose() {
-        clearTimeout(this.activeTimeoutHandler);
         this.trigger('dispose');
 
         // 注销全屏事件
@@ -5375,9 +5409,7 @@ var Player = function () {
         var tag = this.tag;
 
         // 处理 options 中的 html5 标准属性
-        var html5StandardOptions = ['autoplay',
-        // 'controls',
-        'height', 'loop', 'muted', 'poster', 'preload', 'auto', 'metadata', 'none', 'src', 'width', 'playsinline'];
+        var html5StandardOptions = ['autoplay', 'controls', 'height', 'loop', 'muted', 'poster', 'preload', 'auto', 'metadata', 'none', 'src', 'width', 'playsinline'];
         (0, _obj.each)(this.options, function (value, key) {
             if ((0, _lodash2['default'])(html5StandardOptions, key) && value) {
                 DOM.setAttribute(tag, key, value);
@@ -5401,7 +5433,7 @@ var Player = function () {
 
         // 将原生控制条移除
         // 目前只支持使用自定义的控制条
-        tag.removeAttribute('controls');
+        // tag.removeAttribute('controls');
 
         // 将 el 插入到 DOM 中
         if (tag.parentNode) {
@@ -5425,6 +5457,9 @@ var Player = function () {
             el.style.height = tagHeight + 'px';
             tag.removeAttribute('height');
         }
+
+        tag.setAttribute('width', '100%');
+        tag.setAttribute('height', '100%');
 
         // @todo safari 好像不支持移动 video DOM?
         // 将 video 插入到 el 中
@@ -5715,32 +5750,6 @@ var Player = function () {
     };
 
     /**
-     * 显示或隐藏控制条
-     *
-     * @param {boolean=} bool 显示或隐藏控制条，如果不传任何参数，则单纯返回当前控制条状态
-     * @return {boolean} 当前控制条状态（显示或隐藏）
-     */
-
-
-    Player.prototype.controls = function controls(bool) {
-        if (bool === undefined) {
-            return this.getControlsStatus();
-        }
-
-        if (bool) {
-            this.removeClass('lark-controls-hide');
-        } else {
-            this.addClass('lark-controls-hide');
-        }
-
-        return this.getControlsStatus();
-    };
-
-    Player.prototype.getControlsStatus = function getControlsStatus() {
-        return !this.hasClass('lark-controls-hide');
-    };
-
-    /**
      * 获取或设置播放器的高宽
      *
      * @private
@@ -5772,27 +5781,6 @@ var Player = function () {
         // this.updateStyleEl_();
     };
 
-    // @dprecated
-    // videojs 中的方法，目前没用到
-
-
-    Player.prototype.hasStart = function hasStart(hasStarted) {
-        if (hasStarted !== undefined) {
-            if (this.hasStarted !== hasStarted) {
-                this.hasStarted = hasStarted;
-                if (hasStarted) {
-                    this.addClass('lark-has-started');
-                    this.trigger('firstplay');
-                } else {
-                    this.removeClass('lark-has-started');
-                }
-            }
-            return;
-        }
-
-        return !!this.hasStarted;
-    };
-
     // = = = = = = = = = = = = = 事件处理 = = = = = = = = = = = = = =
 
     /**
@@ -5805,17 +5793,6 @@ var Player = function () {
 
 
     Player.prototype.handleFirstplay = function handleFirstplay() {
-        var _this8 = this;
-
-        // @todo 不清楚有什么用
-        this.addClass('lark-has-started');
-
-        clearTimeout(this.activeTimeoutHandler);
-        this.addClass(activeClass);
-        this.activeTimeoutHandler = setTimeout(function () {
-            _this8.removeClass(activeClass);
-        }, this.activeTimeout);
-
         /**
          * 在视频第一次播放时触发，只会触发一次
          *
@@ -5835,7 +5812,6 @@ var Player = function () {
 
     Player.prototype.handleTouchEnd = function handleTouchEnd(event) {
         var clickOnControls = false;
-        // @todo 处理得不够优雅
         if (DOM.parent(event.target, 'lark-play-button') || DOM.parent(event.target, 'lark-control-bar')) {
 
             clickOnControls = true;
@@ -5920,8 +5896,6 @@ var Player = function () {
 
 
     Player.prototype.handleClick = function handleClick(event) {
-        // clearTimeout(this.activeTimeoutHandler);
-
         // 点在播放按钮或者控制条上，（继续）展现控制条
         var clickOnControls = false;
         // @todo 处理得不够优雅
@@ -6438,7 +6412,7 @@ var Player = function () {
  * @param {string=} preload 可选。设置 preload 属性的值（none、auto、metadata）
  * @return {undefined|string} undefined 或 当前 preload 值
  */
-'preload'].forEach(function (prop) {
+'preload', 'controls'].forEach(function (prop) {
     // 这里别用箭头函数，不然 this 就指不到 Player.prototype 了
     Player.prototype[prop] = function (val) {
         if (val !== undefined) {
@@ -6452,7 +6426,7 @@ var Player = function () {
 
 exports['default'] = Player;
 
-},{"./events/evented":8,"./events/events":9,"./html5/fullscreen":10,"./html5/html5":11,"./plugin/component":14,"./plugin/media-source-handler":15,"./plugin/plugin":18,"./plugin/plugin-types":17,"./utils/computed-style":19,"./utils/dom":20,"./utils/feature-detector":21,"./utils/log":23,"./utils/obj":26,"./utils/to-title-case":28,"global/document":1,"lodash.includes":6}],14:[function(require,module,exports){
+},{"./events/evented":8,"./events/events":9,"./html5/fullscreen":10,"./html5/html5":11,"./plugin/component":14,"./plugin/media-source-handler":15,"./plugin/plugin":18,"./plugin/plugin-types":17,"./utils/computed-style":19,"./utils/dom":20,"./utils/feature-detector":21,"./utils/log":24,"./utils/obj":27,"./utils/to-title-case":30,"global/document":1,"lodash.includes":6}],14:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -6585,7 +6559,7 @@ var Component = function () {
 
 exports['default'] = Component;
 
-},{"../events/evented":8,"../events/events":9,"../utils/dom":20,"../utils/to-camel-case":27,"./plugin-store":16,"./plugin-types":17}],15:[function(require,module,exports){
+},{"../events/evented":8,"../events/events":9,"../utils/dom":20,"../utils/to-camel-case":29,"./plugin-store":16,"./plugin-types":17}],15:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -6780,7 +6754,7 @@ exports['default'] = {
     }
 };
 
-},{"../utils/guid":22,"../utils/to-camel-case":27,"./component":14,"./media-source-handler":15,"./plugin":18,"./plugin-types":17,"lodash.values":7}],17:[function(require,module,exports){
+},{"../utils/guid":23,"../utils/to-camel-case":29,"./component":14,"./media-source-handler":15,"./plugin":18,"./plugin-types":17,"lodash.values":7}],17:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -7657,7 +7631,7 @@ var $$ = exports.$$ = createQuerier('querySelectorAll');
 //     }
 // })();
 
-},{"./computed-style":19,"./obj":26,"global/document":1,"global/window":2,"lodash.includes":6}],21:[function(require,module,exports){
+},{"./computed-style":19,"./obj":27,"global/document":1,"global/window":2,"lodash.includes":6}],21:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -7677,6 +7651,62 @@ exports['default'] = {
     */
 
 },{"global/document":1}],22:[function(require,module,exports){
+'use strict';
+
+exports.__esModule = true;
+exports.bind = bind;
+exports.throttle = throttle;
+
+var _guid = require('./guid');
+
+/**
+ * 绑定函数到指定的上下文
+ *
+ * @todo videojs 在返回的函数上还加了 guid 做更加个性化的处理，目前暂时用不上就没写
+ *
+ * @param {Funtion} fn 要绑定上下文的函数
+ * @param {Object} thisArg 函数要绑定的上下文
+ * @return {Function} 该函数会在指定的上下文中执行
+ */
+function bind(fn, thisArg) {
+    if (!fn.guid) {
+        fn.guid = (0, _guid.newGUID)();
+    }
+
+    return function () {
+        for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
+            args[_key] = arguments[_key];
+        }
+
+        return fn.apply(thisArg, args);
+    };
+}
+
+/**
+ * 限制函数的执行的频率
+ *
+ * @param {Function} fn 要控制执行频率的函数
+ * @param {number} wait 函数的执行间隔大于等于此数值（单位：ms）
+ * @return {Funtion} 限制了执行频率的函数
+ */
+/**
+ * @file fn.js 函数相关的一些方法
+ * @author yuhui06@baidu.com
+ * @date 2017/11/3
+ */
+
+function throttle(fn, wait) {
+    var lastTimestamp = Date.now();
+    return function () {
+        var now = Date.now();
+        if (now - lastTimestamp >= wait) {
+            fn.apply(undefined, arguments);
+            lastTimestamp = now;
+        }
+    };
+}
+
+},{"./guid":23}],23:[function(require,module,exports){
 "use strict";
 
 exports.__esModule = true;
@@ -7699,7 +7729,7 @@ function newGUID() {
   return guid++;
 }
 
-},{}],23:[function(require,module,exports){
+},{}],24:[function(require,module,exports){
 "use strict";
 
 exports.__esModule = true;
@@ -7744,7 +7774,7 @@ log.error = console.error;
 
 log.clear = console.clear;
 
-},{}],24:[function(require,module,exports){
+},{}],25:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -7767,7 +7797,7 @@ exports['default'] = {
     'wmv': 'video/x-ms-wmv'
 };
 
-},{}],25:[function(require,module,exports){
+},{}],26:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -7857,7 +7887,7 @@ function nomalizeSource(source) {
     }
 }
 
-},{"./mime-type-map":24,"./obj":26}],26:[function(require,module,exports){
+},{"./mime-type-map":25,"./obj":27}],27:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -7915,7 +7945,66 @@ function each(obj, fn) {
   });
 }
 
-},{}],27:[function(require,module,exports){
+},{}],28:[function(require,module,exports){
+'use strict';
+
+exports.__esModule = true;
+exports['default'] = timeFormat;
+/**
+ * @file time-format.js 将秒数格式化为指定的时间字符串形式
+ * @author yuhui<yuhui06@baidu.com>
+ * @date 2017/11/3
+ */
+
+/**
+ * 将秒数格式化为 hh:mm:ss 的形式
+ *
+ * @param {number} seconds 要转化的秒数
+ * @return {string} 格式化后的表示时间的字符串
+ */
+
+/**
+ * 不足两位的时间，前面补零
+ *
+ * @inner
+ *
+ * @param {string|number} val 该段位的时间（如 1h 12h 23m 1s）
+ * @return {string} 进行过不足两位前面补零操作的时间串
+ */
+function pad(val) {
+    val = '' + val;
+    if (val.length < 2) {
+        val = '0' + val;
+    }
+
+    return val;
+}
+
+/**
+ * 将传入的秒数格式化为 hh:mm:ss 的形式，如果不足一小时，则为 mm:ss 的形式
+ *
+ * @param {number} seconds 总秒数
+ * @return {string} 格式化后的时间串
+ */
+function timeFormat(seconds) {
+    seconds = parseInt(seconds, 10);
+    if (!isNaN(seconds)) {
+        var hour = Math.floor(seconds / 3600);
+        var minute = Math.floor((seconds - hour * 3600) / 60);
+        var second = seconds % 60;
+
+        var result = [pad(minute), pad(second)];
+        if (hour > 0) {
+            result.unshift(pad(hour));
+        }
+
+        return result.join(':');
+    } else {
+        return '- -';
+    }
+}
+
+},{}],29:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -7935,7 +8024,7 @@ function toCamelCase(str) {
     return str.charAt(0).toLowerCase() + str.slice(1);
 }
 
-},{}],28:[function(require,module,exports){
+},{}],30:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -7976,5 +8065,66 @@ function titleCaseEquals(str1, str2) {
   return toTitleCase(str1) === toTitleCase(str2);
 }
 
-},{}]},{},[12])(12)
+},{}],31:[function(require,module,exports){
+'use strict';
+
+exports.__esModule = true;
+
+var _computedStyle = require('./computed-style');
+
+var _computedStyle2 = _interopRequireDefault(_computedStyle);
+
+var _featureDetector = require('./feature-detector');
+
+var _featureDetector2 = _interopRequireDefault(_featureDetector);
+
+var _fn = require('./fn');
+
+var fn = _interopRequireWildcard(_fn);
+
+var _guid = require('./guid');
+
+var guid = _interopRequireWildcard(_guid);
+
+var _mimeTypeMap = require('./mime-type-map');
+
+var _mimeTypeMap2 = _interopRequireDefault(_mimeTypeMap);
+
+var _obj = require('./obj');
+
+var obj = _interopRequireWildcard(_obj);
+
+var _timeFormat = require('./time-format');
+
+var _timeFormat2 = _interopRequireDefault(_timeFormat);
+
+var _toCamelCase = require('./to-camel-case');
+
+var _toCamelCase2 = _interopRequireDefault(_toCamelCase);
+
+var _toTitleCase = require('./to-title-case');
+
+var _toTitleCase2 = _interopRequireDefault(_toTitleCase);
+
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj['default'] = obj; return newObj; } }
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
+
+exports['default'] = {
+    computedStyle: _computedStyle2['default'],
+    featureDetector: _featureDetector2['default'],
+    fn: fn,
+    guid: guid,
+    mimeTypeMap: _mimeTypeMap2['default'],
+    obj: obj,
+    timeFormat: _timeFormat2['default'],
+    toCamelCase: _toCamelCase2['default'],
+    toTitleCase: _toTitleCase2['default']
+}; /**
+    * @file 整合 utils 各方法，方便对外输出
+    * @author yuhui06
+    * @date 2018/5/6
+    */
+
+},{"./computed-style":19,"./feature-detector":21,"./fn":22,"./guid":23,"./mime-type-map":25,"./obj":27,"./time-format":28,"./to-camel-case":29,"./to-title-case":30}]},{},[12])(12)
 });

@@ -5,7 +5,6 @@
  * @todo 对于 Player 构造函数的特殊照顾需要理一下，可能没必要
  */
 
-
 import includes from 'lodash.includes';
 import document from 'global/document';
 
@@ -23,9 +22,6 @@ import {each} from './utils/obj';
 import log from './utils/log';
 import computedStyle from './utils/computed-style';
 import featureDetector from './utils/feature-detector';
-
-
-const activeClass = 'lark-user-active';
 
 /**
  * @class Player
@@ -72,9 +68,6 @@ class Player {
         this.handleClick = this.handleClick.bind(this);
         this.fullWindowOnEscKey = this.fullWindowOnEscKey.bind(this);
 
-        // 3000ms 后自动隐藏播放器控制条
-        this.activeTimeout = 3000;
-
         if (featureDetector.touch) {
             this.on('touchend', this.handleTouchEnd);
         } else {
@@ -84,8 +77,6 @@ class Player {
         if (!this.tech) {
             this.tech = this.loadTech();
         }
-
-        this.addClass('lark-paused');
 
         const src = this.src();
         if (src) {
@@ -207,7 +198,6 @@ class Player {
      *
      */
     dispose() {
-        clearTimeout(this.activeTimeoutHandler);
         this.trigger('dispose');
 
         // 注销全屏事件
@@ -241,7 +231,7 @@ class Player {
         // 处理 options 中的 html5 标准属性
         const html5StandardOptions = [
             'autoplay',
-            // 'controls',
+            'controls',
             'height',
             'loop',
             'muted',
@@ -277,7 +267,7 @@ class Player {
 
         // 将原生控制条移除
         // 目前只支持使用自定义的控制条
-        tag.removeAttribute('controls');
+        // tag.removeAttribute('controls');
 
         // 将 el 插入到 DOM 中
         if (tag.parentNode) {
@@ -302,6 +292,8 @@ class Player {
             tag.removeAttribute('height');
         }
 
+        tag.setAttribute('width', '100%');
+        tag.setAttribute('height', '100%');
 
         // @todo safari 好像不支持移动 video DOM?
         // 将 video 插入到 el 中
@@ -514,7 +506,6 @@ class Player {
             });
         });
 
-
         // 绑定 firstPlay 事件
         // 先 off 确保只绑定一次
         this.off('play', this.handleFirstplay);
@@ -591,30 +582,6 @@ class Player {
     }
 
     /**
-     * 显示或隐藏控制条
-     *
-     * @param {boolean=} bool 显示或隐藏控制条，如果不传任何参数，则单纯返回当前控制条状态
-     * @return {boolean} 当前控制条状态（显示或隐藏）
-     */
-    controls(bool) {
-        if (bool === undefined) {
-            return this.getControlsStatus();
-        }
-
-        if (bool) {
-            this.removeClass('lark-controls-hide');
-        } else {
-            this.addClass('lark-controls-hide');
-        }
-
-        return this.getControlsStatus();
-    }
-
-    getControlsStatus() {
-        return !this.hasClass('lark-controls-hide');
-    }
-
-    /**
      * 获取或设置播放器的高宽
      *
      * @private
@@ -644,25 +611,6 @@ class Player {
         // this.updateStyleEl_();
     }
 
-    // @dprecated
-    // videojs 中的方法，目前没用到
-    hasStart(hasStarted) {
-        if (hasStarted !== undefined) {
-            if (this.hasStarted !== hasStarted) {
-                this.hasStarted = hasStarted;
-                if (hasStarted) {
-                    this.addClass('lark-has-started');
-                    this.trigger('firstplay');
-                } else {
-                    this.removeClass('lark-has-started');
-                }
-            }
-            return;
-        }
-
-        return !!this.hasStarted;
-    }
-
     // = = = = = = = = = = = = = 事件处理 = = = = = = = = = = = = = =
 
     /**
@@ -673,15 +621,6 @@ class Player {
      * @fires Player#firstplay
      */
     handleFirstplay() {
-        // @todo 不清楚有什么用
-        this.addClass('lark-has-started');
-
-        clearTimeout(this.activeTimeoutHandler);
-        this.addClass(activeClass);
-        this.activeTimeoutHandler = setTimeout(() => {
-            this.removeClass(activeClass);
-        }, this.activeTimeout);
-
         /**
          * 在视频第一次播放时触发，只会触发一次
          *
@@ -699,7 +638,6 @@ class Player {
      */
     handleTouchEnd(event) {
         let clickOnControls = false;
-        // @todo 处理得不够优雅
         if (DOM.parent(event.target, 'lark-play-button')
             || DOM.parent(event.target, 'lark-control-bar')) {
 
@@ -777,8 +715,6 @@ class Player {
      * @param {Object} event 事件发生时，浏览器给的 event
      */
     handleClick(event) {
-        // clearTimeout(this.activeTimeoutHandler);
-
         // 点在播放按钮或者控制条上，（继续）展现控制条
         let clickOnControls = false;
         // @todo 处理得不够优雅
@@ -885,7 +821,7 @@ class Player {
                 // @todo 这里返回的 err 可以利用下？
                 log.error(err);
             });
-        }  
+        }
     }
 
     /**
@@ -1243,7 +1179,8 @@ class Player {
      * @param {string=} preload 可选。设置 preload 属性的值（none、auto、metadata）
      * @return {undefined|string} undefined 或 当前 preload 值
      */
-    'preload'
+    'preload',
+    'controls'
 ].forEach(prop => {
     // 这里别用箭头函数，不然 this 就指不到 Player.prototype 了
     Player.prototype[prop] = function (val) {

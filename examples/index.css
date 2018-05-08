@@ -1,0 +1,36 @@
+.container {
+    width: 800px;
+    margin: 50px auto 100px;
+    border: 1px solid #3F51B5;
+    padding: 20px;
+    border-radius: 6px;
+}
+
+.log {
+    margin: 10px 0;
+}
+
+.downloading {
+    color: #00008b;
+}
+
+.downloaded {
+    color: #008000;
+}
+
+.play-url {
+    width: 640px;
+    height: 24px;
+}
+
+.play-url-text {
+    margin-top: 10px;
+}
+
+.play-url-ul {
+    margin: 0;
+}
+
+.player {
+    margin-top: 20px;
+}

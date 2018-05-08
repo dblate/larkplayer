@@ -14,19 +14,9 @@ module.exports = function (grunt) {
             dist: {
                 files: [{
                     expand: true,
-                    cwd: './src/js',
+                    cwd: './src',
                     src: ['**/*.js'],
                     dest: './lib'
-                }]
-            }
-        },
-        copy: {
-            dist: {
-                files: [{
-                    expand: true,
-                    cwd: './src/css/resource',
-                    src: ['*/*'],
-                    dest: './dist/resource'
                 }]
             }
         },
@@ -73,20 +63,17 @@ module.exports = function (grunt) {
                     }
                 },
                 files: {
-                    './dist/<%= pkg.name %>.js': ['./src/js/<%= pkg.name %>.js']
+                    './dist/<%= pkg.name %>.js': ['./src/<%= pkg.name %>.js']
                 }
             }
         }
     });
     grunt.loadNpmTasks('grunt-babel');
-    // grunt.loadNpmTasks('grunt-contrib-jshint');
-    // grunt.loadNpmTasks('grunt-contrib-watch');
-    // grunt.loadNpmTasks('grunt-contrib-concat');
     grunt.loadNpmTasks('grunt-contrib-copy');
     grunt.loadNpmTasks('grunt-contrib-uglify');
     grunt.loadNpmTasks('grunt-contrib-less');
     grunt.loadNpmTasks('grunt-browserify');
-    grunt.registerTask('default', ['less', 'browserify', 'uglify', 'copy']);
+    grunt.registerTask('default', ['browserify', 'uglify']);
     // grunt.registerTask('default', ['less', 'browserify', 'copy']);
 
     grunt.registerTask('generate-lib', ['babel'])
