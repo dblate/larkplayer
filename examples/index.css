@@ -13,11 +13,12 @@ ul {
     width: 100%;
     max-width: 800px;
     margin: 50px auto 100px;
-    border: 1px solid #3F51B5;
+    border: 1px solid #9E9E9E;
     padding: 20px;
     border-radius: 6px;
     overflow: hidden;
     box-sizing: border-box;
+    box-shadow: 5px 5px 5px #888;
 }
 
 @media screen and (max-width: 700px) {
