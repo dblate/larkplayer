@@ -76,7 +76,7 @@ function getResource() {
 var player;
 var playUrlInput = larkplayer.DOM.$('#play-url');
 function initialPlayer() {
-    var width = Math.min(document.body.clientWidth, 640);
+    var width = Math.min(larkplayer.DOM.$('#player').offsetWidth, 640);
     player = larkplayer('player', {
         width: width,
         height: width * 9 / 16,
