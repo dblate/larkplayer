@@ -2,6 +2,11 @@ body {
     padding: 0;
     margin: 0;
     word-break: break-word;
+    font-family: "Arial";
+}
+
+ul {
+    margin: 0;
 }
 
 .container {
@@ -40,10 +45,6 @@ body {
 
 .play-url-text {
     margin-top: 10px;
-}
-
-.play-url-ul {
-    margin: 0;
 }
 
 .player {
