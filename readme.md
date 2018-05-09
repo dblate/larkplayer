@@ -31,7 +31,7 @@ larkplayer 是一款轻量级、可扩展的 html5 播放器
 * 自定义的样式
 * ...
 
-更多插件请访问[插件列表](./docs/plugin/plugin-list) ，或者[编写自定义插件](./docs/plugin)
+更多插件请访问[插件列表](./docs/plugin/plugin-list.md) ，或者[编写自定义插件](./docs/plugin)
 
 更多细节请查看[设计文档](./docs/design.md)
 
