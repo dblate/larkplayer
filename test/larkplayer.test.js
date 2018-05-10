@@ -62,7 +62,7 @@ describe('larkplayer', function () {
             expect(callback).toHaveBeenCalledTimes(1);
         }, 2);
 
-        expect(!!player.dispose).toBe(true);
+        expect(player.dispose).toEqual(jasmine.any(Function));
 
         expect(player.width()).toBe(width);
         expect(player.height()).toBe(height);
@@ -78,10 +78,10 @@ describe('larkplayer', function () {
         expect(player.isFullscreen()).toBe(false);
 
         expect(player.paused()).toBe(true);
-        expect(!!player.play).toBe(true);
-        expect(!!player.pause).toBe(true);
-        expect(!!player.load).toBe(true);
-        expect(!!player.reset).toBe(true);
+        expect(player.play).toEqual(jasmine.any(Function));
+        expect(player.pause).toEqual(jasmine.any(Function));
+        expect(player.load).toEqual(jasmine.any(Function));
+        expect(player.reset).toEqual(jasmine.any(Function));
 
         expect(player.played() instanceof TimeRanges).toBe(true);
         expect(player.currentTime()).toEqual(jasmine.any(Number));
@@ -95,13 +95,20 @@ describe('larkplayer', function () {
         expect(player.networkState()).toBeGreaterThan(0);
         expect(player.videoWidth()).toEqual(jasmine.any(Number));
         expect(player.videoHeight()).toEqual(jasmine.any(Number));
+        expect(player.playsinline).toEqual(jasmine.any(Function));
+        expect(player.loop).toEqual(jasmine.any(Function));
+        expect(player.crossOrigin).toEqual(jasmine.any(Function));
+        expect(player.preload).toEqual(jasmine.any(Function));
+        expect(player.autoplay).toEqual(jasmine.any(Function));
+        expect(player.muted).toEqual(jasmine.any(Function));
+        expect(player.defaultMuted).toEqual(jasmine.any(Function));
 
         expect(player.volume()).toEqual(jasmine.any(Number));
         player.volume(0.5);
         expect(player.volume()).toBe(0.5);
 
         expect(player.src()).toBe(src);
-        expect(!!player.source).toBe(true);
+        expect(player.source).toEqual(jasmine.any(Function));
 
         expect(player.playbackRate()).toBe(1);
         player.playbackRate(5);
