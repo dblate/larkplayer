@@ -8,7 +8,7 @@
  *     3) MS 插件需实现 canPlay 静态方法，用于判断插件是否支持特定类型
  */
 
-import find from 'lodash.find';
+import find from 'array-find';
 
 import pluginStore from './plugin-store';
 import PluginTypes from './plugin-types';

@@ -9,7 +9,7 @@ describe('larkplayer', function () {
         const html = `
             <div id="test-id">
                 <div class="div-class" id="div-id">
-                <video class="video-class" id="video-id"></video>
+                <video class="video-class" id="video-id" controls></video>
             </div>
         `;
         document.body.insertAdjacentHTML('afterbegin', html);

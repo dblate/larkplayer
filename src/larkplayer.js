@@ -4,7 +4,7 @@
  * @date 2017/11/7
  */
 
-import assign from 'lodash.assign';
+import assign from 'object-assign';
 
 import * as DOM from './utils/dom';
 import * as Events from './events/events';
@@ -63,28 +63,6 @@ assign(larkplayer, {
     Plugin,
     util
 });
-
-// assign(larkplayer, {
-//     Events,
-//     DOM,
-//     Component,
-//     MediaSourceHandler,
-//     Plugin,
-//     util: {
-//         computedStyle,
-//         featureDetector,
-//         fn,
-//         guid,
-//         log,
-//         mimeTypeMap,
-//         normalizeSource,
-//         obj,
-//         timeFormat,
-//         toCamelCase,
-//         toTitleCase
-//     }
-// });
-
 
 // for babel es6
 // @see https://github.com/babel/babel/issues/2724

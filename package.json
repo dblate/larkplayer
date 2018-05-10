@@ -54,11 +54,11 @@
     "watchify": "^3.11.0"
   },
   "dependencies": {
+    "array-find": "^1.0.0",
     "classnames": "^2.2.5",
     "global": "^4.3.2",
-    "lodash.assign": "^4.2.0",
-    "lodash.find": "^4.6.0",
     "lodash.includes": "^4.3.0",
-    "lodash.values": "^4.3.0"
+    "lodash.values": "^4.3.0",
+    "object-assign": "^4.1.1"
   }
 }

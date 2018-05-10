@@ -581,36 +581,6 @@ class Player {
         }
     }
 
-    /**
-     * 获取或设置播放器的高宽
-     *
-     * @private
-     * @param {string} dimension 属性名：width/height
-     * @param {number} value 要设置的值
-     * @return {number} 对应属性的值
-     */
-    dimension(dimension, value) {
-        const privateDimension = dimension + '_';
-
-        if (value === undefined) {
-            return this[privateDimension] || 0;
-        }
-
-        if (value === '') {
-            this[privateDimension] = undefined;
-        } else {
-            const parsedVal = parseFloat(value);
-            if (isNaN(parsedVal)) {
-                log(`Improper value ${value} supplied for ${dimension}`);
-                return;
-            }
-
-            this[privateDimension] = parsedVal;
-        }
-
-        // this.updateStyleEl_();
-    }
-
     // = = = = = = = = = = = = = 事件处理 = = = = = = = = = = = = = =
 
     /**
@@ -887,10 +857,6 @@ class Player {
         return this.techGet('played');
     }
 
-    scrubbing(isScrubbing) {
-
-    }
-
     /**
      * 获取／设置当前时间
      *
@@ -930,10 +896,6 @@ class Player {
      */
     buffered() {
         return this.techGet('buffered');
-    }
-
-    bufferedPercent() {
-
     }
 
     /**

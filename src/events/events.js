@@ -6,7 +6,7 @@
  */
 
 import document from 'global/document';
-import assign from 'lodash.assign';
+import assign from 'object-assign';
 
 /**
  * 绑定事件

@@ -649,28 +649,6 @@ export function replaceContent(el, content) {
  * @param {Element|string=} 上下文环境。可选，默认为 document
  * @return {Element|null} 被选中的元素或 null
  */
-
-// export const $ = (function () {
-//     if (document.querySelector) {
-//         return createQuerier('querySelector');
-//     } else {
-//         return function (str, context) {
-//             const idReg = /^#\w+/;
-//             const classReg = /^.\w+/;
-
-//             context = isEl(context) ? context : document;
-
-//             if (idReg.test(str)) {
-//                 return context.getElementById(str.slice(1));
-//             } else if (classReg.test(str)) {
-//                 return context.getElementsByClassName && context.getElementsByClassName(str.slice(1))[0];
-//             } else {
-//                 return context.getElementsByTagName && context.getElementsByTagName(str)[0];
-//             }
-//         }
-//     }
-// })();
-
 export const $ = createQuerier('querySelector');
 
 
@@ -685,27 +663,6 @@ export const $ = createQuerier('querySelector');
  * @return {NodeList} 被选中的元素列表，如果没有符合条件的元素，空列表
  */
 export const $$ = createQuerier('querySelectorAll');
-
-// export const $$ = (function () {
-//     if (document.querySelectorAll) {
-//         return createQuerier('querySelectorAll');
-//     } else {
-//         return function (str, context) {
-//             const idReg = /^#\w+/;
-//             const classReg = /^.\w+/;
-
-//             context = isEl(context) ? context : document;
-
-//             if (idReg.test(str)) {
-//                 return context.getElementById(str.slice(1));
-//             } else if (classReg.test(str)) {
-//                 return context.getElementsByClassName && context.getElementsByClassName(str.slice(1));
-//             } else {
-//                 return context.getElementsByTagName && context.getElementsByTagName(str);
-//             }
-//         }
-//     }
-// })();
 
 
 

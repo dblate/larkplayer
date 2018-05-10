@@ -4,7 +4,7 @@
  * @date 2018/4/27
  */
 
-import evented from '../../src/js/events/evented';
+import evented from '../../src/events/evented';
 
 describe('evented', function () {
     beforeEach(function () {
