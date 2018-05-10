@@ -1416,7 +1416,7 @@ function evented() {
     };
 }
 
-},{"../utils/dom":20,"./events":9}],9:[function(require,module,exports){
+},{"../utils/dom":22,"./events":9}],9:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -1606,6 +1606,116 @@ exports['default'] = {
 };
 
 },{"../events/events":9,"global/document":2}],11:[function(require,module,exports){
+'use strict';
+
+exports.__esModule = true;
+/**
+ * @file html5 video events
+ * @author yuhui06
+ * @date 2018/5/10
+ * @see https://www.w3.org/TR/html5/semantics-embedded-content.html#media-elements-event-summary
+ * @todo 移到这里后，player event 的文档怎么办？
+ */
+
+exports['default'] = ['loadstart',
+
+/**
+ * 浏览器停止获取数据时触发
+ *
+ * @event Player#suspend
+ * @param {Object} event 事件触发时浏览器自带的 event 对象
+ */
+'suspend',
+
+/**
+ * 浏览器在视频下载完成前停止下载时触发。但并不是因为出错，出错时触发 error 事件而不是 abort。
+ * 往往是人为的停止下载，比如删除 src
+ *
+ * @event Player#abort
+ * @param {Object} event 事件触发时浏览器自带的 event 对象
+ */
+'abort', 'error',
+
+/**
+ * 视频被清空时触发
+ *
+ * @event Player#emptied
+ * @param {Object} event 事件触发时浏览器自带的 event 对象
+ */
+'emptied',
+
+/**
+ * 浏览器获取数据时，数据并没有正常返回时触发
+ *
+ * @event Player#stalled
+ * @param {Object} event 事件触发时浏览器自带的 event 对象
+ */
+'stalled',
+
+/**
+ * 播放器成功获取到视频总时长、高宽、字幕等信息时触发
+ *
+ * @event Player#loadedmetadata
+ * @param {Object} event 事件触发时浏览器自带的 event 对象
+ */
+'loadedmetadata',
+
+/**
+ * 播放器第一次能够渲染当前帧时触发
+ *
+ * @event Player#loadeddata
+ * @param {Object} event 事件触发时浏览器自带的 event 对象
+ */
+'loadeddata', 'canplay', 'canplaythrough', 'playing', 'waiting', 'seeking', 'seeked', 'ended', 'durationchange', 'timeupdate',
+
+/**
+ * 浏览器获取数据的过程中触发
+ *
+ * @event Player#progress
+ * @param {Object} event 事件触发时浏览器自带的 event 对象
+ */
+'progress', 'play', 'pause',
+
+/**
+ * 视频播放速率改变时触发
+ *
+ * @event Player#ratechange
+ * @param {Object} event 事件触发时浏览器自带的 event 对象
+ */
+'ratechange',
+
+/**
+ * 视频本身的高宽发生改变时触发，注意不是播放器的高度（比如调整播放器的高宽和全屏不会触发 resize 事件）
+ *
+ * 这里还不是太清楚，有需要的话看看 w3c 文档吧
+ *
+ * @see https://html.spec.whatwg.org/#dom-video-videowidth
+ * @event Player#resize
+ * @param {Object} event 事件触发时浏览器自带的 event 对象
+ */
+'resize',
+
+/**
+ * 视频声音大小改变时触发
+ *
+ * @event Player#volumechange
+ * @param {Object} event 事件触发时浏览器自带的 event 对象
+ */
+'volumechange'];
+
+},{}],12:[function(require,module,exports){
+'use strict';
+
+exports.__esModule = true;
+/**
+ * @file html5 video writable attributes
+ * @author yuhui06
+ * @date 2018/5/10
+ */
+
+exports['default'] = ['src', 'crossorigin', 'poster', 'preload', 'autoplay', 'loop', 'muted', 'controls', 'width', 'height', 'playsinline'];
+
+},{}],13:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -1999,7 +2109,7 @@ Html5.resetMediaElement = function (el) {
     };
 });
 
-},{"../events/evented":8,"../utils/dom":20,"../utils/normalize-source":26,"../utils/to-title-case":29,"global/document":2,"global/window":3}],12:[function(require,module,exports){
+},{"../events/evented":8,"../utils/dom":22,"../utils/normalize-source":28,"../utils/to-title-case":32,"global/document":2,"global/window":3}],14:[function(require,module,exports){
 'use strict';
 
 var _objectAssign = require('object-assign');
@@ -2108,7 +2218,7 @@ function larkplayer(el, options, readyFn) {
 // @see https://github.com/babel/babel/issues/2724
 module.exports = larkplayer;
 
-},{"./events/events":9,"./html5/html5":11,"./player":13,"./plugin/component":14,"./plugin/media-source-handler":15,"./plugin/plugin":18,"./utils/dom":20,"./utils/utils":30,"object-assign":7}],13:[function(require,module,exports){
+},{"./events/events":9,"./html5/html5":13,"./player":15,"./plugin/component":16,"./plugin/media-source-handler":17,"./plugin/plugin":20,"./utils/dom":22,"./utils/utils":33,"object-assign":7}],15:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -2124,6 +2234,14 @@ var _document2 = _interopRequireDefault(_document);
 var _html = require('./html5/html5');
 
 var _html2 = _interopRequireDefault(_html);
+
+var _html5Events = require('./html5/html5-events');
+
+var _html5Events2 = _interopRequireDefault(_html5Events);
+
+var _html5WritableAttrs = require('./html5/html5-writable-attrs');
+
+var _html5WritableAttrs2 = _interopRequireDefault(_html5WritableAttrs);
 
 var _fullscreen = require('./html5/fullscreen');
 
@@ -2408,15 +2526,13 @@ var Player = function () {
         var tag = this.tag;
 
         // 处理 options 中的 html5 标准属性
-        var html5StandardOptions = ['autoplay', 'controls', 'height', 'loop', 'muted', 'poster', 'preload', 'auto', 'metadata', 'none', 'src', 'width', 'playsinline'];
         (0, _obj.each)(this.options, function (value, key) {
-            if ((0, _lodash2['default'])(html5StandardOptions, key) && value) {
+            if ((0, _lodash2['default'])(_html5WritableAttrs2['default'], key) && value) {
                 DOM.setAttribute(tag, key, value);
             }
         });
 
         if (this.options.source) {
-            // 等到 this.tech 初始化完成后再添加
             this.ready(function () {
                 _this5.source(_this5.options.source);
             });
@@ -2430,38 +2546,21 @@ var Player = function () {
 
         DOM.setAttribute(tag, 'tabindex', '-1');
 
-        // 将原生控制条移除
-        // 目前只支持使用自定义的控制条
-        // tag.removeAttribute('controls');
-
         // 将 el 插入到 DOM 中
         if (tag.parentNode) {
             tag.parentNode.insertBefore(el, tag);
         }
 
-        // 父元素的 width height 样式继承子元素的值
-        // 将 video 标签的 width height 属性移除，确保 width height 为 100%
-
-        // IE7 不支持 hasAttribute
-        // if (tag.hasAttribute('width')) {
-        if (tag.width) {
-            var tagWidth = tag.getAttribute('width');
-            el.style.width = tagWidth + 'px';
-            tag.removeAttribute('width');
+        if (tag.hasAttribute('width')) {
+            el.style.width = tag.getAttribute('width') + 'px';
+            tag.setAttribute('width', '100%');
         }
 
-        // if (tag.hasAttribute('height')) {
-        if (tag.height) {
-            var tagHeight = tag.getAttribute('height');
-            el.style.height = tagHeight + 'px';
-            tag.removeAttribute('height');
+        if (tag.hasAttribute('height')) {
+            el.style.height = tag.getAttribute('height') + 'px';
+            tag.setAttribute('height', '100%');
         }
 
-        tag.setAttribute('width', '100%');
-        tag.setAttribute('height', '100%');
-
-        // @todo safari 好像不支持移动 video DOM?
-        // 将 video 插入到 el 中
         el.appendChild(tag);
 
         return el;
@@ -2573,100 +2672,14 @@ var Player = function () {
         this.options.el = this.tag;
         var tech = new _html2['default'](this.player, this.options);
 
-        // 注册 video 的各个事件
-        ['loadstart',
-
-        /**
-         * 浏览器停止获取数据时触发
-         *
-         * @event Player#suspend
-         * @param {Object} event 事件触发时浏览器自带的 event 对象
-         */
-        'suspend',
-
-        /**
-         * 浏览器在视频下载完成前停止下载时触发。但并不是因为出错，出错时触发 error 事件而不是 abort。
-         * 往往是人为的停止下载，比如删除 src
-         *
-         * @event Player#abort
-         * @param {Object} event 事件触发时浏览器自带的 event 对象
-         */
-        'abort', 'error',
-
-        /**
-         * 视频被清空时触发
-         *
-         * @event Player#emptied
-         * @param {Object} event 事件触发时浏览器自带的 event 对象
-         */
-        'emptied',
-
-        /**
-         * 浏览器获取数据时，数据并没有正常返回时触发
-         *
-         * @event Player#stalled
-         * @param {Object} event 事件触发时浏览器自带的 event 对象
-         */
-        'stalled',
-
-        /**
-         * 播放器成功获取到视频总时长、高宽、字幕等信息时触发
-         *
-         * @event Player#loadedmetadata
-         * @param {Object} event 事件触发时浏览器自带的 event 对象
-         */
-        'loadedmetadata',
-
-        /**
-         * 播放器第一次能够渲染当前帧时触发
-         *
-         * @event Player#loadeddata
-         * @param {Object} event 事件触发时浏览器自带的 event 对象
-         */
-        'loadeddata', 'canplay', 'canplaythrough', 'playing', 'waiting', 'seeking', 'seeked', 'ended', 'durationchange', 'timeupdate',
-
-        /**
-         * 浏览器获取数据的过程中触发
-         *
-         * @event Player#progress
-         * @param {Object} event 事件触发时浏览器自带的 event 对象
-         */
-        'progress', 'play', 'pause',
-
-        /**
-         * 视频播放速率改变时触发
-         *
-         * @event Player#ratechange
-         * @param {Object} event 事件触发时浏览器自带的 event 对象
-         */
-        'ratechange',
-
-        /**
-         * 视频本身的高宽发生改变时触发，注意不是播放器的高度（比如调整播放器的高宽和全屏不会触发 resize 事件）
-         *
-         * 这里还不是太清楚，有需要的话看看 w3c 文档吧
-         *
-         * @see https://html.spec.whatwg.org/#dom-video-videowidth
-         * @event Player#resize
-         * @param {Object} event 事件触发时浏览器自带的 event 对象
-         */
-        'resize',
-
-        /**
-         * 视频声音大小改变时触发
-         *
-         * @event Player#volumechange
-         * @param {Object} event 事件触发时浏览器自带的 event 对象
-         */
-        'volumechange'].forEach(function (event) {
-            // 对于我们不做任何处理的事件，直接 trigger 出去，提供给用户就行了
-            Events.on(tech.el, event, function () {
-                _this7.trigger(event);
+        // 代理 video 的各个事件
+        _html5Events2['default'].forEach(function (eventName) {
+            Events.on(tech.el, eventName, function () {
+                _this7.trigger(eventName);
             });
         });
 
         // 绑定 firstPlay 事件
-        // 先 off 确保只绑定一次
         this.off('play', this.handleFirstplay);
         this.one('play', this.handleFirstplay);
 
@@ -2863,29 +2876,12 @@ var Player = function () {
 
 
     Player.prototype.handleClick = function handleClick(event) {
-        // 点在播放按钮或者控制条上，（继续）展现控制条
-        var clickOnControls = false;
-        // @todo 处理得不够优雅
-        if (DOM.parent(event.target, 'lark-control-bar-pc') || DOM.hasClass(event.target, 'lark-control-bar-pc')) {
-
-            clickOnControls = true;
-        }
-
-        if (!clickOnControls) {
-            // 处于暂停状态时，点击非控制条的位置继续播放
-            // 切换暂停／播放状态
-            var isPaused = this.paused();
-            if (isPaused) {
-                this.play();
-            } else {
-                this.pause();
-            }
+        if (event.target === this.tech.el) {
+            this.paused() ? this.play() : this.pause();
         }
     };
 
     // = = = = = = = = = = = = = 对外 api = = = = = = = = = = = = = =
-
-    // = = = func = = =
 
     /**
      * 判断当前是否处于全屏状态
@@ -3389,7 +3385,7 @@ var Player = function () {
 
 exports['default'] = Player;
 
-},{"./events/evented":8,"./events/events":9,"./html5/fullscreen":10,"./html5/html5":11,"./plugin/component":14,"./plugin/media-source-handler":15,"./plugin/plugin":18,"./plugin/plugin-types":17,"./utils/computed-style":19,"./utils/dom":20,"./utils/feature-detector":21,"./utils/log":24,"./utils/obj":27,"./utils/to-title-case":29,"global/document":2,"lodash.includes":5}],14:[function(require,module,exports){
+},{"./events/evented":8,"./events/events":9,"./html5/fullscreen":10,"./html5/html5":13,"./html5/html5-events":11,"./html5/html5-writable-attrs":12,"./plugin/component":16,"./plugin/media-source-handler":17,"./plugin/plugin":20,"./plugin/plugin-types":19,"./utils/computed-style":21,"./utils/dom":22,"./utils/feature-detector":23,"./utils/log":26,"./utils/obj":29,"./utils/to-title-case":32,"global/document":2,"lodash.includes":5}],16:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -3522,7 +3518,7 @@ var Component = function () {
 
 exports['default'] = Component;
 
-},{"../events/evented":8,"../events/events":9,"../utils/dom":20,"../utils/to-camel-case":28,"./plugin-store":16,"./plugin-types":17}],15:[function(require,module,exports){
+},{"../events/evented":8,"../events/events":9,"../utils/dom":22,"../utils/to-camel-case":31,"./plugin-store":18,"./plugin-types":19}],17:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -3600,7 +3596,7 @@ var MediaSourceHandler = function () {
 
 exports['default'] = MediaSourceHandler;
 
-},{"./plugin-store":16,"./plugin-types":17,"array-find":1}],16:[function(require,module,exports){
+},{"./plugin-store":18,"./plugin-types":19,"array-find":1}],18:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -3717,7 +3713,7 @@ exports['default'] = {
     }
 };
 
-},{"../utils/guid":23,"../utils/to-camel-case":28,"./component":14,"./media-source-handler":15,"./plugin":18,"./plugin-types":17,"lodash.values":6}],17:[function(require,module,exports){
+},{"../utils/guid":25,"../utils/to-camel-case":31,"./component":16,"./media-source-handler":17,"./plugin":20,"./plugin-types":19,"lodash.values":6}],19:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -3733,7 +3729,7 @@ exports['default'] = {
   OTHERS: 'plugin'
 };
 
-},{}],18:[function(require,module,exports){
+},{}],20:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -3796,7 +3792,7 @@ var Plugin = function () {
 
 exports['default'] = Plugin;
 
-},{"./plugin-store":16,"./plugin-types":17}],19:[function(require,module,exports){
+},{"./plugin-store":18,"./plugin-types":19}],21:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -3835,7 +3831,7 @@ function computedStyle(el, prop) {
    * @date 2017/11/3
    */
 
-},{"global/window":3}],20:[function(require,module,exports){
+},{"global/window":3}],22:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -4551,7 +4547,7 @@ var $ = exports.$ = createQuerier('querySelector');
  */
 var $$ = exports.$$ = createQuerier('querySelectorAll');
 
-},{"./computed-style":19,"./obj":27,"global/document":2,"global/window":3,"lodash.includes":5}],21:[function(require,module,exports){
+},{"./computed-style":21,"./obj":29,"global/document":2,"global/window":3,"lodash.includes":5}],23:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -4570,7 +4566,7 @@ exports['default'] = {
     * @date 2018/3/8
     */
 
-},{"global/document":2}],22:[function(require,module,exports){
+},{"global/document":2}],24:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -4626,7 +4622,7 @@ function throttle(fn, wait) {
     };
 }
 
-},{"./guid":23}],23:[function(require,module,exports){
+},{"./guid":25}],25:[function(require,module,exports){
 "use strict";
 
 exports.__esModule = true;
@@ -4649,7 +4645,7 @@ function newGUID() {
   return guid++;
 }
 
-},{}],24:[function(require,module,exports){
+},{}],26:[function(require,module,exports){
 "use strict";
 
 exports.__esModule = true;
@@ -4694,7 +4690,7 @@ log.error = console.error;
 
 log.clear = console.clear;
 
-},{}],25:[function(require,module,exports){
+},{}],27:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -4717,7 +4713,7 @@ exports['default'] = {
     'wmv': 'video/x-ms-wmv'
 };
 
-},{}],26:[function(require,module,exports){
+},{}],28:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -4807,7 +4803,7 @@ function nomalizeSource(source) {
     }
 }
 
-},{"./mime-type-map":25,"./obj":27}],27:[function(require,module,exports){
+},{"./mime-type-map":27,"./obj":29}],29:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -4865,7 +4861,66 @@ function each(obj, fn) {
   });
 }
 
-},{}],28:[function(require,module,exports){
+},{}],30:[function(require,module,exports){
+'use strict';
+
+exports.__esModule = true;
+exports['default'] = timeFormat;
+/**
+ * @file time-format.js 将秒数格式化为指定的时间字符串形式
+ * @author yuhui<yuhui06@baidu.com>
+ * @date 2017/11/3
+ */
+
+/**
+ * 将秒数格式化为 hh:mm:ss 的形式
+ *
+ * @param {number} seconds 要转化的秒数
+ * @return {string} 格式化后的表示时间的字符串
+ */
+
+/**
+ * 不足两位的时间，前面补零
+ *
+ * @inner
+ *
+ * @param {string|number} val 该段位的时间（如 1h 12h 23m 1s）
+ * @return {string} 进行过不足两位前面补零操作的时间串
+ */
+function pad(val) {
+    val = '' + val;
+    if (val.length < 2) {
+        val = '0' + val;
+    }
+
+    return val;
+}
+
+/**
+ * 将传入的秒数格式化为 hh:mm:ss 的形式，如果不足一小时，则为 mm:ss 的形式
+ *
+ * @param {number} seconds 总秒数
+ * @return {string} 格式化后的时间串
+ */
+function timeFormat(seconds) {
+    seconds = parseInt(seconds, 10);
+    if (!isNaN(seconds)) {
+        var hour = Math.floor(seconds / 3600);
+        var minute = Math.floor((seconds - hour * 3600) / 60);
+        var second = seconds % 60;
+
+        var result = [pad(minute), pad(second)];
+        if (hour > 0) {
+            result.unshift(pad(hour));
+        }
+
+        return result.join(':');
+    } else {
+        return '- -';
+    }
+}
+
+},{}],31:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -4885,7 +4940,7 @@ function toCamelCase(str) {
     return str.charAt(0).toLowerCase() + str.slice(1);
 }
 
-},{}],29:[function(require,module,exports){
+},{}],32:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -4926,7 +4981,7 @@ function titleCaseEquals(str1, str2) {
   return toTitleCase(str1) === toTitleCase(str2);
 }
 
-},{}],30:[function(require,module,exports){
+},{}],33:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -4955,6 +5010,10 @@ var _obj = require('./obj');
 
 var obj = _interopRequireWildcard(_obj);
 
+var _timeFormat = require('./time-format');
+
+var _timeFormat2 = _interopRequireDefault(_timeFormat);
+
 var _toCamelCase = require('./to-camel-case');
 
 var _toCamelCase2 = _interopRequireDefault(_toCamelCase);
@@ -4967,13 +5026,6 @@ function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj;
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
 
-// import timeFormat from './time-format';
-/**
- * @file 整合 utils 各方法，方便对外输出
- * @author yuhui06
- * @date 2018/5/6
- */
-
 exports['default'] = {
     computedStyle: _computedStyle2['default'],
     featureDetector: _featureDetector2['default'],
@@ -4981,10 +5033,14 @@ exports['default'] = {
     guid: guid,
     mimeTypeMap: _mimeTypeMap2['default'],
     obj: obj,
-    // timeFormat,
+    timeFormat: _timeFormat2['default'],
     toCamelCase: _toCamelCase2['default'],
     toTitleCase: _toTitleCase2['default']
-};
+}; /**
+    * @file 整合 utils 各方法，方便对外输出
+    * @author yuhui06
+    * @date 2018/5/6
+    */
 
-},{"./computed-style":19,"./feature-detector":21,"./fn":22,"./guid":23,"./mime-type-map":25,"./obj":27,"./to-camel-case":28,"./to-title-case":29}]},{},[12])(12)
+},{"./computed-style":21,"./feature-detector":23,"./fn":24,"./guid":25,"./mime-type-map":27,"./obj":29,"./time-format":30,"./to-camel-case":31,"./to-title-case":32}]},{},[14])(14)
 });

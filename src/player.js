@@ -9,6 +9,8 @@ import includes from 'lodash.includes';
 import document from 'global/document';
 
 import Html5 from './html5/html5';
+import html5Events from './html5/html5-events';
+import html5WritableAttrs from './html5/html5-writable-attrs';
 import fullscreen from './html5/fullscreen';
 import Component from './plugin/component';
 import MediaSourceHandler from './plugin/media-source-handler';
@@ -229,29 +231,13 @@ class Player {
         const tag = this.tag;
 
         // 处理 options 中的 html5 标准属性
-        const html5StandardOptions = [
-            'autoplay',
-            'controls',
-            'height',
-            'loop',
-            'muted',
-            'poster',
-            'preload',
-            'auto',
-            'metadata',
-            'none',
-            'src',
-            'width',
-            'playsinline'
-        ];
         each(this.options, (value, key) => {
-            if (includes(html5StandardOptions, key) && value) {
+            if (includes(html5WritableAttrs, key) && value) {
                 DOM.setAttribute(tag, key, value);
             }
         });
 
         if (this.options.source) {
-            // 等到 this.tech 初始化完成后再添加
             this.ready(() => {
                 this.source(this.options.source);
             });
@@ -265,38 +251,21 @@ class Player {
 
         DOM.setAttribute(tag, 'tabindex', '-1');
 
-        // 将原生控制条移除
-        // 目前只支持使用自定义的控制条
-        // tag.removeAttribute('controls');
-
         // 将 el 插入到 DOM 中
         if (tag.parentNode) {
             tag.parentNode.insertBefore(el, tag);
         }
 
-        // 父元素的 width height 样式继承子元素的值
-        // 将 video 标签的 width height 属性移除，确保 width height 为 100%
-
-        // IE7 不支持 hasAttribute
-        // if (tag.hasAttribute('width')) {
-        if (tag.width) {
-            let tagWidth = tag.getAttribute('width');
-            el.style.width = tagWidth + 'px';
-            tag.removeAttribute('width');
+        if (tag.hasAttribute('width')) {
+            el.style.width = tag.getAttribute('width') + 'px';
+            tag.setAttribute('width', '100%');
         }
 
-        // if (tag.hasAttribute('height')) {
-        if (tag.height) {
-            let tagHeight = tag.getAttribute('height');
-            el.style.height = tagHeight + 'px';
-            tag.removeAttribute('height');
+        if (tag.hasAttribute('height')) {
+            el.style.height = tag.getAttribute('height') + 'px';
+            tag.setAttribute('height', '100%');
         }
 
-        tag.setAttribute('width', '100%');
-        tag.setAttribute('height', '100%');
-
-        // @todo safari 好像不支持移动 video DOM?
-        // 将 video 插入到 el 中
         el.appendChild(tag);
 
         return el;
@@ -400,114 +369,14 @@ class Player {
         this.options.el = this.tag;
         let tech = new Html5(this.player, this.options);
 
-        // 注册 video 的各个事件
-        [
-            'loadstart',
-
-            /**
-             * 浏览器停止获取数据时触发
-             *
-             * @event Player#suspend
-             * @param {Object} event 事件触发时浏览器自带的 event 对象
-             */
-            'suspend',
-
-            /**
-             * 浏览器在视频下载完成前停止下载时触发。但并不是因为出错，出错时触发 error 事件而不是 abort。
-             * 往往是人为的停止下载，比如删除 src
-             *
-             * @event Player#abort
-             * @param {Object} event 事件触发时浏览器自带的 event 对象
-             */
-            'abort',
-            'error',
-
-            /**
-             * 视频被清空时触发
-             *
-             * @event Player#emptied
-             * @param {Object} event 事件触发时浏览器自带的 event 对象
-             */
-            'emptied',
-
-            /**
-             * 浏览器获取数据时，数据并没有正常返回时触发
-             *
-             * @event Player#stalled
-             * @param {Object} event 事件触发时浏览器自带的 event 对象
-             */
-            'stalled',
-
-            /**
-             * 播放器成功获取到视频总时长、高宽、字幕等信息时触发
-             *
-             * @event Player#loadedmetadata
-             * @param {Object} event 事件触发时浏览器自带的 event 对象
-             */
-            'loadedmetadata',
-
-            /**
-             * 播放器第一次能够渲染当前帧时触发
-             *
-             * @event Player#loadeddata
-             * @param {Object} event 事件触发时浏览器自带的 event 对象
-             */
-            'loadeddata',
-            'canplay',
-            'canplaythrough',
-            'playing',
-            'waiting',
-            'seeking',
-            'seeked',
-            'ended',
-            'durationchange',
-            'timeupdate',
-
-            /**
-             * 浏览器获取数据的过程中触发
-             *
-             * @event Player#progress
-             * @param {Object} event 事件触发时浏览器自带的 event 对象
-             */
-            'progress',
-            'play',
-            'pause',
-
-            /**
-             * 视频播放速率改变时触发
-             *
-             * @event Player#ratechange
-             * @param {Object} event 事件触发时浏览器自带的 event 对象
-             */
-            'ratechange',
-
-            /**
-             * 视频本身的高宽发生改变时触发，注意不是播放器的高度（比如调整播放器的高宽和全屏不会触发 resize 事件）
-             *
-             * 这里还不是太清楚，有需要的话看看 w3c 文档吧
-             *
-             * @see https://html.spec.whatwg.org/#dom-video-videowidth
-             * @event Player#resize
-             * @param {Object} event 事件触发时浏览器自带的 event 对象
-             */
-            'resize',
-
-            /**
-             * 视频声音大小改变时触发
-             *
-             * @event Player#volumechange
-             * @param {Object} event 事件触发时浏览器自带的 event 对象
-             */
-            'volumechange'
-        ].forEach(event => {
-            // 对于我们不做任何处理的事件，直接 trigger 出去，提供给用户就行了
-            Events.on(tech.el, event, () => {
-                this.trigger(event);
+        // 代理 video 的各个事件
+        html5Events.forEach(eventName => {
+            Events.on(tech.el, eventName, () => {
+                this.trigger(eventName);
             });
         });
 
         // 绑定 firstPlay 事件
-        // 先 off 确保只绑定一次
         this.off('play', this.handleFirstplay);
         this.one('play', this.handleFirstplay);
 
@@ -685,30 +554,12 @@ class Player {
      * @param {Object} event 事件发生时，浏览器给的 event
      */
     handleClick(event) {
-        // 点在播放按钮或者控制条上，（继续）展现控制条
-        let clickOnControls = false;
-        // @todo 处理得不够优雅
-        if (DOM.parent(event.target, 'lark-control-bar-pc')
-            || DOM.hasClass(event.target, 'lark-control-bar-pc')) {
-
-            clickOnControls = true;
-        }
-
-        if (!clickOnControls) {
-            // 处于暂停状态时，点击非控制条的位置继续播放
-            // 切换暂停／播放状态
-            const isPaused = this.paused();
-            if (isPaused) {
-                this.play();
-            } else {
-                this.pause();
-            }
+        if (event.target === this.tech.el) {
+            this.paused() ? this.play() : this.pause();
         }
     }
 
     // = = = = = = = = = = = = = 对外 api = = = = = = = = = = = = = =
-
-    // = = = func = = =
 
     /**
      * 判断当前是否处于全屏状态
