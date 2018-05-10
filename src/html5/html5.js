@@ -231,39 +231,9 @@ Html5.canControlPlaybackRate = function () {
     }
 };
 
-// HTML5 video 事件
-Html5.Events = [
-    'loadstart',
-    'suspend',
-    'abort',
-    'error',
-    'emptied',
-    'stalled',
-    'loadedmetadata',
-    'loadeddata',
-    'canplay',
-    'canplaythrough',
-    'playing',
-    'waiting',
-    'seeking',
-    'seeked',
-    'ended',
-    'durationchange',
-    'timeupdate',
-    'progress',
-    'play',
-    'pause',
-    'ratechange',
-    'resize',
-    'volumechange'
-];
-
 Html5.prototype.featuresVolumeControl = Html5.canControlVolume();
 
 Html5.prototype.featuresPlaybackRate = Html5.canControlPlaybackRate();
-
-// @todo
-// Html5.prototype.movingMediaElementInDOM = !browser.IS_IOS;
 
 // 表明进入全屏时，播放器是否自动改变视频大小
 Html5.prototype.featuresFullscreenResize = true;
@@ -273,9 +243,6 @@ Html5.prototype.featuresProgressEvents = true;
 
 // 表明是否支持 timeupdate 事件
 Html5.prototype.featuresTimeupdateEvents = true;
-
-// @todo patchCanPlayType
-
 
 Html5.disposeMediaElement = function (el) {
     if (!el) {
@@ -378,6 +345,7 @@ Html5.resetMediaElement = function (el) {
 // seekable, ended, palybackRate, defaultPlaybackRate, played, networkState,
 // readyState, videoWidth, videoHeight
 [
+    'crossOrigin',
     'paused',
     'currentTime',
     'duration',
@@ -404,9 +372,10 @@ Html5.resetMediaElement = function (el) {
 
 // Wrap HTML5 video properties with a setter in the following format:
 // set + toTitleCase(propName)
-// setVolume, setSrc, setPoster, setPreload, setPlaybackRate, setDefaultPlaybackRate
+// setVolume, setCrossOrigin, setSrc, setPoster, setPreload, setPlaybackRate, setDefaultPlaybackRate
 [
     'volume',
+    'crossOrigin',
     'src',
     'poster',
     'preload',

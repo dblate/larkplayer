@@ -468,25 +468,9 @@ class Player {
         this.trigger('firstplay');
     }
 
-    /**
-     * 处理 touchend 事件，主要用于控制控制条的显隐
-     *
-     * @param {Object} event 事件发生时，浏览器给的 event
-     *
-     * @private
-     */
     handleTouchEnd(event) {
-        let clickOnControls = false;
-        if (DOM.parent(event.target, 'lark-play-button')
-            || DOM.parent(event.target, 'lark-control-bar')) {
-
-            clickOnControls = true;
-        }
-
-        if (!clickOnControls) {
-            if (this.paused()) {
-                this.play();
-            }
+        if (event.target === this.tech.el && this.paused()) {
+            this.play();
         }
     }
 
@@ -543,16 +527,6 @@ class Player {
         this.trigger('fullscreenerror');
     }
 
-    /**
-     * 处理播放器 click 事件，主要用于控制控制条显隐
-     *
-     * pc 上用 click 事件，移动端用 touchend
-     *
-     * @todo 开发 tap 事件来代替 click
-     * @private
-     *
-     * @param {Object} event 事件发生时，浏览器给的 event
-     */
     handleClick(event) {
         if (event.target === this.tech.el) {
             this.paused() ? this.play() : this.pause();
@@ -921,90 +895,20 @@ class Player {
             return 1.0;
         }
     }
-
-    /**
-     * 设置或获取 poster（视频封面） 属性的值
-     *
-     * @param {string=} val 可选。要设置的 poster 属性的值
-     * @return {string} 不传参数则返回当前 poster 属性的值
-     */
-    poster(val) {
-        if (val !== undefined) {
-            this.techCall('setPoster', val);
-        } else {
-            return this.techGet('poster');
-        }
-    }
-
 }
 
-[
-    /**
-     * 设置或获取 muted 属性的值
-     *
-     * @param {boolean=} isMuted（静音） 可选。设置 muted 属性的值
-     * @return {undefined|boolean} undefined 或 当前 muted 属性值
-     */
-    'muted',
-
-    /**
-     * 设置或获取 defaultMuted（默认静音） 属性的值
-     *
-     * @param {boolean=} isDefaultMuted 可选。设置 defaultMuted 属性的值
-     * @return {undefined|boolean} undefined 或 当前 defaultMuted 的值
-     */
-    'defaultMuted',
-
-    /**
-     * 设置或获取 autoplay（自动播放，大多数移动端浏览器不允许视频自动播放） 属性的值
-     *
-     * @param {boolean=} isAutoplay 可选。设置 autoplay 属性的值
-     * @return {undefined|boolean} undefined 或 当前 autoplay 值
-     */
-    'autoplay',
-
-    /**
-     * 设置或获取 loop（循环播放） 属性的值
-     *
-     * @param {boolean=} isLoop 可选。设置 loop 属性的值
-     * @return {undefined|boolean} undefined 或 当前 loop 值
-     */
-    'loop',
-    /**
-     * 设置或获取 playsinline（是否内联播放，ios10 以上有效） 属性的值
-     *
-     * @param {boolean=} isPlaysinline 可选。设置 playsinline 属性的值
-     * @return {undefined|boolean} undefined 或 当前 playsinline 值
-     */
-    'playsinline',
-
-    /**
-     * 设置或获取 poster（视频封面） 属性的值
-     *
-     * @param {string=} poster 可选。设置 poster 属性的值
-     * @return {undefined|string} undefined 或 当前 poster 值
-     */
-    // 'poster',
-
-    /**
-     * 设置或获取 preload（预加载的数据） 属性的值
-     *
-     * @param {string=} preload 可选。设置 preload 属性的值（none、auto、metadata）
-     * @return {undefined|string} undefined 或 当前 preload 值
-     */
-    'preload',
-    'controls'
-].forEach(prop => {
-    // 这里别用箭头函数，不然 this 就指不到 Player.prototype 了
-    Player.prototype[prop] = function (val) {
-        if (val !== undefined) {
-            this.techCall(`set${toTitleCase(prop)}`, val);
-            this.options[prop] = val;
-        } else {
-            return this.techGet(prop);
-        }
-    };
-});
+html5WritableAttrs
+    .filter(attr => !['src', 'playbackRate', 'defaultPlaybackRate', 'volume', 'currentTime'].includes(attr))
+    .forEach(attr => {
+        Player.prototype[attr] = function (val) {
+            if (val !== undefined) {
+                this.techCall(`set${toTitleCase(attr)}`, val);
+                this.options[attr] = val;
+            } else {
+                return this.techGet(attr);
+            }
+        };
+    });
 
 export default Player;
 
