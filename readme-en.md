@@ -14,7 +14,7 @@
 
 larkplayer is a light and flexible web player
 
-* Lightweight
+* Lightweight, uglify + gzip < 13kb
 * Solve most compatibility issues, such as full screen, mobile inline playback, etc
 * Provide an event mechanism to proxy native events and allow custom events
 * Provide plugin mechanism to support multiple plugin types
