@@ -102,6 +102,7 @@ describe('larkplayer', function () {
         expect(player.autoplay).toEqual(jasmine.any(Function));
         expect(player.muted).toEqual(jasmine.any(Function));
         expect(player.defaultMuted).toEqual(jasmine.any(Function));
+        expect(player.controlsList).toEqual(jasmine.any(Function));
 
         expect(player.volume()).toEqual(jasmine.any(Number));
         player.volume(0.5);
