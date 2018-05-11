@@ -2221,10 +2221,8 @@ var Player = function () {
         this.el = this.createEl();
         this.ready(readyFn);
 
-        // 使得 this 具有事件能力(on off one trigger)
         (0, _evented2['default'])(this, { eventBusKey: this.el });
 
-        // 需放在 this.loadTech 方法前面
         this.handleFirstplay = this.handleFirstplay.bind(this);
         this.handleTouchEnd = this.handleTouchEnd.bind(this);
         this.handleFullscreenChange = this.handleFullscreenChange.bind(this);
@@ -2252,12 +2250,6 @@ var Player = function () {
 
         this.initialUIPlugins();
         this.initialNormalPlugins();
-
-        // 如果当前视频已经出错，重新触发一次 error 事件
-        if (this.techGet('error')) {
-            Events.trigger(this.tech.el, 'error');
-        }
-
         this.triggerReady();
     }
     /* eslint-enable fecs-max-statements */
@@ -2457,6 +2449,13 @@ var Player = function () {
 
     Player.prototype.handleLateInit = function handleLateInit(el) {
         var _this6 = this;
+
+        if (!!el.error) {
+            this.ready(function () {
+                _this6.trigger('error');
+            });
+            return;
+        }
 
         // readyState
         // 0 - HAVE_NOTHING

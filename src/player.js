@@ -64,10 +64,8 @@ export default class Player {
         this.el = this.createEl();
         this.ready(readyFn);
 
-        // 使得 this 具有事件能力(on off one trigger)
         evented(this, {eventBusKey: this.el});
 
-        // 需放在 this.loadTech 方法前面
         this.handleFirstplay = this.handleFirstplay.bind(this);
         this.handleTouchEnd = this.handleTouchEnd.bind(this);
         this.handleFullscreenChange = this.handleFullscreenChange.bind(this);
@@ -95,12 +93,6 @@ export default class Player {
 
         this.initialUIPlugins();
         this.initialNormalPlugins();
-
-        // 如果当前视频已经出错，重新触发一次 error 事件
-        if (this.techGet('error')) {
-            Events.trigger(this.tech.el, 'error');
-        }
-
         this.triggerReady();
     }
     /* eslint-enable fecs-max-statements */
@@ -283,6 +275,13 @@ export default class Player {
      * @param {Element} el video DOM 标签
      */
     handleLateInit(el) {
+        if (!!el.error) {
+            this.ready(() => {
+                this.trigger('error');
+            });
+            return;
+        }
+
         // readyState
         // 0 - HAVE_NOTHING
         // 没有任何资源可供播放，如果 networkState 的状态是 NETWORK_EMPTY 那么 readyState 的状态一定是 HAVE_NOTHING
