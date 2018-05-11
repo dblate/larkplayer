@@ -9,8 +9,8 @@ import includes from 'lodash.includes';
 import document from 'global/document';
 
 import Html5 from './html5/html5';
-import html5Events from './html5/html5-events';
-import html5WritableAttrs from './html5/html5-writable-attrs';
+import HTML5_EVENTS from './html5/html5-events';
+import {HTML5_WRITABLE_ATTRS, HTML5_READONLY_ATTRS} from './html5/html5-attrs';
 import fullscreen from './html5/fullscreen';
 import Component from './plugin/component';
 import MediaSourceHandler from './plugin/media-source-handler';
@@ -28,19 +28,24 @@ import featureDetector from './utils/feature-detector';
 /**
  * @class Player
  */
-class Player {
+export default class Player {
 
     /**
      * 初始化一个播放器实例
      *
      * @constructor
-     * @param {Element|string} tag video 标签的 DOM 元素或者 id
+     * @param {Element|string} tag DOM 元素或其 id，如果是 video 标签，会自动获取其属性
      * @param {Object=} options 配置项，可选
      * @param {number=} options.height 播放器高度
      * @param {number=} options.width 播放器宽度
-     * @param {boolean=} options.loop 是否循环播放
+     * @param {boolean=} options.loop 是否循环播放，默认 false
+     * @param {boolean=} options.controls 是否有控制条，默认 false
+     * @param {string=} options.controlsList 对原生控制条的一些设置，可选值为 nodownload nofullscreen noremoteplayback
+     * @param {number=} options.playbackRate 视频播放速率，默认 1.0
+     * @param {number=} options.defaultPlaybackRate 视频默认播放速率，默认 1.0
+     * @param {number=} options.volume 声音大小，默认 1，取值应在 0~1
      * @param {boolean=} options.muted 是否静音
-     * @param {boolean=} options.playsinline 是否使用内联的形式播放（即非全屏的形式）。仅 ios10 以上有效，在 ios10 以下，视频播放时会自动进入全屏
+     * @param {boolean=} options.playsinline 是否使用内联的形式播放（即非全屏的形式），默认 true。仅 ios10 以上有效，在 ios10 以下，视频播放时会自动进入全屏
      * @param {string=} options.poster 视频封面
      * @param {string=} options.preload 视频预先下载资源的设置，可选值有以下 3 种（当然就算你设置了以下 3 种，最终结果也不一定符合预期，毕竟浏览器嘛，你懂的）
      *                                  - auto 浏览器自己决定
@@ -232,7 +237,7 @@ class Player {
 
         // 处理 options 中的 html5 标准属性
         each(this.options, (value, key) => {
-            if (includes(html5WritableAttrs, key) && value) {
+            if (includes(HTML5_WRITABLE_ATTRS, key) && value) {
                 DOM.setAttribute(tag, key, value);
             }
         });
@@ -370,7 +375,7 @@ class Player {
         let tech = new Html5(this.player, this.options);
 
         // 代理 video 的各个事件
-        html5Events.forEach(eventName => {
+        HTML5_EVENTS.forEach(eventName => {
             Events.on(tech.el, eventName, () => {
                 this.trigger(eventName);
             });
@@ -662,26 +667,6 @@ class Player {
         });
     }
 
-    // = = = get attr = = =
-
-    /**
-     * 判断当前是否是暂停状态
-     *
-     * @return {boolean} 当前是否是暂停状态
-     */
-    paused() {
-        return this.techGet('paused');
-    }
-
-    /**
-     * 获取已播放时长
-     *
-     * @return {number} 当前已经播放的时长，以秒为单位
-     */
-    played() {
-        return this.techGet('played');
-    }
-
     /**
      * 获取／设置当前时间
      *
@@ -697,30 +682,12 @@ class Player {
     }
 
     /**
-     * 获取当前视频总时长
-     *
-     * @return {number} 视频总时长，如果视频未初始化完成，可能返回 NaN
-     */
-    duration() {
-        return this.techGet('duration');
-    }
-
-    /**
      * 获取视频剩下的时长
      *
      * @return {number} 总时长 - 已播放时长 = 剩下的时长
      */
     remainingTime() {
         return this.duration() - this.currentTime();
-    }
-
-    /**
-     * 获取当前已缓冲的范围
-     *
-     * @return {TimeRanges} 当前已缓冲的范围（buffer 有自己的 TimeRanges 对象）
-     */
-    buffered() {
-        return this.techGet('buffered');
     }
 
     /**
@@ -735,77 +702,6 @@ class Player {
             return buffered.end(buffered.length - 1) === duration;
         } else {
             return false;
-        }
-    }
-
-    /**
-     * 判断当前视频是否处于 seeking（跳转中） 状态
-     *
-     * @return {boolean} 是否处于跳转中状态
-     */
-    seeking() {
-        return this.techGet('seeking');
-    }
-
-    /**
-     * 判断当前视频是否可跳转到指定时刻
-     *
-     * @return {boolean} 前视频是否可跳转到指定时刻
-     */
-    seekable() {
-        return this.techGet('seekable');
-    }
-
-    /**
-     * 判断当前视频是否已播放完成
-     *
-     * @return {boolean} 当前视频是否已播放完成
-     */
-    ended() {
-        return this.techGet('ended');
-    }
-
-    /**
-     * 获取当前视频的 networkState 状态
-     *
-     * @return {number} 当前视频的 networkState 状态
-     * @todo 补充 networkState 各状态说明
-     */
-    networkState() {
-        return this.techGet('networkState');
-    }
-
-    /**
-     * 获取当前播放的视频的原始宽度
-     *
-     * @return {number} 当前视频的原始宽度
-     */
-    videoWidth() {
-        return this.techGet('videoWidth');
-    }
-
-    /**
-     * 获取当前播放的视频的原始高度
-     *
-     * @return {number} 当前视频的原始高度
-     */
-    videoHeight() {
-        return this.techGet('videoHeight');
-    }
-
-    // = = = set && get attr= = =
-
-    /**
-     * 获取或设置播放器声音大小
-     *
-     * @param {number=} decimal 要设置的声音大小的值（0~1），可选
-     * @return {number} 不传参数则返回当前视频声音大小
-     */
-    volume(decimal) {
-        if (decimal !== undefined) {
-            this.techCall('setVolume', Math.min(1, Math.max(decimal, 0)));
-        } else {
-            return this.techGet('volume');
         }
     }
 
@@ -861,44 +757,10 @@ class Player {
             return this.techGet('source');
         }
     }
-
-    /**
-     * 获取或设置当前视频的播放速率
-     *
-     * @param {number=} playbackRate 要设置的播放速率的值，可选
-     * @return {number} 不传参数则返回当前视频的播放速率
-     */
-    playbackRate(playbackRate) {
-        if (playbackRate !== undefined) {
-            this.techCall('setPlaybackRate', playbackRate);
-        } else if (this.tech && this.tech.featuresPlaybackRate) {
-            return this.techGet('playbackRate');
-        } else {
-            return 1.0;
-        }
-    }
-
-    /**
-     * 获取或设置当前视频的默认播放速率
-     *
-     * @todo 确认是否有必要传参
-     *
-     * @param {number=} defaultPlaybackRate 要设置的默认播放速率的值，可选
-     * @return {number} 不传参数则返回当前视频的默认播放速率
-     */
-    defaultPlaybackRate(defaultPlaybackRate) {
-        if (defaultPlaybackRate !== undefined) {
-            this.techCall('setDefaultPlaybackRate', defaultPlaybackRate);
-        } else if (this.tech && this.tech.featuresPlaybackRate) {
-            return this.techGet('defaultPlaybackRate');
-        } else {
-            return 1.0;
-        }
-    }
 }
 
-html5WritableAttrs
-    .filter(attr => !['src', 'playbackRate', 'defaultPlaybackRate', 'volume', 'currentTime'].includes(attr))
+HTML5_WRITABLE_ATTRS
+    .filter(attr => !includes(['src', 'currentTime', 'width', 'height'], attr))
     .forEach(attr => {
         Player.prototype[attr] = function (val) {
             if (val !== undefined) {
@@ -910,38 +772,11 @@ html5WritableAttrs
         };
     });
 
-export default Player;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+HTML5_READONLY_ATTRS.forEach(attr => {
+    Player.prototype[attr] = function () {
+        return this.techGet(attr);
+    }
+});
 
 
 

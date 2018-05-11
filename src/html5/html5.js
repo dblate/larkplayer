@@ -8,12 +8,13 @@
 
 import window from 'global/window';
 import document from 'global/document';
+import includes from 'lodash.includes'; 
 
 import * as DOM from '../utils/dom';
 import toTitleCase from '../utils/to-title-case';
 import normalizeSource from '../utils/normalize-source';
 import evented from '../events/evented';
-
+import HTML5_ATTRS, {HTML5_WRITABLE_ATTRS, HTML5_WRITABLE_BOOL_ATTRS} from './html5-attrs';
 
 export default class Html5 {
     constructor(player, options) {
@@ -21,33 +22,11 @@ export default class Html5 {
         this.el = this.options.el;
 
         evented(this, {eventBusKey: this.el});
-
-        // @todo 处理有 source 的情况
-
         this.proxyWebkitFullscreen();
     }
 
     dispose() {
         Html5.disposeMediaElement(this.el);
-    }
-
-
-    setCurrentTime(seconds) {
-        try {
-            this.el.currentTime = seconds;
-        } catch (ex) {
-            /* eslint-disable no-console */
-            console.log(ex, 'Video is not ready');
-            /* eslint-enbale no-console */
-        }
-    }
-
-    width() {
-        return this.el.offsetWidth;
-    }
-
-    height() {
-        return this.el.offsetHeight;
     }
 
     proxyWebkitFullscreen() {
@@ -145,22 +124,6 @@ export default class Html5 {
     reset() {
         Html5.resetMediaElement(this.el);
     }
-
-    currentSrc() {
-        if (this.currentSource) {
-            return this.currentSource.src;
-        }
-
-        return this.el.currentSrc;
-    }
-
-    setControls(val) {
-        this.el.controls = !!val;
-    }
-
-    getVideoPlaybackQuality() {
-
-    }
 }
 
 // HTML5 Support Testing
@@ -194,23 +157,6 @@ Html5.canPlayType = function (type) {
 };
 
 /**
- * 检查是否可以改变播放器的声音大小（许多移动端的浏览器没法改变声音大小，比如 ios）
- *
- * @return {boolean} 是否可以改变声音大小
- */
-Html5.canControlVolume = function () {
-    // IE will error if Windows Media Player not installed #3315
-    try {
-        const volume = Html5.TEST_VID.volume;
-
-        Html5.TEST_VID.volume = (volume / 2) + 0.1;
-        return volume !== Html5.TEST_VID.volume;
-    } catch (ex) {
-        return false;
-    }
-};
-
-/**
  * 检查能否改变视频播放速度
  *
  * @return {boolean} 是否可以改变视频播放速度
@@ -231,49 +177,9 @@ Html5.canControlPlaybackRate = function () {
     }
 };
 
-Html5.prototype.featuresVolumeControl = Html5.canControlVolume();
-
-Html5.prototype.featuresPlaybackRate = Html5.canControlPlaybackRate();
-
-// 表明进入全屏时，播放器是否自动改变视频大小
-Html5.prototype.featuresFullscreenResize = true;
-
-// 表明是否支持 progress 事件
-Html5.prototype.featuresProgressEvents = true;
-
-// 表明是否支持 timeupdate 事件
-Html5.prototype.featuresTimeupdateEvents = true;
-
 Html5.disposeMediaElement = function (el) {
-    if (!el) {
-        return;
-    }
-
-    if (el.parentNode) {
-        el.parentNode.removeChild(el);
-    }
-
-    while (el.hasChildNodes()) {
-        el.removeChild(el.firstChild);
-    }
-
-    // 移除 src 属性，而不是设置 src=''（在 firefox 下会有问题）
-    el.removeAttribute('src');
-
-    // force the media element to update its loading state by calling load()
-    // however IE on Windows 7N has a bug that throws an error so need a try/catch (#793)
-    if (typeof el.load === 'function') {
-        // wrapping in an iife so it's not deoptimized (#1060#discussion_r10324473)
-        (function () {
-            try {
-                el.load();
-            } catch (ex) {
-                /* eslint-disable no-console */
-                console.log(ex);
-                /* eslint-enbale no-console */
-            }
-        }());
-    }
+    Html5.resetMediaElement(el);
+    el.parentNode && el.parentNode.removeChild(el);
 };
 
 Html5.resetMediaElement = function (el) {
@@ -281,115 +187,37 @@ Html5.resetMediaElement = function (el) {
         return;
     }
 
-    const sources = el.querySelectorAll('source');
-    let i = sources.length;
-
-    while (i--) {
-        el.removeChild(sources[i]);
+    while(el.hasChildNodes()) {
+        el.removeChild(el.firstChild);
     }
 
     el.removeAttribute('src');
 
     if (typeof el.load === 'function') {
-        // wrapping in an iife so it's not deoptimized (#1060#discussion_r10324473)
-        (function () {
-            try {
-                el.load();
-            } catch (e) {
-                // satisfy linter
-            }
-        }());
+        try {
+            el.load();
+        } catch (ex) {}
     }
 };
 
-// HTML5 video attributes proxy
-// 获取对应属性的值
-// muted defaultMuted autoplay controls loop playsinline
-[
-    'muted',
-    'defaultMuted',
-    'autoplay',
-    'controls',
-    'loop',
-    'playsinline'
-].forEach(attr => {
+// Wrap HTML5 video attributes with a getter 
+HTML5_ATTRS.forEach(attr => {
     Html5.prototype[attr] = function () {
-        return this.el[attr] || this.el.hasAttribute(attr);
+        return includes(HTML5_WRITABLE_BOOL_ATTRS, attr)
+            ? (this.el[attr] || this.el.hasAttribute(attr))
+            : this.el[attr];
     };
 });
 
-// HTML5 video attributes proxy
-// 设置对应属性的值
-// setMuted, setDefaultMuted, setAutoPlay, setLoop, setPlaysinline
-// setControls 算是特例
-[
-    'muted',
-    'defaultMuted',
-    'autoplay',
-    'loop',
-    'playsinline'
-].forEach(attr => {
-    Html5.prototype['set' + toTitleCase(attr)] = function (value) {
+// Wrap HTML5 video attributes with a setter on Html5 prototype
+HTML5_WRITABLE_ATTRS.forEach(attr => {
+    Html5.prototype[`set${toTitleCase(attr)}`] = function (value) {
         this.el[attr] = value;
-
-        if (value) {
-            this.el.setAttribute(attr, attr);
-        } else {
-            this.el.removeAttribute(attr);
-        }
+        value === false && this.el.removeAttribute(attr);
     };
 });
-
-// Wrap HTML5 video properties with a getter
-// paused, currentTime, duration, buffered, volume, poster, preload, error, seeking
-// seekable, ended, palybackRate, defaultPlaybackRate, played, networkState,
-// readyState, videoWidth, videoHeight
-[
-    'crossOrigin',
-    'paused',
-    'currentTime',
-    'duration',
-    'buffered',
-    'volume',
-    'poster',
-    'preload',
-    'error',
-    'seeking',
-    'seekable',
-    'ended',
-    'playbackRate',
-    'defaultPlaybackRate',
-    'played',
-    'networkState',
-    'readyState',
-    'videoWidth',
-    'videoHeight'
-].forEach(prop => {
-    Html5.prototype[prop] = function () {
-        return this.el[prop];
-    };
-});
-
-// Wrap HTML5 video properties with a setter in the following format:
-// set + toTitleCase(propName)
-// setVolume, setCrossOrigin, setSrc, setPoster, setPreload, setPlaybackRate, setDefaultPlaybackRate
-[
-    'volume',
-    'crossOrigin',
-    'src',
-    'poster',
-    'preload',
-    'playbackRate',
-    'defaultPlaybackRate'
-].forEach(prop => {
-    Html5.prototype['set' + toTitleCase(prop)] = function (value) {
-        this.el[prop] = value;
-    };
-});
-
 
 // Wrap native functions with a function
-// pause, load, play
 [
     'pause',
     'load',
