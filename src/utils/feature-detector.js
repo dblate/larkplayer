@@ -6,7 +6,6 @@
 
 import document from 'global/document';
 
-
 export default {
     touch: 'ontouchend' in document
 };

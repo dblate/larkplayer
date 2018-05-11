@@ -1987,7 +1987,7 @@ _html5Attrs.HTML5_WRITABLE_ATTRS.forEach(function (attr) {
     };
 });
 
-},{"../events/evented":8,"../utils/dom":22,"../utils/normalize-source":28,"../utils/to-title-case":32,"./html5-attrs":11,"global/document":2,"global/window":3,"lodash.includes":5}],14:[function(require,module,exports){
+},{"../events/evented":8,"../utils/dom":22,"../utils/normalize-source":27,"../utils/to-title-case":31,"./html5-attrs":11,"global/document":2,"global/window":3,"lodash.includes":5}],14:[function(require,module,exports){
 'use strict';
 
 var _objectAssign = require('object-assign');
@@ -2096,7 +2096,7 @@ function larkplayer(el, options, readyFn) {
 // @see https://github.com/babel/babel/issues/2724
 module.exports = larkplayer;
 
-},{"./events/events":9,"./html5/html5":13,"./player":15,"./plugin/component":16,"./plugin/media-source-handler":17,"./plugin/plugin":20,"./utils/dom":22,"./utils/utils":33,"object-assign":7}],15:[function(require,module,exports){
+},{"./events/events":9,"./html5/html5":13,"./player":15,"./plugin/component":16,"./plugin/media-source-handler":17,"./plugin/plugin":20,"./utils/dom":22,"./utils/utils":32,"object-assign":7}],15:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -3005,7 +3005,7 @@ _html5Attrs.HTML5_READONLY_ATTRS.forEach(function (attr) {
     };
 });
 
-},{"./events/evented":8,"./events/events":9,"./html5/fullscreen":10,"./html5/html5":13,"./html5/html5-attrs":11,"./html5/html5-events":12,"./plugin/component":16,"./plugin/media-source-handler":17,"./plugin/plugin":20,"./plugin/plugin-types":19,"./utils/computed-style":21,"./utils/dom":22,"./utils/feature-detector":23,"./utils/log":26,"./utils/obj":29,"./utils/to-title-case":32,"global/document":2,"lodash.includes":5}],16:[function(require,module,exports){
+},{"./events/evented":8,"./events/events":9,"./html5/fullscreen":10,"./html5/html5":13,"./html5/html5-attrs":11,"./html5/html5-events":12,"./plugin/component":16,"./plugin/media-source-handler":17,"./plugin/plugin":20,"./plugin/plugin-types":19,"./utils/computed-style":21,"./utils/dom":22,"./utils/feature-detector":23,"./utils/log":25,"./utils/obj":28,"./utils/to-title-case":31,"global/document":2,"lodash.includes":5}],16:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -3138,7 +3138,7 @@ var Component = function () {
 
 exports['default'] = Component;
 
-},{"../events/evented":8,"../events/events":9,"../utils/dom":22,"../utils/to-camel-case":31,"./plugin-store":18,"./plugin-types":19}],17:[function(require,module,exports){
+},{"../events/evented":8,"../events/events":9,"../utils/dom":22,"../utils/to-camel-case":30,"./plugin-store":18,"./plugin-types":19}],17:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -3333,7 +3333,7 @@ exports['default'] = {
     }
 };
 
-},{"../utils/guid":25,"../utils/to-camel-case":31,"./component":16,"./media-source-handler":17,"./plugin":20,"./plugin-types":19,"lodash.values":6}],19:[function(require,module,exports){
+},{"../utils/guid":24,"../utils/to-camel-case":30,"./component":16,"./media-source-handler":17,"./plugin":20,"./plugin-types":19,"lodash.values":6}],19:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -4167,7 +4167,7 @@ var $ = exports.$ = createQuerier('querySelector');
  */
 var $$ = exports.$$ = createQuerier('querySelectorAll');
 
-},{"./computed-style":21,"./obj":29,"global/document":2,"global/window":3,"lodash.includes":5}],23:[function(require,module,exports){
+},{"./computed-style":21,"./obj":28,"global/document":2,"global/window":3,"lodash.includes":5}],23:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -4187,62 +4187,6 @@ exports['default'] = {
     */
 
 },{"global/document":2}],24:[function(require,module,exports){
-'use strict';
-
-exports.__esModule = true;
-exports.bind = bind;
-exports.throttle = throttle;
-
-var _guid = require('./guid');
-
-/**
- * 绑定函数到指定的上下文
- *
- * @todo videojs 在返回的函数上还加了 guid 做更加个性化的处理，目前暂时用不上就没写
- *
- * @param {Funtion} fn 要绑定上下文的函数
- * @param {Object} thisArg 函数要绑定的上下文
- * @return {Function} 该函数会在指定的上下文中执行
- */
-function bind(fn, thisArg) {
-    if (!fn.guid) {
-        fn.guid = (0, _guid.newGUID)();
-    }
-
-    return function () {
-        for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
-            args[_key] = arguments[_key];
-        }
-
-        return fn.apply(thisArg, args);
-    };
-}
-
-/**
- * 限制函数的执行的频率
- *
- * @param {Function} fn 要控制执行频率的函数
- * @param {number} wait 函数的执行间隔大于等于此数值（单位：ms）
- * @return {Funtion} 限制了执行频率的函数
- */
-/**
- * @file fn.js 函数相关的一些方法
- * @author yuhui06@baidu.com
- * @date 2017/11/3
- */
-
-function throttle(fn, wait) {
-    var lastTimestamp = Date.now();
-    return function () {
-        var now = Date.now();
-        if (now - lastTimestamp >= wait) {
-            fn.apply(undefined, arguments);
-            lastTimestamp = now;
-        }
-    };
-}
-
-},{"./guid":25}],25:[function(require,module,exports){
 "use strict";
 
 exports.__esModule = true;
@@ -4253,7 +4197,6 @@ exports.newGUID = newGUID;
  * @date 2017/11/3
  */
 
-// guid 从 1 开始
 var guid = 1;
 
 /**
@@ -4265,7 +4208,7 @@ function newGUID() {
   return guid++;
 }
 
-},{}],26:[function(require,module,exports){
+},{}],25:[function(require,module,exports){
 "use strict";
 
 exports.__esModule = true;
@@ -4310,7 +4253,7 @@ log.error = console.error;
 
 log.clear = console.clear;
 
-},{}],27:[function(require,module,exports){
+},{}],26:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -4333,7 +4276,7 @@ exports['default'] = {
     'wmv': 'video/x-ms-wmv'
 };
 
-},{}],28:[function(require,module,exports){
+},{}],27:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -4423,7 +4366,7 @@ function nomalizeSource(source) {
     }
 }
 
-},{"./mime-type-map":27,"./obj":29}],29:[function(require,module,exports){
+},{"./mime-type-map":26,"./obj":28}],28:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -4481,7 +4424,7 @@ function each(obj, fn) {
   });
 }
 
-},{}],30:[function(require,module,exports){
+},{}],29:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -4540,7 +4483,7 @@ function timeFormat(seconds) {
     }
 }
 
-},{}],31:[function(require,module,exports){
+},{}],30:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -4560,12 +4503,11 @@ function toCamelCase(str) {
     return str.charAt(0).toLowerCase() + str.slice(1);
 }
 
-},{}],32:[function(require,module,exports){
+},{}],31:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
 exports['default'] = toTitleCase;
-exports.titleCaseEquals = titleCaseEquals;
 /**
  * @file to-title-case.js
  * @author yuhui06@baidu.com
@@ -4590,21 +4532,26 @@ function toTitleCase(str) {
   return str.charAt(0).toUpperCase() + str.slice(1);
 }
 
-/**
- * 比较两个字符串在首字母大写的情况下是否相等
- *
- * @param {string} str1 待比较的字符串
- * @param {string} str2 待比较的字符串
- * @return {boolean} 两个字符串在首字母大写后是否相等
- */
-function titleCaseEquals(str1, str2) {
-  return toTitleCase(str1) === toTitleCase(str2);
-}
-
-},{}],33:[function(require,module,exports){
+},{}],32:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
+
+var _arrayFind = require('array-find');
+
+var _arrayFind2 = _interopRequireDefault(_arrayFind);
+
+var _lodash = require('lodash.includes');
+
+var _lodash2 = _interopRequireDefault(_lodash);
+
+var _lodash3 = require('lodash.values');
+
+var _lodash4 = _interopRequireDefault(_lodash3);
+
+var _objectAssign = require('object-assign');
+
+var _objectAssign2 = _interopRequireDefault(_objectAssign);
 
 var _computedStyle = require('./computed-style');
 
@@ -4613,10 +4560,6 @@ var _computedStyle2 = _interopRequireDefault(_computedStyle);
 var _featureDetector = require('./feature-detector');
 
 var _featureDetector2 = _interopRequireDefault(_featureDetector);
-
-var _fn = require('./fn');
-
-var fn = _interopRequireWildcard(_fn);
 
 var _guid = require('./guid');
 
@@ -4646,21 +4589,26 @@ function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj;
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
 
+/**
+ * @file 整合 utils 方法，对外输出
+ * @author yuhui06
+ * @date 2018/5/6
+ */
+
 exports['default'] = {
+    find: _arrayFind2['default'],
+    includes: _lodash2['default'],
+    values: _lodash4['default'],
+    assign: _objectAssign2['default'],
     computedStyle: _computedStyle2['default'],
     featureDetector: _featureDetector2['default'],
-    fn: fn,
     guid: guid,
     mimeTypeMap: _mimeTypeMap2['default'],
     obj: obj,
     timeFormat: _timeFormat2['default'],
     toCamelCase: _toCamelCase2['default'],
     toTitleCase: _toTitleCase2['default']
-}; /**
-    * @file 整合 utils 各方法，方便对外输出
-    * @author yuhui06
-    * @date 2018/5/6
-    */
+};
 
-},{"./computed-style":21,"./feature-detector":23,"./fn":24,"./guid":25,"./mime-type-map":27,"./obj":29,"./time-format":30,"./to-camel-case":31,"./to-title-case":32}]},{},[14])(14)
+},{"./computed-style":21,"./feature-detector":23,"./guid":24,"./mime-type-map":26,"./obj":28,"./time-format":29,"./to-camel-case":30,"./to-title-case":31,"array-find":1,"lodash.includes":5,"lodash.values":6,"object-assign":7}]},{},[14])(14)
 });
