@@ -15,9 +15,5 @@ export default function toTitleCase(str) {
         return str;
     }
 
-    // let [firstChar, ...otherChars] = [...str];
-    // return firstChar.toUpperCase() + otherChars.join('');
-
-    // return [...str].map((value, index) => (index === 0 ? value.toUpperCase() : value)).join('');
     return str.charAt(0).toUpperCase() + str.slice(1);
 }

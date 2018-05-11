@@ -1987,7 +1987,7 @@ _html5Attrs.HTML5_WRITABLE_ATTRS.forEach(function (attr) {
     };
 });
 
-},{"../events/evented":8,"../utils/dom":22,"../utils/normalize-source":27,"../utils/to-title-case":31,"./html5-attrs":11,"global/document":2,"global/window":3,"lodash.includes":5}],14:[function(require,module,exports){
+},{"../events/evented":8,"../utils/dom":22,"../utils/normalize-source":27,"../utils/to-title-case":30,"./html5-attrs":11,"global/document":2,"global/window":3,"lodash.includes":5}],14:[function(require,module,exports){
 'use strict';
 
 var _objectAssign = require('object-assign');
@@ -2096,7 +2096,7 @@ function larkplayer(el, options, readyFn) {
 // @see https://github.com/babel/babel/issues/2724
 module.exports = larkplayer;
 
-},{"./events/events":9,"./html5/html5":13,"./player":15,"./plugin/component":16,"./plugin/media-source-handler":17,"./plugin/plugin":20,"./utils/dom":22,"./utils/utils":32,"object-assign":7}],15:[function(require,module,exports){
+},{"./events/events":9,"./html5/html5":13,"./player":15,"./plugin/component":16,"./plugin/media-source-handler":17,"./plugin/plugin":20,"./utils/dom":22,"./utils/utils":31,"object-assign":7}],15:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -3005,7 +3005,7 @@ _html5Attrs.HTML5_READONLY_ATTRS.forEach(function (attr) {
     };
 });
 
-},{"./events/evented":8,"./events/events":9,"./html5/fullscreen":10,"./html5/html5":13,"./html5/html5-attrs":11,"./html5/html5-events":12,"./plugin/component":16,"./plugin/media-source-handler":17,"./plugin/plugin":20,"./plugin/plugin-types":19,"./utils/computed-style":21,"./utils/dom":22,"./utils/feature-detector":23,"./utils/log":25,"./utils/obj":28,"./utils/to-title-case":31,"global/document":2,"lodash.includes":5}],16:[function(require,module,exports){
+},{"./events/evented":8,"./events/events":9,"./html5/fullscreen":10,"./html5/html5":13,"./html5/html5-attrs":11,"./html5/html5-events":12,"./plugin/component":16,"./plugin/media-source-handler":17,"./plugin/plugin":20,"./plugin/plugin-types":19,"./utils/computed-style":21,"./utils/dom":22,"./utils/feature-detector":23,"./utils/log":25,"./utils/obj":28,"./utils/to-title-case":30,"global/document":2,"lodash.includes":5}],16:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -3138,7 +3138,7 @@ var Component = function () {
 
 exports['default'] = Component;
 
-},{"../events/evented":8,"../events/events":9,"../utils/dom":22,"../utils/to-camel-case":30,"./plugin-store":18,"./plugin-types":19}],17:[function(require,module,exports){
+},{"../events/evented":8,"../events/events":9,"../utils/dom":22,"../utils/to-camel-case":29,"./plugin-store":18,"./plugin-types":19}],17:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -3333,7 +3333,7 @@ exports['default'] = {
     }
 };
 
-},{"../utils/guid":24,"../utils/to-camel-case":30,"./component":16,"./media-source-handler":17,"./plugin":20,"./plugin-types":19,"lodash.values":6}],19:[function(require,module,exports){
+},{"../utils/guid":24,"../utils/to-camel-case":29,"./component":16,"./media-source-handler":17,"./plugin":20,"./plugin-types":19,"lodash.values":6}],19:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -4428,65 +4428,6 @@ function each(obj, fn) {
 'use strict';
 
 exports.__esModule = true;
-exports['default'] = timeFormat;
-/**
- * @file time-format.js 将秒数格式化为指定的时间字符串形式
- * @author yuhui<yuhui06@baidu.com>
- * @date 2017/11/3
- */
-
-/**
- * 将秒数格式化为 hh:mm:ss 的形式
- *
- * @param {number} seconds 要转化的秒数
- * @return {string} 格式化后的表示时间的字符串
- */
-
-/**
- * 不足两位的时间，前面补零
- *
- * @inner
- *
- * @param {string|number} val 该段位的时间（如 1h 12h 23m 1s）
- * @return {string} 进行过不足两位前面补零操作的时间串
- */
-function pad(val) {
-    val = '' + val;
-    if (val.length < 2) {
-        val = '0' + val;
-    }
-
-    return val;
-}
-
-/**
- * 将传入的秒数格式化为 hh:mm:ss 的形式，如果不足一小时，则为 mm:ss 的形式
- *
- * @param {number} seconds 总秒数
- * @return {string} 格式化后的时间串
- */
-function timeFormat(seconds) {
-    seconds = parseInt(seconds, 10);
-    if (!isNaN(seconds)) {
-        var hour = Math.floor(seconds / 3600);
-        var minute = Math.floor((seconds - hour * 3600) / 60);
-        var second = seconds % 60;
-
-        var result = [pad(minute), pad(second)];
-        if (hour > 0) {
-            result.unshift(pad(hour));
-        }
-
-        return result.join(':');
-    } else {
-        return '- -';
-    }
-}
-
-},{}],30:[function(require,module,exports){
-'use strict';
-
-exports.__esModule = true;
 exports['default'] = toCamelCase;
 /**
  * @file 将命名风格改为驼峰式
@@ -4503,7 +4444,7 @@ function toCamelCase(str) {
     return str.charAt(0).toLowerCase() + str.slice(1);
 }
 
-},{}],31:[function(require,module,exports){
+},{}],30:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -4525,14 +4466,10 @@ function toTitleCase(str) {
     return str;
   }
 
-  // let [firstChar, ...otherChars] = [...str];
-  // return firstChar.toUpperCase() + otherChars.join('');
-
-  // return [...str].map((value, index) => (index === 0 ? value.toUpperCase() : value)).join('');
   return str.charAt(0).toUpperCase() + str.slice(1);
 }
 
-},{}],32:[function(require,module,exports){
+},{}],31:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -4573,10 +4510,6 @@ var _obj = require('./obj');
 
 var obj = _interopRequireWildcard(_obj);
 
-var _timeFormat = require('./time-format');
-
-var _timeFormat2 = _interopRequireDefault(_timeFormat);
-
 var _toCamelCase = require('./to-camel-case');
 
 var _toCamelCase2 = _interopRequireDefault(_toCamelCase);
@@ -4589,12 +4522,6 @@ function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj;
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
 
-/**
- * @file 整合 utils 方法，对外输出
- * @author yuhui06
- * @date 2018/5/6
- */
-
 exports['default'] = {
     find: _arrayFind2['default'],
     includes: _lodash2['default'],
@@ -4605,10 +4532,13 @@ exports['default'] = {
     guid: guid,
     mimeTypeMap: _mimeTypeMap2['default'],
     obj: obj,
-    timeFormat: _timeFormat2['default'],
     toCamelCase: _toCamelCase2['default'],
     toTitleCase: _toTitleCase2['default']
-};
+}; /**
+    * @file 整合 utils 方法，对外输出
+    * @author yuhui06
+    * @date 2018/5/6
+    */
 
-},{"./computed-style":21,"./feature-detector":23,"./guid":24,"./mime-type-map":26,"./obj":28,"./time-format":29,"./to-camel-case":30,"./to-title-case":31,"array-find":1,"lodash.includes":5,"lodash.values":6,"object-assign":7}]},{},[14])(14)
+},{"./computed-style":21,"./feature-detector":23,"./guid":24,"./mime-type-map":26,"./obj":28,"./to-camel-case":29,"./to-title-case":30,"array-find":1,"lodash.includes":5,"lodash.values":6,"object-assign":7}]},{},[14])(14)
 });

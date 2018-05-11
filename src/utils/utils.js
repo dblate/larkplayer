@@ -14,7 +14,6 @@ import featureDetector from './feature-detector';
 import * as guid from './guid';
 import mimeTypeMap from './mime-type-map';
 import * as obj from './obj';
-import timeFormat from './time-format';
 import toCamelCase from './to-camel-case';
 import toTitleCase from './to-title-case';
 
@@ -28,7 +27,6 @@ export default {
     guid,
     mimeTypeMap,
     obj,
-    timeFormat,
     toCamelCase,
     toTitleCase
 }
