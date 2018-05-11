@@ -1927,12 +1927,6 @@ Html5.canPlayType = function (type) {
  * @return {boolean} 是否可以改变视频播放速度
  */
 Html5.canControlPlaybackRate = function () {
-    // Playback rate API is implemented in Android Chrome, but doesn't do anything
-    // https://github.com/videojs/video.js/issues/3180
-    // if (browser.IS_ANDROID && browser.IS_CHROME && browser.CHROME_VERSION < 58) {
-    //     return false;
-    // }
-
     try {
         var playbackRate = Html5.TEST_VID.playbackRate;
         Html5.TEST_VID.playbackRate = playbackRate / 2 + 0.1;
