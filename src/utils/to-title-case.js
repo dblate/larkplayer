@@ -15,20 +15,5 @@ export default function toTitleCase(str) {
         return str;
     }
 
-    // let [firstChar, ...otherChars] = [...str];
-    // return firstChar.toUpperCase() + otherChars.join('');
-
-    // return [...str].map((value, index) => (index === 0 ? value.toUpperCase() : value)).join('');
     return str.charAt(0).toUpperCase() + str.slice(1);
-}
-
-/**
- * 比较两个字符串在首字母大写的情况下是否相等
- *
- * @param {string} str1 待比较的字符串
- * @param {string} str2 待比较的字符串
- * @return {boolean} 两个字符串在首字母大写后是否相等
- */
-export function titleCaseEquals(str1, str2) {
-    return toTitleCase(str1) === toTitleCase(str2);
 }

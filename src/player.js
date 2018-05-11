@@ -9,6 +9,8 @@ import includes from 'lodash.includes';
 import document from 'global/document';
 
 import Html5 from './html5/html5';
+import HTML5_EVENTS from './html5/html5-events';
+import {HTML5_WRITABLE_ATTRS, HTML5_READONLY_ATTRS} from './html5/html5-attrs';
 import fullscreen from './html5/fullscreen';
 import Component from './plugin/component';
 import MediaSourceHandler from './plugin/media-source-handler';
@@ -26,19 +28,24 @@ import featureDetector from './utils/feature-detector';
 /**
  * @class Player
  */
-class Player {
+export default class Player {
 
     /**
      * 初始化一个播放器实例
      *
      * @constructor
-     * @param {Element|string} tag video 标签的 DOM 元素或者 id
+     * @param {Element|string} tag DOM 元素或其 id，如果是 video 标签，会自动获取其属性
      * @param {Object=} options 配置项，可选
      * @param {number=} options.height 播放器高度
      * @param {number=} options.width 播放器宽度
-     * @param {boolean=} options.loop 是否循环播放
+     * @param {boolean=} options.loop 是否循环播放，默认 false
+     * @param {boolean=} options.controls 是否有控制条，默认 false
+     * @param {string=} options.controlsList 对原生控制条的一些设置，可选值为 nodownload nofullscreen noremoteplayback
+     * @param {number=} options.playbackRate 视频播放速率，默认 1.0
+     * @param {number=} options.defaultPlaybackRate 视频默认播放速率，默认 1.0
+     * @param {number=} options.volume 声音大小，默认 1，取值应在 0~1
      * @param {boolean=} options.muted 是否静音
-     * @param {boolean=} options.playsinline 是否使用内联的形式播放（即非全屏的形式）。仅 ios10 以上有效，在 ios10 以下，视频播放时会自动进入全屏
+     * @param {boolean=} options.playsinline 是否使用内联的形式播放（即非全屏的形式），默认 true。仅 ios10 以上有效，在 ios10 以下，视频播放时会自动进入全屏
      * @param {string=} options.poster 视频封面
      * @param {string=} options.preload 视频预先下载资源的设置，可选值有以下 3 种（当然就算你设置了以下 3 种，最终结果也不一定符合预期，毕竟浏览器嘛，你懂的）
      *                                  - auto 浏览器自己决定
@@ -57,10 +64,8 @@ class Player {
         this.el = this.createEl();
         this.ready(readyFn);
 
-        // 使得 this 具有事件能力(on off one trigger)
         evented(this, {eventBusKey: this.el});
 
-        // 需放在 this.loadTech 方法前面
         this.handleFirstplay = this.handleFirstplay.bind(this);
         this.handleTouchEnd = this.handleTouchEnd.bind(this);
         this.handleFullscreenChange = this.handleFullscreenChange.bind(this);
@@ -88,12 +93,6 @@ class Player {
 
         this.initialUIPlugins();
         this.initialNormalPlugins();
-
-        // 如果当前视频已经出错，重新触发一次 error 事件
-        if (this.techGet('error')) {
-            Events.trigger(this.tech.el, 'error');
-        }
-
         this.triggerReady();
     }
     /* eslint-enable fecs-max-statements */
@@ -229,29 +228,13 @@ class Player {
         const tag = this.tag;
 
         // 处理 options 中的 html5 标准属性
-        const html5StandardOptions = [
-            'autoplay',
-            'controls',
-            'height',
-            'loop',
-            'muted',
-            'poster',
-            'preload',
-            'auto',
-            'metadata',
-            'none',
-            'src',
-            'width',
-            'playsinline'
-        ];
         each(this.options, (value, key) => {
-            if (includes(html5StandardOptions, key) && value) {
+            if (includes(HTML5_WRITABLE_ATTRS, key) && value) {
                 DOM.setAttribute(tag, key, value);
             }
         });
 
         if (this.options.source) {
-            // 等到 this.tech 初始化完成后再添加
             this.ready(() => {
                 this.source(this.options.source);
             });
@@ -265,38 +248,21 @@ class Player {
 
         DOM.setAttribute(tag, 'tabindex', '-1');
 
-        // 将原生控制条移除
-        // 目前只支持使用自定义的控制条
-        // tag.removeAttribute('controls');
-
         // 将 el 插入到 DOM 中
         if (tag.parentNode) {
             tag.parentNode.insertBefore(el, tag);
         }
 
-        // 父元素的 width height 样式继承子元素的值
-        // 将 video 标签的 width height 属性移除，确保 width height 为 100%
-
-        // IE7 不支持 hasAttribute
-        // if (tag.hasAttribute('width')) {
-        if (tag.width) {
-            let tagWidth = tag.getAttribute('width');
-            el.style.width = tagWidth + 'px';
-            tag.removeAttribute('width');
+        if (tag.hasAttribute('width')) {
+            el.style.width = tag.getAttribute('width') + 'px';
+            tag.setAttribute('width', '100%');
         }
 
-        // if (tag.hasAttribute('height')) {
-        if (tag.height) {
-            let tagHeight = tag.getAttribute('height');
-            el.style.height = tagHeight + 'px';
-            tag.removeAttribute('height');
+        if (tag.hasAttribute('height')) {
+            el.style.height = tag.getAttribute('height') + 'px';
+            tag.setAttribute('height', '100%');
         }
 
-        tag.setAttribute('width', '100%');
-        tag.setAttribute('height', '100%');
-
-        // @todo safari 好像不支持移动 video DOM?
-        // 将 video 插入到 el 中
         el.appendChild(tag);
 
         return el;
@@ -309,6 +275,13 @@ class Player {
      * @param {Element} el video DOM 标签
      */
     handleLateInit(el) {
+        if (!!el.error) {
+            this.ready(() => {
+                this.trigger('error');
+            });
+            return;
+        }
+
         // readyState
         // 0 - HAVE_NOTHING
         // 没有任何资源可供播放，如果 networkState 的状态是 NETWORK_EMPTY 那么 readyState 的状态一定是 HAVE_NOTHING
@@ -400,114 +373,14 @@ class Player {
         this.options.el = this.tag;
         let tech = new Html5(this.player, this.options);
 
-        // 注册 video 的各个事件
-        [
-            'loadstart',
-
-            /**
-             * 浏览器停止获取数据时触发
-             *
-             * @event Player#suspend
-             * @param {Object} event 事件触发时浏览器自带的 event 对象
-             */
-            'suspend',
-
-            /**
-             * 浏览器在视频下载完成前停止下载时触发。但并不是因为出错，出错时触发 error 事件而不是 abort。
-             * 往往是人为的停止下载，比如删除 src
-             *
-             * @event Player#abort
-             * @param {Object} event 事件触发时浏览器自带的 event 对象
-             */
-            'abort',
-            'error',
-
-            /**
-             * 视频被清空时触发
-             *
-             * @event Player#emptied
-             * @param {Object} event 事件触发时浏览器自带的 event 对象
-             */
-            'emptied',
-
-            /**
-             * 浏览器获取数据时，数据并没有正常返回时触发
-             *
-             * @event Player#stalled
-             * @param {Object} event 事件触发时浏览器自带的 event 对象
-             */
-            'stalled',
-
-            /**
-             * 播放器成功获取到视频总时长、高宽、字幕等信息时触发
-             *
-             * @event Player#loadedmetadata
-             * @param {Object} event 事件触发时浏览器自带的 event 对象
-             */
-            'loadedmetadata',
-
-            /**
-             * 播放器第一次能够渲染当前帧时触发
-             *
-             * @event Player#loadeddata
-             * @param {Object} event 事件触发时浏览器自带的 event 对象
-             */
-            'loadeddata',
-            'canplay',
-            'canplaythrough',
-            'playing',
-            'waiting',
-            'seeking',
-            'seeked',
-            'ended',
-            'durationchange',
-            'timeupdate',
-
-            /**
-             * 浏览器获取数据的过程中触发
-             *
-             * @event Player#progress
-             * @param {Object} event 事件触发时浏览器自带的 event 对象
-             */
-            'progress',
-            'play',
-            'pause',
-
-            /**
-             * 视频播放速率改变时触发
-             *
-             * @event Player#ratechange
-             * @param {Object} event 事件触发时浏览器自带的 event 对象
-             */
-            'ratechange',
-
-            /**
-             * 视频本身的高宽发生改变时触发，注意不是播放器的高度（比如调整播放器的高宽和全屏不会触发 resize 事件）
-             *
-             * 这里还不是太清楚，有需要的话看看 w3c 文档吧
-             *
-             * @see https://html.spec.whatwg.org/#dom-video-videowidth
-             * @event Player#resize
-             * @param {Object} event 事件触发时浏览器自带的 event 对象
-             */
-            'resize',
-
-            /**
-             * 视频声音大小改变时触发
-             *
-             * @event Player#volumechange
-             * @param {Object} event 事件触发时浏览器自带的 event 对象
-             */
-            'volumechange'
-        ].forEach(event => {
-            // 对于我们不做任何处理的事件，直接 trigger 出去，提供给用户就行了
-            Events.on(tech.el, event, () => {
-                this.trigger(event);
+        // 代理 video 的各个事件
+        HTML5_EVENTS.forEach(eventName => {
+            Events.on(tech.el, eventName, () => {
+                this.trigger(eventName);
             });
         });
 
         // 绑定 firstPlay 事件
-        // 先 off 确保只绑定一次
         this.off('play', this.handleFirstplay);
         this.one('play', this.handleFirstplay);
 
@@ -599,25 +472,9 @@ class Player {
         this.trigger('firstplay');
     }
 
-    /**
-     * 处理 touchend 事件，主要用于控制控制条的显隐
-     *
-     * @param {Object} event 事件发生时，浏览器给的 event
-     *
-     * @private
-     */
     handleTouchEnd(event) {
-        let clickOnControls = false;
-        if (DOM.parent(event.target, 'lark-play-button')
-            || DOM.parent(event.target, 'lark-control-bar')) {
-
-            clickOnControls = true;
-        }
-
-        if (!clickOnControls) {
-            if (this.paused()) {
-                this.play();
-            }
+        if (event.target === this.tech.el && this.paused()) {
+            this.play();
         }
     }
 
@@ -674,41 +531,13 @@ class Player {
         this.trigger('fullscreenerror');
     }
 
-    /**
-     * 处理播放器 click 事件，主要用于控制控制条显隐
-     *
-     * pc 上用 click 事件，移动端用 touchend
-     *
-     * @todo 开发 tap 事件来代替 click
-     * @private
-     *
-     * @param {Object} event 事件发生时，浏览器给的 event
-     */
     handleClick(event) {
-        // 点在播放按钮或者控制条上，（继续）展现控制条
-        let clickOnControls = false;
-        // @todo 处理得不够优雅
-        if (DOM.parent(event.target, 'lark-control-bar-pc')
-            || DOM.hasClass(event.target, 'lark-control-bar-pc')) {
-
-            clickOnControls = true;
-        }
-
-        if (!clickOnControls) {
-            // 处于暂停状态时，点击非控制条的位置继续播放
-            // 切换暂停／播放状态
-            const isPaused = this.paused();
-            if (isPaused) {
-                this.play();
-            } else {
-                this.pause();
-            }
+        if (event.target === this.tech.el) {
+            this.paused() ? this.play() : this.pause();
         }
     }
 
     // = = = = = = = = = = = = = 对外 api = = = = = = = = = = = = = =
-
-    // = = = func = = =
 
     /**
      * 判断当前是否处于全屏状态
@@ -837,26 +666,6 @@ class Player {
         });
     }
 
-    // = = = get attr = = =
-
-    /**
-     * 判断当前是否是暂停状态
-     *
-     * @return {boolean} 当前是否是暂停状态
-     */
-    paused() {
-        return this.techGet('paused');
-    }
-
-    /**
-     * 获取已播放时长
-     *
-     * @return {number} 当前已经播放的时长，以秒为单位
-     */
-    played() {
-        return this.techGet('played');
-    }
-
     /**
      * 获取／设置当前时间
      *
@@ -872,30 +681,12 @@ class Player {
     }
 
     /**
-     * 获取当前视频总时长
-     *
-     * @return {number} 视频总时长，如果视频未初始化完成，可能返回 NaN
-     */
-    duration() {
-        return this.techGet('duration');
-    }
-
-    /**
      * 获取视频剩下的时长
      *
      * @return {number} 总时长 - 已播放时长 = 剩下的时长
      */
     remainingTime() {
         return this.duration() - this.currentTime();
-    }
-
-    /**
-     * 获取当前已缓冲的范围
-     *
-     * @return {TimeRanges} 当前已缓冲的范围（buffer 有自己的 TimeRanges 对象）
-     */
-    buffered() {
-        return this.techGet('buffered');
     }
 
     /**
@@ -910,77 +701,6 @@ class Player {
             return buffered.end(buffered.length - 1) === duration;
         } else {
             return false;
-        }
-    }
-
-    /**
-     * 判断当前视频是否处于 seeking（跳转中） 状态
-     *
-     * @return {boolean} 是否处于跳转中状态
-     */
-    seeking() {
-        return this.techGet('seeking');
-    }
-
-    /**
-     * 判断当前视频是否可跳转到指定时刻
-     *
-     * @return {boolean} 前视频是否可跳转到指定时刻
-     */
-    seekable() {
-        return this.techGet('seekable');
-    }
-
-    /**
-     * 判断当前视频是否已播放完成
-     *
-     * @return {boolean} 当前视频是否已播放完成
-     */
-    ended() {
-        return this.techGet('ended');
-    }
-
-    /**
-     * 获取当前视频的 networkState 状态
-     *
-     * @return {number} 当前视频的 networkState 状态
-     * @todo 补充 networkState 各状态说明
-     */
-    networkState() {
-        return this.techGet('networkState');
-    }
-
-    /**
-     * 获取当前播放的视频的原始宽度
-     *
-     * @return {number} 当前视频的原始宽度
-     */
-    videoWidth() {
-        return this.techGet('videoWidth');
-    }
-
-    /**
-     * 获取当前播放的视频的原始高度
-     *
-     * @return {number} 当前视频的原始高度
-     */
-    videoHeight() {
-        return this.techGet('videoHeight');
-    }
-
-    // = = = set && get attr= = =
-
-    /**
-     * 获取或设置播放器声音大小
-     *
-     * @param {number=} decimal 要设置的声音大小的值（0~1），可选
-     * @return {number} 不传参数则返回当前视频声音大小
-     */
-    volume(decimal) {
-        if (decimal !== undefined) {
-            this.techCall('setVolume', Math.min(1, Math.max(decimal, 0)));
-        } else {
-            return this.techGet('volume');
         }
     }
 
@@ -1036,157 +756,26 @@ class Player {
             return this.techGet('source');
         }
     }
-
-    /**
-     * 获取或设置当前视频的播放速率
-     *
-     * @param {number=} playbackRate 要设置的播放速率的值，可选
-     * @return {number} 不传参数则返回当前视频的播放速率
-     */
-    playbackRate(playbackRate) {
-        if (playbackRate !== undefined) {
-            this.techCall('setPlaybackRate', playbackRate);
-        } else if (this.tech && this.tech.featuresPlaybackRate) {
-            return this.techGet('playbackRate');
-        } else {
-            return 1.0;
-        }
-    }
-
-    /**
-     * 获取或设置当前视频的默认播放速率
-     *
-     * @todo 确认是否有必要传参
-     *
-     * @param {number=} defaultPlaybackRate 要设置的默认播放速率的值，可选
-     * @return {number} 不传参数则返回当前视频的默认播放速率
-     */
-    defaultPlaybackRate(defaultPlaybackRate) {
-        if (defaultPlaybackRate !== undefined) {
-            this.techCall('setDefaultPlaybackRate', defaultPlaybackRate);
-        } else if (this.tech && this.tech.featuresPlaybackRate) {
-            return this.techGet('defaultPlaybackRate');
-        } else {
-            return 1.0;
-        }
-    }
-
-    /**
-     * 设置或获取 poster（视频封面） 属性的值
-     *
-     * @param {string=} val 可选。要设置的 poster 属性的值
-     * @return {string} 不传参数则返回当前 poster 属性的值
-     */
-    poster(val) {
-        if (val !== undefined) {
-            this.techCall('setPoster', val);
-        } else {
-            return this.techGet('poster');
-        }
-    }
-
 }
 
-[
-    /**
-     * 设置或获取 muted 属性的值
-     *
-     * @param {boolean=} isMuted（静音） 可选。设置 muted 属性的值
-     * @return {undefined|boolean} undefined 或 当前 muted 属性值
-     */
-    'muted',
+HTML5_WRITABLE_ATTRS
+    .filter(attr => !includes(['src', 'currentTime', 'width', 'height'], attr))
+    .forEach(attr => {
+        Player.prototype[attr] = function (val) {
+            if (val !== undefined) {
+                this.techCall(`set${toTitleCase(attr)}`, val);
+                this.options[attr] = val;
+            } else {
+                return this.techGet(attr);
+            }
+        };
+    });
 
-    /**
-     * 设置或获取 defaultMuted（默认静音） 属性的值
-     *
-     * @param {boolean=} isDefaultMuted 可选。设置 defaultMuted 属性的值
-     * @return {undefined|boolean} undefined 或 当前 defaultMuted 的值
-     */
-    'defaultMuted',
-
-    /**
-     * 设置或获取 autoplay（自动播放，大多数移动端浏览器不允许视频自动播放） 属性的值
-     *
-     * @param {boolean=} isAutoplay 可选。设置 autoplay 属性的值
-     * @return {undefined|boolean} undefined 或 当前 autoplay 值
-     */
-    'autoplay',
-
-    /**
-     * 设置或获取 loop（循环播放） 属性的值
-     *
-     * @param {boolean=} isLoop 可选。设置 loop 属性的值
-     * @return {undefined|boolean} undefined 或 当前 loop 值
-     */
-    'loop',
-    /**
-     * 设置或获取 playsinline（是否内联播放，ios10 以上有效） 属性的值
-     *
-     * @param {boolean=} isPlaysinline 可选。设置 playsinline 属性的值
-     * @return {undefined|boolean} undefined 或 当前 playsinline 值
-     */
-    'playsinline',
-
-    /**
-     * 设置或获取 poster（视频封面） 属性的值
-     *
-     * @param {string=} poster 可选。设置 poster 属性的值
-     * @return {undefined|string} undefined 或 当前 poster 值
-     */
-    // 'poster',
-
-    /**
-     * 设置或获取 preload（预加载的数据） 属性的值
-     *
-     * @param {string=} preload 可选。设置 preload 属性的值（none、auto、metadata）
-     * @return {undefined|string} undefined 或 当前 preload 值
-     */
-    'preload',
-    'controls'
-].forEach(prop => {
-    // 这里别用箭头函数，不然 this 就指不到 Player.prototype 了
-    Player.prototype[prop] = function (val) {
-        if (val !== undefined) {
-            this.techCall(`set${toTitleCase(prop)}`, val);
-            this.options[prop] = val;
-        } else {
-            return this.techGet(prop);
-        }
-    };
+HTML5_READONLY_ATTRS.forEach(attr => {
+    Player.prototype[attr] = function () {
+        return this.techGet(attr);
+    }
 });
-
-export default Player;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 

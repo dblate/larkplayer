@@ -1416,7 +1416,7 @@ function evented() {
     };
 }
 
-},{"../utils/dom":20,"./events":9}],9:[function(require,module,exports){
+},{"../utils/dom":22,"./events":9}],9:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -1609,6 +1609,125 @@ exports['default'] = {
 'use strict';
 
 exports.__esModule = true;
+/**
+ * @file html5 video attributes
+ * @author yuhui06
+ * @date 2018/5/11
+ * @see https://www.w3.org/TR/html5/semantics-embedded-content.html#the-media-elements
+ * @see https://www.w3.org/TR/html5/semantics-embedded-content.html#the-video-element
+ * @todo player 对应方法的文档
+ */
+
+var HTML5_WRITABLE_ATTRS = exports.HTML5_WRITABLE_ATTRS = ['src', 'crossOrigin', 'poster', 'preload', 'autoplay', 'loop', 'muted', 'defaultMuted', 'controls', 'controlsList', 'width', 'height', 'playsinline', 'playbackRate', 'defaultPlaybackRate', 'volume', 'currentTime'];
+
+var HTML5_WRITABLE_BOOL_ATTRS = exports.HTML5_WRITABLE_BOOL_ATTRS = ['autoplay', 'loop', 'muted', 'defaultMuted', 'controls', 'playsinline'];
+
+var HTML5_READONLY_ATTRS = exports.HTML5_READONLY_ATTRS = ['error', 'currentSrc', 'networkState', 'buffered', 'readyState', 'seeking', 'duration', 'paused', 'played', 'seekable', 'ended', 'videoWidth', 'videoHeight'];
+
+exports['default'] = [].concat(HTML5_WRITABLE_ATTRS, HTML5_READONLY_ATTRS);
+
+},{}],12:[function(require,module,exports){
+'use strict';
+
+exports.__esModule = true;
+/**
+ * @file html5 video events
+ * @author yuhui06
+ * @date 2018/5/10
+ * @see https://www.w3.org/TR/html5/semantics-embedded-content.html#media-elements-event-summary
+ * @todo 移到这里后，player event 的文档怎么办？
+ */
+
+exports['default'] = ['loadstart',
+
+/**
+ * 浏览器停止获取数据时触发
+ *
+ * @event Player#suspend
+ * @param {Object} event 事件触发时浏览器自带的 event 对象
+ */
+'suspend',
+
+/**
+ * 浏览器在视频下载完成前停止下载时触发。但并不是因为出错，出错时触发 error 事件而不是 abort。
+ * 往往是人为的停止下载，比如删除 src
+ *
+ * @event Player#abort
+ * @param {Object} event 事件触发时浏览器自带的 event 对象
+ */
+'abort', 'error',
+
+/**
+ * 视频被清空时触发
+ *
+ * @event Player#emptied
+ * @param {Object} event 事件触发时浏览器自带的 event 对象
+ */
+'emptied',
+
+/**
+ * 浏览器获取数据时，数据并没有正常返回时触发
+ *
+ * @event Player#stalled
+ * @param {Object} event 事件触发时浏览器自带的 event 对象
+ */
+'stalled',
+
+/**
+ * 播放器成功获取到视频总时长、高宽、字幕等信息时触发
+ *
+ * @event Player#loadedmetadata
+ * @param {Object} event 事件触发时浏览器自带的 event 对象
+ */
+'loadedmetadata',
+
+/**
+ * 播放器第一次能够渲染当前帧时触发
+ *
+ * @event Player#loadeddata
+ * @param {Object} event 事件触发时浏览器自带的 event 对象
+ */
+'loadeddata', 'canplay', 'canplaythrough', 'playing', 'waiting', 'seeking', 'seeked', 'ended', 'durationchange', 'timeupdate',
+
+/**
+ * 浏览器获取数据的过程中触发
+ *
+ * @event Player#progress
+ * @param {Object} event 事件触发时浏览器自带的 event 对象
+ */
+'progress', 'play', 'pause',
+
+/**
+ * 视频播放速率改变时触发
+ *
+ * @event Player#ratechange
+ * @param {Object} event 事件触发时浏览器自带的 event 对象
+ */
+'ratechange',
+
+/**
+ * 视频本身的高宽发生改变时触发，注意不是播放器的高度（比如调整播放器的高宽和全屏不会触发 resize 事件）
+ *
+ * 这里还不是太清楚，有需要的话看看 w3c 文档吧
+ *
+ * @see https://html.spec.whatwg.org/#dom-video-videowidth
+ * @event Player#resize
+ * @param {Object} event 事件触发时浏览器自带的 event 对象
+ */
+'resize',
+
+/**
+ * 视频声音大小改变时触发
+ *
+ * @event Player#volumechange
+ * @param {Object} event 事件触发时浏览器自带的 event 对象
+ */
+'volumechange'];
+
+},{}],13:[function(require,module,exports){
+'use strict';
+
+exports.__esModule = true;
 
 var _window = require('global/window');
 
@@ -1617,6 +1736,10 @@ var _window2 = _interopRequireDefault(_window);
 var _document = require('global/document');
 
 var _document2 = _interopRequireDefault(_document);
+
+var _lodash = require('lodash.includes');
+
+var _lodash2 = _interopRequireDefault(_lodash);
 
 var _dom = require('../utils/dom');
 
@@ -1633,6 +1756,10 @@ var _normalizeSource2 = _interopRequireDefault(_normalizeSource);
 var _evented = require('../events/evented');
 
 var _evented2 = _interopRequireDefault(_evented);
+
+var _html5Attrs = require('./html5-attrs');
+
+var _html5Attrs2 = _interopRequireDefault(_html5Attrs);
 
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj['default'] = obj; return newObj; } }
 
@@ -1654,32 +1781,11 @@ var Html5 = function () {
         this.el = this.options.el;
 
         (0, _evented2['default'])(this, { eventBusKey: this.el });
-
-        // @todo 处理有 source 的情况
-
         this.proxyWebkitFullscreen();
     }
 
     Html5.prototype.dispose = function dispose() {
         Html5.disposeMediaElement(this.el);
-    };
-
-    Html5.prototype.setCurrentTime = function setCurrentTime(seconds) {
-        try {
-            this.el.currentTime = seconds;
-        } catch (ex) {
-            /* eslint-disable no-console */
-            console.log(ex, 'Video is not ready');
-            /* eslint-enbale no-console */
-        }
-    };
-
-    Html5.prototype.width = function width() {
-        return this.el.offsetWidth;
-    };
-
-    Html5.prototype.height = function height() {
-        return this.el.offsetHeight;
     };
 
     Html5.prototype.proxyWebkitFullscreen = function proxyWebkitFullscreen() {
@@ -1779,20 +1885,6 @@ var Html5 = function () {
         Html5.resetMediaElement(this.el);
     };
 
-    Html5.prototype.currentSrc = function currentSrc() {
-        if (this.currentSource) {
-            return this.currentSource.src;
-        }
-
-        return this.el.currentSrc;
-    };
-
-    Html5.prototype.setControls = function setControls(val) {
-        this.el.controls = !!val;
-    };
-
-    Html5.prototype.getVideoPlaybackQuality = function getVideoPlaybackQuality() {};
-
     return Html5;
 }();
 
@@ -1830,34 +1922,11 @@ Html5.canPlayType = function (type) {
 };
 
 /**
- * 检查是否可以改变播放器的声音大小（许多移动端的浏览器没法改变声音大小，比如 ios）
- *
- * @return {boolean} 是否可以改变声音大小
- */
-Html5.canControlVolume = function () {
-    // IE will error if Windows Media Player not installed #3315
-    try {
-        var volume = Html5.TEST_VID.volume;
-
-        Html5.TEST_VID.volume = volume / 2 + 0.1;
-        return volume !== Html5.TEST_VID.volume;
-    } catch (ex) {
-        return false;
-    }
-};
-
-/**
  * 检查能否改变视频播放速度
  *
  * @return {boolean} 是否可以改变视频播放速度
  */
 Html5.canControlPlaybackRate = function () {
-    // Playback rate API is implemented in Android Chrome, but doesn't do anything
-    // https://github.com/videojs/video.js/issues/3180
-    // if (browser.IS_ANDROID && browser.IS_CHROME && browser.CHROME_VERSION < 58) {
-    //     return false;
-    // }
-
     try {
         var playbackRate = Html5.TEST_VID.playbackRate;
         Html5.TEST_VID.playbackRate = playbackRate / 2 + 0.1;
@@ -1867,58 +1936,9 @@ Html5.canControlPlaybackRate = function () {
     }
 };
 
-// HTML5 video 事件
-Html5.Events = ['loadstart', 'suspend', 'abort', 'error', 'emptied', 'stalled', 'loadedmetadata', 'loadeddata', 'canplay', 'canplaythrough', 'playing', 'waiting', 'seeking', 'seeked', 'ended', 'durationchange', 'timeupdate', 'progress', 'play', 'pause', 'ratechange', 'resize', 'volumechange'];
-
-Html5.prototype.featuresVolumeControl = Html5.canControlVolume();
-
-Html5.prototype.featuresPlaybackRate = Html5.canControlPlaybackRate();
-
-// @todo
-// Html5.prototype.movingMediaElementInDOM = !browser.IS_IOS;
-
-// 表明进入全屏时，播放器是否自动改变视频大小
-Html5.prototype.featuresFullscreenResize = true;
-
-// 表明是否支持 progress 事件
-Html5.prototype.featuresProgressEvents = true;
-
-// 表明是否支持 timeupdate 事件
-Html5.prototype.featuresTimeupdateEvents = true;
-
-// @todo patchCanPlayType
-
-
 Html5.disposeMediaElement = function (el) {
-    if (!el) {
-        return;
-    }
-
-    if (el.parentNode) {
-        el.parentNode.removeChild(el);
-    }
-
-    while (el.hasChildNodes()) {
-        el.removeChild(el.firstChild);
-    }
-
-    // 移除 src 属性，而不是设置 src=''（在 firefox 下会有问题）
-    el.removeAttribute('src');
-
-    // force the media element to update its loading state by calling load()
-    // however IE on Windows 7N has a bug that throws an error so need a try/catch (#793)
-    if (typeof el.load === 'function') {
-        // wrapping in an iife so it's not deoptimized (#1060#discussion_r10324473)
-        (function () {
-            try {
-                el.load();
-            } catch (ex) {
-                /* eslint-disable no-console */
-                console.log(ex);
-                /* eslint-enbale no-console */
-            }
-        })();
-    }
+    Html5.resetMediaElement(el);
+    el.parentNode && el.parentNode.removeChild(el);
 };
 
 Html5.resetMediaElement = function (el) {
@@ -1926,80 +1946,42 @@ Html5.resetMediaElement = function (el) {
         return;
     }
 
-    var sources = el.querySelectorAll('source');
-    var i = sources.length;
-
-    while (i--) {
-        el.removeChild(sources[i]);
+    while (el.hasChildNodes()) {
+        el.removeChild(el.firstChild);
     }
 
     el.removeAttribute('src');
 
     if (typeof el.load === 'function') {
-        // wrapping in an iife so it's not deoptimized (#1060#discussion_r10324473)
-        (function () {
-            try {
-                el.load();
-            } catch (e) {
-                // satisfy linter
-            }
-        })();
+        try {
+            el.load();
+        } catch (ex) {}
     }
 };
 
-// HTML5 video attributes proxy
-// 获取对应属性的值
-// muted defaultMuted autoplay controls loop playsinline
-['muted', 'defaultMuted', 'autoplay', 'controls', 'loop', 'playsinline'].forEach(function (attr) {
+// Wrap HTML5 video attributes with a getter 
+_html5Attrs2['default'].forEach(function (attr) {
     Html5.prototype[attr] = function () {
-        return this.el[attr] || this.el.hasAttribute(attr);
+        return (0, _lodash2['default'])(_html5Attrs.HTML5_WRITABLE_BOOL_ATTRS, attr) ? this.el[attr] || this.el.hasAttribute(attr) : this.el[attr];
     };
 });
 
-// HTML5 video attributes proxy
-// 设置对应属性的值
-// setMuted, setDefaultMuted, setAutoPlay, setLoop, setPlaysinline
-// setControls 算是特例
-['muted', 'defaultMuted', 'autoplay', 'loop', 'playsinline'].forEach(function (attr) {
+// Wrap HTML5 video attributes with a setter on Html5 prototype
+_html5Attrs.HTML5_WRITABLE_ATTRS.forEach(function (attr) {
     Html5.prototype['set' + (0, _toTitleCase2['default'])(attr)] = function (value) {
         this.el[attr] = value;
-
-        if (value) {
-            this.el.setAttribute(attr, attr);
-        } else {
-            this.el.removeAttribute(attr);
-        }
-    };
-});
-
-// Wrap HTML5 video properties with a getter
-// paused, currentTime, duration, buffered, volume, poster, preload, error, seeking
-// seekable, ended, palybackRate, defaultPlaybackRate, played, networkState,
-// readyState, videoWidth, videoHeight
-['paused', 'currentTime', 'duration', 'buffered', 'volume', 'poster', 'preload', 'error', 'seeking', 'seekable', 'ended', 'playbackRate', 'defaultPlaybackRate', 'played', 'networkState', 'readyState', 'videoWidth', 'videoHeight'].forEach(function (prop) {
-    Html5.prototype[prop] = function () {
-        return this.el[prop];
-    };
-});
-
-// Wrap HTML5 video properties with a setter in the following format:
-// set + toTitleCase(propName)
-// setVolume, setSrc, setPoster, setPreload, setPlaybackRate, setDefaultPlaybackRate
-['volume', 'src', 'poster', 'preload', 'playbackRate', 'defaultPlaybackRate'].forEach(function (prop) {
-    Html5.prototype['set' + (0, _toTitleCase2['default'])(prop)] = function (value) {
-        this.el[prop] = value;
+        value === false && this.el.removeAttribute(attr);
     };
 });
 
 // Wrap native functions with a function
-// pause, load, play
 ['pause', 'load', 'play'].forEach(function (prop) {
     Html5.prototype[prop] = function () {
         return this.el[prop]();
     };
 });
 
-},{"../events/evented":8,"../utils/dom":20,"../utils/normalize-source":26,"../utils/to-title-case":30,"global/document":2,"global/window":3}],12:[function(require,module,exports){
+},{"../events/evented":8,"../utils/dom":22,"../utils/normalize-source":27,"../utils/to-title-case":30,"./html5-attrs":11,"global/document":2,"global/window":3,"lodash.includes":5}],14:[function(require,module,exports){
 'use strict';
 
 var _objectAssign = require('object-assign');
@@ -2048,16 +2030,12 @@ function normalize(el) {
 
     options = (0, _objectAssign2['default'])({ playsinline: true }, options);
 
-    // 如果传入 id，则根据 id 获取元素
     if (typeof el === 'string') {
         el = DOM.$(/^#/.test(el) ? el : '#' + el);
     }
-
     if (!DOM.isEl(el)) {
         throw new Error('[larkplayer initial error]: el should be an id or DOM element!');
     }
-
-    // 如果该元素不是 video 标签，则在该元素内创建 video 标签
     if (el.tagName.toUpperCase() !== 'VIDEO') {
         var videoEl = DOM.createElement('video', {
             id: el.id + '-video'
@@ -2065,50 +2043,30 @@ function normalize(el) {
 
         el.appendChild(videoEl);
         el = videoEl;
-        videoEl = null;
     }
 
-    return { el: el, options: options, readyFn: readyFn };
+    return [el, options, readyFn];
 } /**
-   * @file larkplayer.js larkplayer 入口函数
-   * @author yuhui<yuhui06@baidu.com>
+   * @file larkplayer entry
+   * @author yuhui06
    * @date 2017/11/7
    */
 
 function larkplayer(el, options, readyFn) {
-    // @todo 优化不支持 html5 video 标签时的展示
     if (!_html2['default'].isSupported()) {
+        el.innerHTML = '请升级或更换浏览器以支持 html5 视频播放';
         return false;
     }
 
-    // () 避免 {} 在行首造成语法错误
-
-    var _normalize = normalize(el, options, readyFn);
-
-    el = _normalize.el;
-    options = _normalize.options;
-    readyFn = _normalize.readyFn;
-
-
-    var player = new _player2['default'](el, options, readyFn);
-
-    return player;
+    return new (Function.prototype.bind.apply(_player2['default'], [null].concat(normalize(el, options, readyFn))))();
 }
 
-(0, _objectAssign2['default'])(larkplayer, {
-    Events: Events,
-    DOM: DOM,
-    Component: _component2['default'],
-    MediaSourceHandler: _mediaSourceHandler2['default'],
-    Plugin: _plugin2['default'],
-    util: _utils2['default']
-});
+(0, _objectAssign2['default'])(larkplayer, { Events: Events, DOM: DOM, Component: _component2['default'], MediaSourceHandler: _mediaSourceHandler2['default'], Plugin: _plugin2['default'], util: _utils2['default'] });
 
-// for babel es6
 // @see https://github.com/babel/babel/issues/2724
 module.exports = larkplayer;
 
-},{"./events/events":9,"./html5/html5":11,"./player":13,"./plugin/component":14,"./plugin/media-source-handler":15,"./plugin/plugin":18,"./utils/dom":20,"./utils/utils":31,"object-assign":7}],13:[function(require,module,exports){
+},{"./events/events":9,"./html5/html5":13,"./player":15,"./plugin/component":16,"./plugin/media-source-handler":17,"./plugin/plugin":20,"./utils/dom":22,"./utils/utils":31,"object-assign":7}],15:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -2124,6 +2082,12 @@ var _document2 = _interopRequireDefault(_document);
 var _html = require('./html5/html5');
 
 var _html2 = _interopRequireDefault(_html);
+
+var _html5Events = require('./html5/html5-events');
+
+var _html5Events2 = _interopRequireDefault(_html5Events);
+
+var _html5Attrs = require('./html5/html5-attrs');
 
 var _fullscreen = require('./html5/fullscreen');
 
@@ -2195,13 +2159,18 @@ var Player = function () {
      * 初始化一个播放器实例
      *
      * @constructor
-     * @param {Element|string} tag video 标签的 DOM 元素或者 id
+     * @param {Element|string} tag DOM 元素或其 id，如果是 video 标签，会自动获取其属性
      * @param {Object=} options 配置项，可选
      * @param {number=} options.height 播放器高度
      * @param {number=} options.width 播放器宽度
-     * @param {boolean=} options.loop 是否循环播放
+     * @param {boolean=} options.loop 是否循环播放，默认 false
+     * @param {boolean=} options.controls 是否有控制条，默认 false
+     * @param {string=} options.controlsList 对原生控制条的一些设置，可选值为 nodownload nofullscreen noremoteplayback
+     * @param {number=} options.playbackRate 视频播放速率，默认 1.0
+     * @param {number=} options.defaultPlaybackRate 视频默认播放速率，默认 1.0
+     * @param {number=} options.volume 声音大小，默认 1，取值应在 0~1
      * @param {boolean=} options.muted 是否静音
-     * @param {boolean=} options.playsinline 是否使用内联的形式播放（即非全屏的形式）。仅 ios10 以上有效，在 ios10 以下，视频播放时会自动进入全屏
+     * @param {boolean=} options.playsinline 是否使用内联的形式播放（即非全屏的形式），默认 true。仅 ios10 以上有效，在 ios10 以下，视频播放时会自动进入全屏
      * @param {string=} options.poster 视频封面
      * @param {string=} options.preload 视频预先下载资源的设置，可选值有以下 3 种（当然就算你设置了以下 3 种，最终结果也不一定符合预期，毕竟浏览器嘛，你懂的）
      *                                  - auto 浏览器自己决定
@@ -2222,10 +2191,8 @@ var Player = function () {
         this.el = this.createEl();
         this.ready(readyFn);
 
-        // 使得 this 具有事件能力(on off one trigger)
         (0, _evented2['default'])(this, { eventBusKey: this.el });
 
-        // 需放在 this.loadTech 方法前面
         this.handleFirstplay = this.handleFirstplay.bind(this);
         this.handleTouchEnd = this.handleTouchEnd.bind(this);
         this.handleFullscreenChange = this.handleFullscreenChange.bind(this);
@@ -2253,12 +2220,6 @@ var Player = function () {
 
         this.initialUIPlugins();
         this.initialNormalPlugins();
-
-        // 如果当前视频已经出错，重新触发一次 error 事件
-        if (this.techGet('error')) {
-            Events.trigger(this.tech.el, 'error');
-        }
-
         this.triggerReady();
     }
     /* eslint-enable fecs-max-statements */
@@ -2408,15 +2369,13 @@ var Player = function () {
         var tag = this.tag;
 
         // 处理 options 中的 html5 标准属性
-        var html5StandardOptions = ['autoplay', 'controls', 'height', 'loop', 'muted', 'poster', 'preload', 'auto', 'metadata', 'none', 'src', 'width', 'playsinline'];
         (0, _obj.each)(this.options, function (value, key) {
-            if ((0, _lodash2['default'])(html5StandardOptions, key) && value) {
+            if ((0, _lodash2['default'])(_html5Attrs.HTML5_WRITABLE_ATTRS, key) && value) {
                 DOM.setAttribute(tag, key, value);
             }
         });
 
         if (this.options.source) {
-            // 等到 this.tech 初始化完成后再添加
             this.ready(function () {
                 _this5.source(_this5.options.source);
             });
@@ -2430,38 +2389,21 @@ var Player = function () {
 
         DOM.setAttribute(tag, 'tabindex', '-1');
 
-        // 将原生控制条移除
-        // 目前只支持使用自定义的控制条
-        // tag.removeAttribute('controls');
-
         // 将 el 插入到 DOM 中
         if (tag.parentNode) {
             tag.parentNode.insertBefore(el, tag);
         }
 
-        // 父元素的 width height 样式继承子元素的值
-        // 将 video 标签的 width height 属性移除，确保 width height 为 100%
-
-        // IE7 不支持 hasAttribute
-        // if (tag.hasAttribute('width')) {
-        if (tag.width) {
-            var tagWidth = tag.getAttribute('width');
-            el.style.width = tagWidth + 'px';
-            tag.removeAttribute('width');
+        if (tag.hasAttribute('width')) {
+            el.style.width = tag.getAttribute('width') + 'px';
+            tag.setAttribute('width', '100%');
         }
 
-        // if (tag.hasAttribute('height')) {
-        if (tag.height) {
-            var tagHeight = tag.getAttribute('height');
-            el.style.height = tagHeight + 'px';
-            tag.removeAttribute('height');
+        if (tag.hasAttribute('height')) {
+            el.style.height = tag.getAttribute('height') + 'px';
+            tag.setAttribute('height', '100%');
         }
 
-        tag.setAttribute('width', '100%');
-        tag.setAttribute('height', '100%');
-
-        // @todo safari 好像不支持移动 video DOM?
-        // 将 video 插入到 el 中
         el.appendChild(tag);
 
         return el;
@@ -2477,6 +2419,13 @@ var Player = function () {
 
     Player.prototype.handleLateInit = function handleLateInit(el) {
         var _this6 = this;
+
+        if (!!el.error) {
+            this.ready(function () {
+                _this6.trigger('error');
+            });
+            return;
+        }
 
         // readyState
         // 0 - HAVE_NOTHING
@@ -2573,100 +2522,14 @@ var Player = function () {
         this.options.el = this.tag;
         var tech = new _html2['default'](this.player, this.options);
 
-        // 注册 video 的各个事件
-        ['loadstart',
-
-        /**
-         * 浏览器停止获取数据时触发
-         *
-         * @event Player#suspend
-         * @param {Object} event 事件触发时浏览器自带的 event 对象
-         */
-        'suspend',
-
-        /**
-         * 浏览器在视频下载完成前停止下载时触发。但并不是因为出错，出错时触发 error 事件而不是 abort。
-         * 往往是人为的停止下载，比如删除 src
-         *
-         * @event Player#abort
-         * @param {Object} event 事件触发时浏览器自带的 event 对象
-         */
-        'abort', 'error',
-
-        /**
-         * 视频被清空时触发
-         *
-         * @event Player#emptied
-         * @param {Object} event 事件触发时浏览器自带的 event 对象
-         */
-        'emptied',
-
-        /**
-         * 浏览器获取数据时，数据并没有正常返回时触发
-         *
-         * @event Player#stalled
-         * @param {Object} event 事件触发时浏览器自带的 event 对象
-         */
-        'stalled',
-
-        /**
-         * 播放器成功获取到视频总时长、高宽、字幕等信息时触发
-         *
-         * @event Player#loadedmetadata
-         * @param {Object} event 事件触发时浏览器自带的 event 对象
-         */
-        'loadedmetadata',
-
-        /**
-         * 播放器第一次能够渲染当前帧时触发
-         *
-         * @event Player#loadeddata
-         * @param {Object} event 事件触发时浏览器自带的 event 对象
-         */
-        'loadeddata', 'canplay', 'canplaythrough', 'playing', 'waiting', 'seeking', 'seeked', 'ended', 'durationchange', 'timeupdate',
-
-        /**
-         * 浏览器获取数据的过程中触发
-         *
-         * @event Player#progress
-         * @param {Object} event 事件触发时浏览器自带的 event 对象
-         */
-        'progress', 'play', 'pause',
-
-        /**
-         * 视频播放速率改变时触发
-         *
-         * @event Player#ratechange
-         * @param {Object} event 事件触发时浏览器自带的 event 对象
-         */
-        'ratechange',
-
-        /**
-         * 视频本身的高宽发生改变时触发，注意不是播放器的高度（比如调整播放器的高宽和全屏不会触发 resize 事件）
-         *
-         * 这里还不是太清楚，有需要的话看看 w3c 文档吧
-         *
-         * @see https://html.spec.whatwg.org/#dom-video-videowidth
-         * @event Player#resize
-         * @param {Object} event 事件触发时浏览器自带的 event 对象
-         */
-        'resize',
-
-        /**
-         * 视频声音大小改变时触发
-         *
-         * @event Player#volumechange
-         * @param {Object} event 事件触发时浏览器自带的 event 对象
-         */
-        'volumechange'].forEach(function (event) {
-            // 对于我们不做任何处理的事件，直接 trigger 出去，提供给用户就行了
-            Events.on(tech.el, event, function () {
-                _this7.trigger(event);
+        // 代理 video 的各个事件
+        _html5Events2['default'].forEach(function (eventName) {
+            Events.on(tech.el, eventName, function () {
+                _this7.trigger(eventName);
             });
         });
 
         // 绑定 firstPlay 事件
-        // 先 off 确保只绑定一次
         this.off('play', this.handleFirstplay);
         this.one('play', this.handleFirstplay);
 
@@ -2768,26 +2631,9 @@ var Player = function () {
         this.trigger('firstplay');
     };
 
-    /**
-     * 处理 touchend 事件，主要用于控制控制条的显隐
-     *
-     * @param {Object} event 事件发生时，浏览器给的 event
-     *
-     * @private
-     */
-
-
     Player.prototype.handleTouchEnd = function handleTouchEnd(event) {
-        var clickOnControls = false;
-        if (DOM.parent(event.target, 'lark-play-button') || DOM.parent(event.target, 'lark-control-bar')) {
-
-            clickOnControls = true;
-        }
-
-        if (!clickOnControls) {
-            if (this.paused()) {
-                this.play();
-            }
+        if (event.target === this.tech.el && this.paused()) {
+            this.play();
         }
     };
 
@@ -2850,42 +2696,13 @@ var Player = function () {
         this.trigger('fullscreenerror');
     };
 
-    /**
-     * 处理播放器 click 事件，主要用于控制控制条显隐
-     *
-     * pc 上用 click 事件，移动端用 touchend
-     *
-     * @todo 开发 tap 事件来代替 click
-     * @private
-     *
-     * @param {Object} event 事件发生时，浏览器给的 event
-     */
-
-
     Player.prototype.handleClick = function handleClick(event) {
-        // 点在播放按钮或者控制条上，（继续）展现控制条
-        var clickOnControls = false;
-        // @todo 处理得不够优雅
-        if (DOM.parent(event.target, 'lark-control-bar-pc') || DOM.hasClass(event.target, 'lark-control-bar-pc')) {
-
-            clickOnControls = true;
-        }
-
-        if (!clickOnControls) {
-            // 处于暂停状态时，点击非控制条的位置继续播放
-            // 切换暂停／播放状态
-            var isPaused = this.paused();
-            if (isPaused) {
-                this.play();
-            } else {
-                this.pause();
-            }
+        if (event.target === this.tech.el) {
+            this.paused() ? this.play() : this.pause();
         }
     };
 
     // = = = = = = = = = = = = = 对外 api = = = = = = = = = = = = = =
-
-    // = = = func = = =
 
     /**
      * 判断当前是否处于全屏状态
@@ -3032,30 +2849,6 @@ var Player = function () {
         });
     };
 
-    // = = = get attr = = =
-
-    /**
-     * 判断当前是否是暂停状态
-     *
-     * @return {boolean} 当前是否是暂停状态
-     */
-
-
-    Player.prototype.paused = function paused() {
-        return this.techGet('paused');
-    };
-
-    /**
-     * 获取已播放时长
-     *
-     * @return {number} 当前已经播放的时长，以秒为单位
-     */
-
-
-    Player.prototype.played = function played() {
-        return this.techGet('played');
-    };
-
     /**
      * 获取／设置当前时间
      *
@@ -3073,17 +2866,6 @@ var Player = function () {
     };
 
     /**
-     * 获取当前视频总时长
-     *
-     * @return {number} 视频总时长，如果视频未初始化完成，可能返回 NaN
-     */
-
-
-    Player.prototype.duration = function duration() {
-        return this.techGet('duration');
-    };
-
-    /**
      * 获取视频剩下的时长
      *
      * @return {number} 总时长 - 已播放时长 = 剩下的时长
@@ -3092,17 +2874,6 @@ var Player = function () {
 
     Player.prototype.remainingTime = function remainingTime() {
         return this.duration() - this.currentTime();
-    };
-
-    /**
-     * 获取当前已缓冲的范围
-     *
-     * @return {TimeRanges} 当前已缓冲的范围（buffer 有自己的 TimeRanges 对象）
-     */
-
-
-    Player.prototype.buffered = function buffered() {
-        return this.techGet('buffered');
     };
 
     /**
@@ -3119,91 +2890,6 @@ var Player = function () {
             return buffered.end(buffered.length - 1) === duration;
         } else {
             return false;
-        }
-    };
-
-    /**
-     * 判断当前视频是否处于 seeking（跳转中） 状态
-     *
-     * @return {boolean} 是否处于跳转中状态
-     */
-
-
-    Player.prototype.seeking = function seeking() {
-        return this.techGet('seeking');
-    };
-
-    /**
-     * 判断当前视频是否可跳转到指定时刻
-     *
-     * @return {boolean} 前视频是否可跳转到指定时刻
-     */
-
-
-    Player.prototype.seekable = function seekable() {
-        return this.techGet('seekable');
-    };
-
-    /**
-     * 判断当前视频是否已播放完成
-     *
-     * @return {boolean} 当前视频是否已播放完成
-     */
-
-
-    Player.prototype.ended = function ended() {
-        return this.techGet('ended');
-    };
-
-    /**
-     * 获取当前视频的 networkState 状态
-     *
-     * @return {number} 当前视频的 networkState 状态
-     * @todo 补充 networkState 各状态说明
-     */
-
-
-    Player.prototype.networkState = function networkState() {
-        return this.techGet('networkState');
-    };
-
-    /**
-     * 获取当前播放的视频的原始宽度
-     *
-     * @return {number} 当前视频的原始宽度
-     */
-
-
-    Player.prototype.videoWidth = function videoWidth() {
-        return this.techGet('videoWidth');
-    };
-
-    /**
-     * 获取当前播放的视频的原始高度
-     *
-     * @return {number} 当前视频的原始高度
-     */
-
-
-    Player.prototype.videoHeight = function videoHeight() {
-        return this.techGet('videoHeight');
-    };
-
-    // = = = set && get attr= = =
-
-    /**
-     * 获取或设置播放器声音大小
-     *
-     * @param {number=} decimal 要设置的声音大小的值（0~1），可选
-     * @return {number} 不传参数则返回当前视频声音大小
-     */
-
-
-    Player.prototype.volume = function volume(decimal) {
-        if (decimal !== undefined) {
-            this.techCall('setVolume', Math.min(1, Math.max(decimal, 0)));
-        } else {
-            return this.techGet('volume');
         }
     };
 
@@ -3264,132 +2950,32 @@ var Player = function () {
         }
     };
 
-    /**
-     * 获取或设置当前视频的播放速率
-     *
-     * @param {number=} playbackRate 要设置的播放速率的值，可选
-     * @return {number} 不传参数则返回当前视频的播放速率
-     */
-
-
-    Player.prototype.playbackRate = function playbackRate(_playbackRate) {
-        if (_playbackRate !== undefined) {
-            this.techCall('setPlaybackRate', _playbackRate);
-        } else if (this.tech && this.tech.featuresPlaybackRate) {
-            return this.techGet('playbackRate');
-        } else {
-            return 1.0;
-        }
-    };
-
-    /**
-     * 获取或设置当前视频的默认播放速率
-     *
-     * @todo 确认是否有必要传参
-     *
-     * @param {number=} defaultPlaybackRate 要设置的默认播放速率的值，可选
-     * @return {number} 不传参数则返回当前视频的默认播放速率
-     */
-
-
-    Player.prototype.defaultPlaybackRate = function defaultPlaybackRate(_defaultPlaybackRate) {
-        if (_defaultPlaybackRate !== undefined) {
-            this.techCall('setDefaultPlaybackRate', _defaultPlaybackRate);
-        } else if (this.tech && this.tech.featuresPlaybackRate) {
-            return this.techGet('defaultPlaybackRate');
-        } else {
-            return 1.0;
-        }
-    };
-
-    /**
-     * 设置或获取 poster（视频封面） 属性的值
-     *
-     * @param {string=} val 可选。要设置的 poster 属性的值
-     * @return {string} 不传参数则返回当前 poster 属性的值
-     */
-
-
-    Player.prototype.poster = function poster(val) {
-        if (val !== undefined) {
-            this.techCall('setPoster', val);
-        } else {
-            return this.techGet('poster');
-        }
-    };
-
     return Player;
 }();
 
-[
-/**
- * 设置或获取 muted 属性的值
- *
- * @param {boolean=} isMuted（静音） 可选。设置 muted 属性的值
- * @return {undefined|boolean} undefined 或 当前 muted 属性值
- */
-'muted',
+exports['default'] = Player;
 
-/**
- * 设置或获取 defaultMuted（默认静音） 属性的值
- *
- * @param {boolean=} isDefaultMuted 可选。设置 defaultMuted 属性的值
- * @return {undefined|boolean} undefined 或 当前 defaultMuted 的值
- */
-'defaultMuted',
 
-/**
- * 设置或获取 autoplay（自动播放，大多数移动端浏览器不允许视频自动播放） 属性的值
- *
- * @param {boolean=} isAutoplay 可选。设置 autoplay 属性的值
- * @return {undefined|boolean} undefined 或 当前 autoplay 值
- */
-'autoplay',
-
-/**
- * 设置或获取 loop（循环播放） 属性的值
- *
- * @param {boolean=} isLoop 可选。设置 loop 属性的值
- * @return {undefined|boolean} undefined 或 当前 loop 值
- */
-'loop',
-/**
- * 设置或获取 playsinline（是否内联播放，ios10 以上有效） 属性的值
- *
- * @param {boolean=} isPlaysinline 可选。设置 playsinline 属性的值
- * @return {undefined|boolean} undefined 或 当前 playsinline 值
- */
-'playsinline',
-
-/**
- * 设置或获取 poster（视频封面） 属性的值
- *
- * @param {string=} poster 可选。设置 poster 属性的值
- * @return {undefined|string} undefined 或 当前 poster 值
- */
-// 'poster',
-
-/**
- * 设置或获取 preload（预加载的数据） 属性的值
- *
- * @param {string=} preload 可选。设置 preload 属性的值（none、auto、metadata）
- * @return {undefined|string} undefined 或 当前 preload 值
- */
-'preload', 'controls'].forEach(function (prop) {
-    // 这里别用箭头函数，不然 this 就指不到 Player.prototype 了
-    Player.prototype[prop] = function (val) {
+_html5Attrs.HTML5_WRITABLE_ATTRS.filter(function (attr) {
+    return !(0, _lodash2['default'])(['src', 'currentTime', 'width', 'height'], attr);
+}).forEach(function (attr) {
+    Player.prototype[attr] = function (val) {
         if (val !== undefined) {
-            this.techCall('set' + (0, _toTitleCase2['default'])(prop), val);
-            this.options[prop] = val;
+            this.techCall('set' + (0, _toTitleCase2['default'])(attr), val);
+            this.options[attr] = val;
         } else {
-            return this.techGet(prop);
+            return this.techGet(attr);
         }
     };
 });
 
-exports['default'] = Player;
+_html5Attrs.HTML5_READONLY_ATTRS.forEach(function (attr) {
+    Player.prototype[attr] = function () {
+        return this.techGet(attr);
+    };
+});
 
-},{"./events/evented":8,"./events/events":9,"./html5/fullscreen":10,"./html5/html5":11,"./plugin/component":14,"./plugin/media-source-handler":15,"./plugin/plugin":18,"./plugin/plugin-types":17,"./utils/computed-style":19,"./utils/dom":20,"./utils/feature-detector":21,"./utils/log":24,"./utils/obj":27,"./utils/to-title-case":30,"global/document":2,"lodash.includes":5}],14:[function(require,module,exports){
+},{"./events/evented":8,"./events/events":9,"./html5/fullscreen":10,"./html5/html5":13,"./html5/html5-attrs":11,"./html5/html5-events":12,"./plugin/component":16,"./plugin/media-source-handler":17,"./plugin/plugin":20,"./plugin/plugin-types":19,"./utils/computed-style":21,"./utils/dom":22,"./utils/feature-detector":23,"./utils/log":25,"./utils/obj":28,"./utils/to-title-case":30,"global/document":2,"lodash.includes":5}],16:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -3522,7 +3108,7 @@ var Component = function () {
 
 exports['default'] = Component;
 
-},{"../events/evented":8,"../events/events":9,"../utils/dom":20,"../utils/to-camel-case":29,"./plugin-store":16,"./plugin-types":17}],15:[function(require,module,exports){
+},{"../events/evented":8,"../events/events":9,"../utils/dom":22,"../utils/to-camel-case":29,"./plugin-store":18,"./plugin-types":19}],17:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -3600,7 +3186,7 @@ var MediaSourceHandler = function () {
 
 exports['default'] = MediaSourceHandler;
 
-},{"./plugin-store":16,"./plugin-types":17,"array-find":1}],16:[function(require,module,exports){
+},{"./plugin-store":18,"./plugin-types":19,"array-find":1}],18:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -3717,7 +3303,7 @@ exports['default'] = {
     }
 };
 
-},{"../utils/guid":23,"../utils/to-camel-case":29,"./component":14,"./media-source-handler":15,"./plugin":18,"./plugin-types":17,"lodash.values":6}],17:[function(require,module,exports){
+},{"../utils/guid":24,"../utils/to-camel-case":29,"./component":16,"./media-source-handler":17,"./plugin":20,"./plugin-types":19,"lodash.values":6}],19:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -3733,7 +3319,7 @@ exports['default'] = {
   OTHERS: 'plugin'
 };
 
-},{}],18:[function(require,module,exports){
+},{}],20:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -3796,7 +3382,7 @@ var Plugin = function () {
 
 exports['default'] = Plugin;
 
-},{"./plugin-store":16,"./plugin-types":17}],19:[function(require,module,exports){
+},{"./plugin-store":18,"./plugin-types":19}],21:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -3835,7 +3421,7 @@ function computedStyle(el, prop) {
    * @date 2017/11/3
    */
 
-},{"global/window":3}],20:[function(require,module,exports){
+},{"global/window":3}],22:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -4551,7 +4137,7 @@ var $ = exports.$ = createQuerier('querySelector');
  */
 var $$ = exports.$$ = createQuerier('querySelectorAll');
 
-},{"./computed-style":19,"./obj":27,"global/document":2,"global/window":3,"lodash.includes":5}],21:[function(require,module,exports){
+},{"./computed-style":21,"./obj":28,"global/document":2,"global/window":3,"lodash.includes":5}],23:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -4570,63 +4156,7 @@ exports['default'] = {
     * @date 2018/3/8
     */
 
-},{"global/document":2}],22:[function(require,module,exports){
-'use strict';
-
-exports.__esModule = true;
-exports.bind = bind;
-exports.throttle = throttle;
-
-var _guid = require('./guid');
-
-/**
- * 绑定函数到指定的上下文
- *
- * @todo videojs 在返回的函数上还加了 guid 做更加个性化的处理，目前暂时用不上就没写
- *
- * @param {Funtion} fn 要绑定上下文的函数
- * @param {Object} thisArg 函数要绑定的上下文
- * @return {Function} 该函数会在指定的上下文中执行
- */
-function bind(fn, thisArg) {
-    if (!fn.guid) {
-        fn.guid = (0, _guid.newGUID)();
-    }
-
-    return function () {
-        for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
-            args[_key] = arguments[_key];
-        }
-
-        return fn.apply(thisArg, args);
-    };
-}
-
-/**
- * 限制函数的执行的频率
- *
- * @param {Function} fn 要控制执行频率的函数
- * @param {number} wait 函数的执行间隔大于等于此数值（单位：ms）
- * @return {Funtion} 限制了执行频率的函数
- */
-/**
- * @file fn.js 函数相关的一些方法
- * @author yuhui06@baidu.com
- * @date 2017/11/3
- */
-
-function throttle(fn, wait) {
-    var lastTimestamp = Date.now();
-    return function () {
-        var now = Date.now();
-        if (now - lastTimestamp >= wait) {
-            fn.apply(undefined, arguments);
-            lastTimestamp = now;
-        }
-    };
-}
-
-},{"./guid":23}],23:[function(require,module,exports){
+},{"global/document":2}],24:[function(require,module,exports){
 "use strict";
 
 exports.__esModule = true;
@@ -4637,7 +4167,6 @@ exports.newGUID = newGUID;
  * @date 2017/11/3
  */
 
-// guid 从 1 开始
 var guid = 1;
 
 /**
@@ -4649,7 +4178,7 @@ function newGUID() {
   return guid++;
 }
 
-},{}],24:[function(require,module,exports){
+},{}],25:[function(require,module,exports){
 "use strict";
 
 exports.__esModule = true;
@@ -4694,7 +4223,7 @@ log.error = console.error;
 
 log.clear = console.clear;
 
-},{}],25:[function(require,module,exports){
+},{}],26:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -4717,7 +4246,7 @@ exports['default'] = {
     'wmv': 'video/x-ms-wmv'
 };
 
-},{}],26:[function(require,module,exports){
+},{}],27:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -4807,7 +4336,7 @@ function nomalizeSource(source) {
     }
 }
 
-},{"./mime-type-map":25,"./obj":27}],27:[function(require,module,exports){
+},{"./mime-type-map":26,"./obj":28}],28:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
@@ -4865,65 +4394,6 @@ function each(obj, fn) {
   });
 }
 
-},{}],28:[function(require,module,exports){
-'use strict';
-
-exports.__esModule = true;
-exports['default'] = timeFormat;
-/**
- * @file time-format.js 将秒数格式化为指定的时间字符串形式
- * @author yuhui<yuhui06@baidu.com>
- * @date 2017/11/3
- */
-
-/**
- * 将秒数格式化为 hh:mm:ss 的形式
- *
- * @param {number} seconds 要转化的秒数
- * @return {string} 格式化后的表示时间的字符串
- */
-
-/**
- * 不足两位的时间，前面补零
- *
- * @inner
- *
- * @param {string|number} val 该段位的时间（如 1h 12h 23m 1s）
- * @return {string} 进行过不足两位前面补零操作的时间串
- */
-function pad(val) {
-    val = '' + val;
-    if (val.length < 2) {
-        val = '0' + val;
-    }
-
-    return val;
-}
-
-/**
- * 将传入的秒数格式化为 hh:mm:ss 的形式，如果不足一小时，则为 mm:ss 的形式
- *
- * @param {number} seconds 总秒数
- * @return {string} 格式化后的时间串
- */
-function timeFormat(seconds) {
-    seconds = parseInt(seconds, 10);
-    if (!isNaN(seconds)) {
-        var hour = Math.floor(seconds / 3600);
-        var minute = Math.floor((seconds - hour * 3600) / 60);
-        var second = seconds % 60;
-
-        var result = [pad(minute), pad(second)];
-        if (hour > 0) {
-            result.unshift(pad(hour));
-        }
-
-        return result.join(':');
-    } else {
-        return '- -';
-    }
-}
-
 },{}],29:[function(require,module,exports){
 'use strict';
 
@@ -4949,7 +4419,6 @@ function toCamelCase(str) {
 
 exports.__esModule = true;
 exports['default'] = toTitleCase;
-exports.titleCaseEquals = titleCaseEquals;
 /**
  * @file to-title-case.js
  * @author yuhui06@baidu.com
@@ -4967,28 +4436,29 @@ function toTitleCase(str) {
     return str;
   }
 
-  // let [firstChar, ...otherChars] = [...str];
-  // return firstChar.toUpperCase() + otherChars.join('');
-
-  // return [...str].map((value, index) => (index === 0 ? value.toUpperCase() : value)).join('');
   return str.charAt(0).toUpperCase() + str.slice(1);
-}
-
-/**
- * 比较两个字符串在首字母大写的情况下是否相等
- *
- * @param {string} str1 待比较的字符串
- * @param {string} str2 待比较的字符串
- * @return {boolean} 两个字符串在首字母大写后是否相等
- */
-function titleCaseEquals(str1, str2) {
-  return toTitleCase(str1) === toTitleCase(str2);
 }
 
 },{}],31:[function(require,module,exports){
 'use strict';
 
 exports.__esModule = true;
+
+var _arrayFind = require('array-find');
+
+var _arrayFind2 = _interopRequireDefault(_arrayFind);
+
+var _lodash = require('lodash.includes');
+
+var _lodash2 = _interopRequireDefault(_lodash);
+
+var _lodash3 = require('lodash.values');
+
+var _lodash4 = _interopRequireDefault(_lodash3);
+
+var _objectAssign = require('object-assign');
+
+var _objectAssign2 = _interopRequireDefault(_objectAssign);
 
 var _computedStyle = require('./computed-style');
 
@@ -4997,10 +4467,6 @@ var _computedStyle2 = _interopRequireDefault(_computedStyle);
 var _featureDetector = require('./feature-detector');
 
 var _featureDetector2 = _interopRequireDefault(_featureDetector);
-
-var _fn = require('./fn');
-
-var fn = _interopRequireWildcard(_fn);
 
 var _guid = require('./guid');
 
@@ -5013,10 +4479,6 @@ var _mimeTypeMap2 = _interopRequireDefault(_mimeTypeMap);
 var _obj = require('./obj');
 
 var obj = _interopRequireWildcard(_obj);
-
-var _timeFormat = require('./time-format');
-
-var _timeFormat2 = _interopRequireDefault(_timeFormat);
 
 var _toCamelCase = require('./to-camel-case');
 
@@ -5031,20 +4493,22 @@ function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj;
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
 
 exports['default'] = {
+    find: _arrayFind2['default'],
+    includes: _lodash2['default'],
+    values: _lodash4['default'],
+    assign: _objectAssign2['default'],
     computedStyle: _computedStyle2['default'],
     featureDetector: _featureDetector2['default'],
-    fn: fn,
     guid: guid,
     mimeTypeMap: _mimeTypeMap2['default'],
     obj: obj,
-    timeFormat: _timeFormat2['default'],
     toCamelCase: _toCamelCase2['default'],
     toTitleCase: _toTitleCase2['default']
 }; /**
-    * @file 整合 utils 各方法，方便对外输出
+    * @file 整合 utils 方法，对外输出
     * @author yuhui06
     * @date 2018/5/6
     */
 
-},{"./computed-style":19,"./feature-detector":21,"./fn":22,"./guid":23,"./mime-type-map":25,"./obj":27,"./time-format":28,"./to-camel-case":29,"./to-title-case":30}]},{},[12])(12)
+},{"./computed-style":21,"./feature-detector":23,"./guid":24,"./mime-type-map":26,"./obj":28,"./to-camel-case":29,"./to-title-case":30,"array-find":1,"lodash.includes":5,"lodash.values":6,"object-assign":7}]},{},[14])(14)
 });
