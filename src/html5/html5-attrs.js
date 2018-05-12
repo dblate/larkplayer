@@ -4,7 +4,6 @@
  * @date 2018/5/11
  * @see https://www.w3.org/TR/html5/semantics-embedded-content.html#the-media-elements
  * @see https://www.w3.org/TR/html5/semantics-embedded-content.html#the-video-element
- * @todo player 对应方法的文档
  */
 
 export const HTML5_WRITABLE_ATTRS = [
@@ -53,3 +52,5 @@ export const HTML5_READONLY_ATTRS = [
 ];
 
 export default [].concat(HTML5_WRITABLE_ATTRS, HTML5_READONLY_ATTRS);
+
+
