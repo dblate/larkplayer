@@ -26,9 +26,9 @@ import computedStyle from './utils/computed-style';
 import featureDetector from './utils/feature-detector';
 
 /**
- * @class Player
+ * @class
  */
-export default class Player {
+class Player {
 
     /**
      * 初始化一个播放器实例
@@ -758,6 +758,126 @@ export default class Player {
     }
 }
 
+/**
+ * @function poster
+ * @description 获取或设置 poster 的值
+ * @memberof Player
+ * @instance
+ *
+ * @param {string=} poster 封面图
+ * @return {boolean} 不传参时返回当前 poster 的值
+ */
+
+/**
+ * @function preload
+ * @description 获取或设置 preload 的值
+ * @memberof Player
+ * @instance
+ *
+ * @param {string=} preload 自动下载策略，可选值为 none, metadata, auto
+ * @return {boolean} 不传参时返回当前 preload 的值
+ */
+
+/**
+ * @function autoplay
+ * @description 获取或设置 autoplay 的值
+ * @memberof Player
+ * @instance
+ *
+ * @param {boolean=} autoplay 是否自动播放，默认 false，由于浏览器策略，移动端大多无法自动播放
+ * @return {boolean} 不传参时返回当前 autoplay 的值
+ */
+
+/**
+ * @function loop
+ * @description 获取或设置 loop 的值
+ * @memberof Player
+ * @instance
+ *
+ * @param {boolean=} loop 是否循环播放，默认 false
+ * @return {boolean} 不传参时返回当前 loop 的值
+ */
+
+/**
+ * @function muted
+ * @description 获取或设置 muted 的值
+ * @memberof Player
+ * @instance
+ *
+ * @param {boolean=} muted 是否静音，默认 false
+ * @return {boolean} 不传参时返回当前 muted 的值
+ */
+
+/**
+ * @function defaultMuted
+ * @description 获取或设置 defaultMuted 的值
+ * @memberof Player
+ * @instance
+ *
+ * @param {boolean=} defaultMuted 是否默认静音，默认 false
+ * @return {boolean} 不传参时返回当前 defaultMuted 的值
+ */
+
+/**
+ * @function controls
+ * @description 获取或设置 controls 的值
+ * @memberof Player
+ * @instance
+ *
+ * @param {boolean=} controls 是否显示控制条，默认 false
+ * @return {boolean} 不传参时返回当前 controls 的值
+ */
+
+/**
+ * @function controlsList
+ * @description 获取或设置 controlsList 的值
+ * @memberof Player
+ * @instance
+ *
+ * @param {string=} controlsList 对控制条的一些设置，可选值为 nodownload, nofullscreen, noremoteplayback
+ *     比如 'nodownload nofullscreen'
+ * @return {DOMTokenList} 不传参时返回当前 controlsList 的值
+ */
+
+/**
+ * @function playsinline
+ * @description 获取或设置 playsinline 的值
+ * @memberof Player
+ * @instance
+ *
+ * @param {boolean=} playsinline 是否内联播放，IOS10 及以上有效，默认 false
+ * @return {boolean} 不传参时返回当前 playsinline 的值
+ */
+
+/**
+ * @function playbackRate
+ * @description 获取或设置 playbackRate 的值
+ * @memberof Player
+ * @instance
+ *
+ * @param {boolean=} playbackRate 播放速率，默认为 1.0
+ * @return {boolean} 不传参时返回当前 playbackRate 的值
+ */
+
+/**
+ * @function defaultPlaybackRate
+ * @description 获取或设置 defaultPlaybackRate 的值
+ * @memberof Player
+ * @instance
+ *
+ * @param {boolean=} defaultPlaybackRate 默认播放速率，默认为 1.0
+ * @return {boolean} 不传参时返回当前 defaultPlaybackRate 的值
+ */
+
+/**
+ * @function volume
+ * @description 获取或设置 volume 的值
+ * @memberof Player
+ * @instance
+ *
+ * @param {boolean=} volume 播放速率，默认为 1，可选值为 0~1
+ * @return {boolean} 不传参时返回当前 volume 的值
+ */
 HTML5_WRITABLE_ATTRS
     .filter(attr => !includes(['src', 'currentTime', 'width', 'height'], attr))
     .forEach(attr => {
@@ -771,11 +891,132 @@ HTML5_WRITABLE_ATTRS
         };
     });
 
+/**
+ * @function error
+ * @description 获取 error 的值
+ * @memberof Player
+ * @instance
+ *
+ * @return {MediaError|null} 出错时返回 MediaError 对象，否则返回 null
+ * @see https://html.spec.whatwg.org/multipage/media.html#mediaerror
+ */
+
+/**
+ * @function currentSrc
+ * @description 获取 currentSrc 的值
+ * @memberof Player
+ * @instance
+ *
+ * @return {string} 当前视频链接
+ */
+
+/**
+ * @function networkState
+ * @description 获取 networkState 的值
+ * @memberof Player
+ * @instance
+ *
+ * @return {number} 当前播放器的网络状态
+ * @see https://html.spec.whatwg.org/multipage/media.html#network-states
+ */
+
+/**
+ * @function buffered
+ * @description 获取 buffered 的值
+ * @memberof Player
+ * @instance
+ *
+ * @return {TimeRanges} 当前已缓冲的区间
+ * @see https://html.spec.whatwg.org/multipage/media.html#dom-media-buffered
+ */
+
+/**
+ * @function readyState
+ * @description 获取 readyState 的值
+ * @memberof Player
+ * @instance
+ *
+ * @return {number} 当前 readyState 的值
+ * @see https://html.spec.whatwg.org/multipage/media.html#dom-media-readystate
+ */
+
+/**
+ * @function seeking
+ * @description 获取 seeking 的值
+ * @memberof Player
+ * @instance
+ *
+ * @return {boolean} seeking
+ * @see https://html.spec.whatwg.org/multipage/media.html#dom-media-seek
+ */
+
+/**
+ * @function duration
+ * @description 获取 duration 的值
+ * @memberof Player
+ * @instance
+ *
+ * @return {number|NaN} 视频总时长
+ */
+
+/**
+ * @function paused
+ * @description 获取 paused 的值
+ * @memberof Player
+ * @instance
+ *
+ * @return {boolean} 当前是否处于暂停状态
+ */
+
+/**
+ * @function played
+ * @description 获取 played 的值
+ * @memberof Player
+ * @instance
+ *
+ * @return {TimeRanges} 当前真正已播放过的时间范围，假设从时刻 A 直接跳到 B，A B 之间的时间并不算已经播放过
+ */
+
+/**
+ * @function seekable
+ * @description 获取 seekable 的值
+ * @memberof Player
+ * @instance
+ *
+ * @return {TimeRanges} 当前可流畅切换的时间范围
+ */
+
+/**
+ * @function ended
+ * @description 获取 ended 的值
+ * @memberof Player
+ * @instance
+ *
+ * @return {boolean} 是否已播放完成
+ */
+
+/**
+ * @function videoWidth
+ * @description 获取 videoWidth 的值
+ * @memberof Player
+ * @instance
+ *
+ * @return {number|NaN} 视频原始宽度（注意不是播放器宽度）
+ */
+
+/**
+ * @function videoHeight
+ * @description 获取 videoHeight 的值
+ * @memberof Player
+ * @instance
+ *
+ * @return {number|NaN} 视频原始高度（注意不是播放器高度）
+ */
 HTML5_READONLY_ATTRS.forEach(attr => {
     Player.prototype[attr] = function () {
         return this.techGet(attr);
     }
 });
 
-
+export default Player;
 
