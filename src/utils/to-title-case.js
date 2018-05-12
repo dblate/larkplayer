@@ -5,7 +5,8 @@
  */
 
 /**
- * 将字符串的首字母大写
+ * @function toTitleCase
+ * @description 将字符串的首字母大写
  *
  * @param {string} str 要将首字母大写的字符串
  * @return {string} 首字母大写的字符串
