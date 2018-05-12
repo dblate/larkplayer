@@ -37,12 +37,9 @@ function normalize(el, options = {}, readyFn = function () {}) {
 }
 
 function larkplayer(el, options, readyFn) {
-    if (!Html5.isSupported()) {
-        el.innerHTML = '请升级或更换浏览器以支持 html5 视频播放';
-        return false;
-    }
-
-    return new Player(...normalize(el, options, readyFn));
+    return Html5.isSupported()
+        ? new Player(...normalize(el, options, readyFn))
+        : false;
 }
 
 assign(larkplayer, {Events, DOM, Component, MediaSourceHandler, Plugin, util});

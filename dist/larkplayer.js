@@ -1615,7 +1615,6 @@ exports.__esModule = true;
  * @date 2018/5/11
  * @see https://www.w3.org/TR/html5/semantics-embedded-content.html#the-media-elements
  * @see https://www.w3.org/TR/html5/semantics-embedded-content.html#the-video-element
- * @todo player 对应方法的文档
  */
 
 var HTML5_WRITABLE_ATTRS = exports.HTML5_WRITABLE_ATTRS = ['src', 'crossOrigin', 'poster', 'preload', 'autoplay', 'loop', 'muted', 'defaultMuted', 'controls', 'controlsList', 'width', 'height', 'playsinline', 'playbackRate', 'defaultPlaybackRate', 'volume', 'currentTime'];
@@ -1635,94 +1634,9 @@ exports.__esModule = true;
  * @author yuhui06
  * @date 2018/5/10
  * @see https://www.w3.org/TR/html5/semantics-embedded-content.html#media-elements-event-summary
- * @todo 移到这里后，player event 的文档怎么办？
  */
 
-exports['default'] = ['loadstart',
-
-/**
- * 浏览器停止获取数据时触发
- *
- * @event Player#suspend
- * @param {Object} event 事件触发时浏览器自带的 event 对象
- */
-'suspend',
-
-/**
- * 浏览器在视频下载完成前停止下载时触发。但并不是因为出错，出错时触发 error 事件而不是 abort。
- * 往往是人为的停止下载，比如删除 src
- *
- * @event Player#abort
- * @param {Object} event 事件触发时浏览器自带的 event 对象
- */
-'abort', 'error',
-
-/**
- * 视频被清空时触发
- *
- * @event Player#emptied
- * @param {Object} event 事件触发时浏览器自带的 event 对象
- */
-'emptied',
-
-/**
- * 浏览器获取数据时，数据并没有正常返回时触发
- *
- * @event Player#stalled
- * @param {Object} event 事件触发时浏览器自带的 event 对象
- */
-'stalled',
-
-/**
- * 播放器成功获取到视频总时长、高宽、字幕等信息时触发
- *
- * @event Player#loadedmetadata
- * @param {Object} event 事件触发时浏览器自带的 event 对象
- */
-'loadedmetadata',
-
-/**
- * 播放器第一次能够渲染当前帧时触发
- *
- * @event Player#loadeddata
- * @param {Object} event 事件触发时浏览器自带的 event 对象
- */
-'loadeddata', 'canplay', 'canplaythrough', 'playing', 'waiting', 'seeking', 'seeked', 'ended', 'durationchange', 'timeupdate',
-
-/**
- * 浏览器获取数据的过程中触发
- *
- * @event Player#progress
- * @param {Object} event 事件触发时浏览器自带的 event 对象
- */
-'progress', 'play', 'pause',
-
-/**
- * 视频播放速率改变时触发
- *
- * @event Player#ratechange
- * @param {Object} event 事件触发时浏览器自带的 event 对象
- */
-'ratechange',
-
-/**
- * 视频本身的高宽发生改变时触发，注意不是播放器的高度（比如调整播放器的高宽和全屏不会触发 resize 事件）
- *
- * 这里还不是太清楚，有需要的话看看 w3c 文档吧
- *
- * @see https://html.spec.whatwg.org/#dom-video-videowidth
- * @event Player#resize
- * @param {Object} event 事件触发时浏览器自带的 event 对象
- */
-'resize',
-
-/**
- * 视频声音大小改变时触发
- *
- * @event Player#volumechange
- * @param {Object} event 事件触发时浏览器自带的 event 对象
- */
-'volumechange'];
+exports['default'] = ['loadstart', 'suspend', 'abort', 'error', 'emptied', 'stalled', 'loadedmetadata', 'loadeddata', 'canplay', 'canplaythrough', 'playing', 'waiting', 'seeking', 'seeked', 'ended', 'durationchange', 'timeupdate', 'progress', 'play', 'pause', 'ratechange', 'resize', 'volumechange'];
 
 },{}],13:[function(require,module,exports){
 'use strict';
@@ -2053,12 +1967,7 @@ function normalize(el) {
    */
 
 function larkplayer(el, options, readyFn) {
-    if (!_html2['default'].isSupported()) {
-        el.innerHTML = '请升级或更换浏览器以支持 html5 视频播放';
-        return false;
-    }
-
-    return new (Function.prototype.bind.apply(_player2['default'], [null].concat(normalize(el, options, readyFn))))();
+    return _html2['default'].isSupported() ? new (Function.prototype.bind.apply(_player2['default'], [null].concat(normalize(el, options, readyFn))))() : false;
 }
 
 (0, _objectAssign2['default'])(larkplayer, { Events: Events, DOM: DOM, Component: _component2['default'], MediaSourceHandler: _mediaSourceHandler2['default'], Plugin: _plugin2['default'], util: _utils2['default'] });
@@ -2151,7 +2060,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
                                                                                                                                                            */
 
 /**
- * @class Player
+ * @class
  */
 var Player = function () {
 
@@ -2159,7 +2068,7 @@ var Player = function () {
      * 初始化一个播放器实例
      *
      * @constructor
-     * @param {Element|string} tag DOM 元素或其 id，如果是 video 标签，会自动获取其属性
+     * @param {Element|string} tag DOM 元素或其 id（如果是 video 标签，会将其已有属性作为参数）
      * @param {Object=} options 配置项，可选
      * @param {number=} options.height 播放器高度
      * @param {number=} options.width 播放器宽度
@@ -2169,7 +2078,7 @@ var Player = function () {
      * @param {number=} options.playbackRate 视频播放速率，默认 1.0
      * @param {number=} options.defaultPlaybackRate 视频默认播放速率，默认 1.0
      * @param {number=} options.volume 声音大小，默认 1，取值应在 0~1
-     * @param {boolean=} options.muted 是否静音
+     * @param {boolean=} options.muted 是否静音，默认 false
      * @param {boolean=} options.playsinline 是否使用内联的形式播放（即非全屏的形式），默认 true。仅 ios10 以上有效，在 ios10 以下，视频播放时会自动进入全屏
      * @param {string=} options.poster 视频封面
      * @param {string=} options.preload 视频预先下载资源的设置，可选值有以下 3 种（当然就算你设置了以下 3 种，最终结果也不一定符合预期，毕竟浏览器嘛，你懂的）
@@ -2281,15 +2190,17 @@ var Player = function () {
     Player.prototype.ready = function ready(fn) {
         var _this3 = this;
 
-        if (fn) {
-            if (this.isReady) {
-                setTimeout(function () {
-                    fn.call(_this3);
-                }, 1);
-            } else {
-                this.readyQueue = this.readyQueue || [];
-                this.readyQueue.push(fn);
-            }
+        if (typeof fn !== 'function') {
+            return;
+        }
+
+        if (this.isReady) {
+            setTimeout(function () {
+                return fn.call(_this3);
+            }, 1);
+        } else {
+            this.readyQueue = this.readyQueue || [];
+            this.readyQueue.push(fn);
         }
     };
 
@@ -2821,7 +2732,7 @@ var Player = function () {
     };
 
     /**
-     * 加载当前视频的资源
+     * 加载当前视频的资源，一般不需手动调用，链接更新时会自动加载
      */
 
 
@@ -2937,13 +2848,6 @@ var Player = function () {
     Player.prototype.source = function source(_source) {
         if (_source !== undefined) {
             this.techCall('source', _source);
-
-            /**
-             * srcchange 时触发
-             *
-             * @event Player#srcchange
-             * @param {string} src 更换后的视频地址
-             */
             this.trigger('srcchange', { detail: this.player.src() });
         } else {
             return this.techGet('source');
@@ -2952,9 +2856,6 @@ var Player = function () {
 
     return Player;
 }();
-
-exports['default'] = Player;
-
 
 _html5Attrs.HTML5_WRITABLE_ATTRS.filter(function (attr) {
     return !(0, _lodash2['default'])(['src', 'currentTime', 'width', 'height'], attr);
@@ -2974,6 +2875,405 @@ _html5Attrs.HTML5_READONLY_ATTRS.forEach(function (attr) {
         return this.techGet(attr);
     };
 });
+
+exports['default'] = Player;
+
+// Generate HTML5_WRITABLE_ATTRS docs
+/**
+ * @function poster
+ * @description 获取或设置 poster 的值
+ * @memberof Player
+ * @instance
+ *
+ * @param {string=} poster 封面图
+ * @return {boolean} 不传参时返回当前 poster 的值
+ */
+
+/**
+ * @function preload
+ * @description 获取或设置 preload 的值
+ * @memberof Player
+ * @instance
+ *
+ * @param {string=} preload 自动下载策略，可选值为 none, metadata, auto
+ * @return {boolean} 不传参时返回当前 preload 的值
+ */
+
+/**
+ * @function autoplay
+ * @description 获取或设置 autoplay 的值
+ * @memberof Player
+ * @instance
+ *
+ * @param {boolean=} autoplay 是否自动播放，默认 false，由于浏览器策略，移动端大多无法自动播放
+ * @return {boolean} 不传参时返回当前 autoplay 的值
+ */
+
+/**
+ * @function loop
+ * @description 获取或设置 loop 的值
+ * @memberof Player
+ * @instance
+ *
+ * @param {boolean=} loop 是否循环播放，默认 false
+ * @return {boolean} 不传参时返回当前 loop 的值
+ */
+
+/**
+ * @function muted
+ * @description 获取或设置 muted 的值
+ * @memberof Player
+ * @instance
+ *
+ * @param {boolean=} muted 是否静音，默认 false
+ * @return {boolean} 不传参时返回当前 muted 的值
+ */
+
+/**
+ * @function defaultMuted
+ * @description 获取或设置 defaultMuted 的值
+ * @memberof Player
+ * @instance
+ *
+ * @param {boolean=} defaultMuted 是否默认静音，默认 false
+ * @return {boolean} 不传参时返回当前 defaultMuted 的值
+ */
+
+/**
+ * @function controls
+ * @description 获取或设置 controls 的值
+ * @memberof Player
+ * @instance
+ *
+ * @param {boolean=} controls 是否显示控制条，默认 false
+ * @return {boolean} 不传参时返回当前 controls 的值
+ */
+
+/**
+ * @function controlsList
+ * @description 获取或设置 controlsList 的值
+ * @memberof Player
+ * @instance
+ *
+ * @param {string=} controlsList 对控制条的一些设置，可选值为 nodownload, nofullscreen, noremoteplayback
+ *     比如 'nodownload nofullscreen'
+ * @return {external:DOMTokenList} 不传参时返回当前 controlsList 的值
+ */
+
+/**
+ * @function playsinline
+ * @description 获取或设置 playsinline 的值
+ * @memberof Player
+ * @instance
+ *
+ * @param {boolean=} playsinline 是否内联播放，IOS10 及以上有效，默认 true
+ * @return {boolean} 不传参时返回当前 playsinline 的值
+ */
+
+/**
+ * @function playbackRate
+ * @description 获取或设置 playbackRate 的值
+ * @memberof Player
+ * @instance
+ *
+ * @param {boolean=} playbackRate 播放速率，默认为 1.0
+ * @return {boolean} 不传参时返回当前 playbackRate 的值
+ */
+
+/**
+ * @function defaultPlaybackRate
+ * @description 获取或设置 defaultPlaybackRate 的值
+ * @memberof Player
+ * @instance
+ *
+ * @param {boolean=} defaultPlaybackRate 默认播放速率，默认为 1.0
+ * @return {boolean} 不传参时返回当前 defaultPlaybackRate 的值
+ */
+
+/**
+ * @function volume
+ * @description 获取或设置 volume 的值
+ * @memberof Player
+ * @instance
+ *
+ * @param {boolean=} volume 播放速率，默认为 1，可选值为 0~1
+ * @return {boolean} 不传参时返回当前 volume 的值
+ */
+
+// Generate HTML5_READONLY_ATTRS docs
+/**
+ * @function error
+ * @description 获取 error 的值
+ * @memberof Player
+ * @instance
+ *
+ * @return {external:MediaError|null} 出错时返回 [MediaError]{@link https://developer.mozilla.org/en-US/docs/Web/API/MediaError} 对象，否则返回 null
+ * @see html spec [mediaerror]{@link https://html.spec.whatwg.org/multipage/media.html#mediaerror} for detail
+ */
+
+/**
+ * @function currentSrc
+ * @description 获取 currentSrc 的值
+ * @memberof Player
+ * @instance
+ *
+ * @return {string} 当前视频链接
+ */
+
+/**
+ * @function networkState
+ * @description 获取 networkState 的值
+ * @memberof Player
+ * @instance
+ *
+ * @return {number} 当前播放器的网络状态
+ * @see https://html.spec.whatwg.org/multipage/media.html#network-states
+ */
+
+/**
+ * @function buffered
+ * @description 获取 buffered 的值
+ * @memberof Player
+ * @instance
+ *
+ * @return {external:TimeRanges} 当前已缓冲的区间
+ */
+
+/**
+ * @function readyState
+ * @description 获取 readyState 的值
+ * @memberof Player
+ * @instance
+ *
+ * @return {number} 当前 readyState 的值
+ * @see html spec [dom-media-readystate]{@link https://html.spec.whatwg.org/multipage/media.html#dom-media-readystate} for detail
+ */
+
+/**
+ * @function seeking
+ * @description 获取 seeking 的值
+ * @memberof Player
+ * @instance
+ *
+ * @return {boolean} 播放器是否正在跳转到某一时刻
+ */
+
+/**
+ * @function duration
+ * @description 获取 duration 的值
+ * @memberof Player
+ * @instance
+ *
+ * @return {number|NaN} 视频总时长
+ */
+
+/**
+ * @function paused
+ * @description 获取 paused 的值
+ * @memberof Player
+ * @instance
+ *
+ * @return {boolean} 当前是否处于暂停状态
+ */
+
+/**
+ * @function played
+ * @description 获取 played 的值
+ * @memberof Player
+ * @instance
+ *
+ * @return {external:TimeRanges} 当前真正已播放过的时间范围，假设从时刻 A 直接跳到 B，A B 之间的时间并不算已经播放过
+ */
+
+/**
+ * @function seekable
+ * @description 获取 seekable 的值
+ * @memberof Player
+ * @instance
+ *
+ * @return {external:TimeRanges} 当前可流畅切换的时间范围
+ */
+
+/**
+ * @function ended
+ * @description 获取 ended 的值
+ * @memberof Player
+ * @instance
+ *
+ * @return {boolean} 是否已播放完成
+ */
+
+/**
+ * @function videoWidth
+ * @description 获取 videoWidth 的值
+ * @memberof Player
+ * @instance
+ *
+ * @return {number|NaN} 视频原始宽度（注意不是播放器宽度）
+ */
+
+/**
+ * @function videoHeight
+ * @description 获取 videoHeight 的值
+ * @memberof Player
+ * @instance
+ *
+ * @return {number|NaN} 视频原始高度（注意不是播放器高度）
+ */
+
+// Generate HTML5_EVENTS docs
+/**
+ * @event Player#loadstart
+ * @description The user agent begins looking for media data
+ * @see html spec [event-media-loadstart]{@link https://html.spec.whatwg.org/multipage/media.html#event-media-loadstart} for detail
+ */
+
+/**
+ * @event Player#suspend
+ * @description The user agent is intentionally not currently fetching media data
+ * @see html spec [event-media-suspend]{@link https://html.spec.whatwg.org/multipage/media.html#event-media-suspend} for detail
+ */
+
+/**
+ * @event Player#abort
+ * @description The user agent stops fetching the media data before it is completely downloaded, but not due to an error
+ * @see html spec [event-media-abort]{@link https://html.spec.whatwg.org/multipage/media.html#event-media-abort} for detail
+ */
+
+/**
+ * @event Player#error
+ * @description An error occurs while fetching the media data or the type of the resource is not supported media format
+ * @see html spec [event-media-error]{@link https://html.spec.whatwg.org/multipage/media.html#event-media-error} for detail
+ */
+
+/**
+ * @event Player#emptied
+ * @description A media element whose networkState was previously not in the NETWORK_EMPTY state has just switched to that state
+ * @see html spec [event-media-emptied]{@link https://html.spec.whatwg.org/multipage/media.html#event-media-emptied} for detail
+ */
+
+/**
+ * @event Player#stalled
+ * @description The user agent is trying to fetch media data, but data is unexpectedly not forthcoming
+ * @see html spec [event-media-stalled]{@link https://html.spec.whatwg.org/multipage/media.html#event-media-stalled} for detail
+ */
+
+/**
+ * @event Player#loadedmetadata
+ * @description The user agent has just determined the duration and dimensions of the media resource and the text tracks are ready
+ * @see html spec [event-media-loadedmetadata]{@link https://html.spec.whatwg.org/multipage/media.html#event-media-loadedmetadata} for detail
+ */
+
+/**
+ * @event Player#loadeddata
+ * @description The user agent can render the media data at the current playback position for the first time
+ * @see html spec [event-media-loadeddata]{@link https://html.spec.whatwg.org/multipage/media.html#event-media-loadeddata} for detail
+ */
+
+/**
+ * @event Player#canplay
+ * @description The user agent can resume playback of the media data, but estimates that if playback were to be started now, the media resource could not be rendered at the current playback rate up to its end without having to stop for further buffering of content
+ * @see html spec [event-media-canplay]{@link https://html.spec.whatwg.org/multipage/media.html#event-media-canplay} for detail
+ */
+
+/**
+ * @event Player#canplaythrough
+ * @description The user agent estimates that if playback were to be started now, the media resource could be rendered at the current playback rate all the way to its end without having to stop for further buffering
+ * @see html spec [event-media-canplaythrough]{@link https://html.spec.whatwg.org/multipage/media.html#event-media-canplaythrough} for detail
+ */
+
+/**
+ * @event Player#playing
+ * @description Playback is ready to start after having been paused or delayed due to lack of media data
+ * @see html spec [event-media-playing]{@link https://html.spec.whatwg.org/multipage/media.html#event-media-playing} for detail
+ */
+
+/**
+ * @event Player#waiting
+ * @description Playback has stopped because the next frame is not available, but the user agent expects that frame to become available in due course
+ * @see html spec [event-media-waiting]{@link https://html.spec.whatwg.org/multipage/media.html#event-media-waiting} for detail
+ */
+
+/**
+ * @event Player#seeking
+ * @description The seeking IDL attribute changed to true, and the user agent has started seeking to a new position
+ * @see html spec [event-media-seeking]{@link https://html.spec.whatwg.org/multipage/media.html#event-media-seeking} for detail
+ */
+
+/**
+ * @event Player#seeked
+ * @description The seeking IDL attribute changed to false after the current playback position was changed
+ * @see html spec [event-media-seeked]{@link https://html.spec.whatwg.org/multipage/media.html#event-media-seeked} for detail
+ */
+
+/**
+ * @event Player#ended
+ * @description Playback has stopped because the end of the media resource was reached
+ * @see html spec [event-media-ended]{@link https://html.spec.whatwg.org/multipage/media.html#event-media-ended} for detail
+ */
+
+/**
+ * @event Player#durationchange
+ * @description The duration attribute has just been updated
+ * @see html spec [event-media-durationchange]{@link https://html.spec.whatwg.org/multipage/media.html#event-media-durationchange} for detail
+ */
+
+/**
+ * @event Player#timeupdate
+ * @description The current playback position changed as part of normal playback or in an especially interesting way, for example discontinuously
+ * @see html spec [event-media-timeupdate]{@link https://html.spec.whatwg.org/multipage/media.html#event-media-timeupdate} for detail
+ */
+
+/**
+ * @event Player#progress
+ * @description The user agent is fetching media data
+ * @see html spec [event-media-progress]{@link https://html.spec.whatwg.org/multipage/media.html#event-media-progress} for detail
+ */
+
+/**
+ * @event Player#play
+ * @description The element is no longer paused. Fired after the play() method has returned, or when the autoplay attribute has caused playback to begin
+ * @see html spec [event-media-play]{@link https://html.spec.whatwg.org/multipage/media.html#event-media-play} for detail
+ */
+
+/**
+ * @event Player#pause
+ * @description The element has been paused. Fired after the pause() method has returned
+ * @see html spec [event-media-pause]{@link https://html.spec.whatwg.org/multipage/media.html#event-media-pause} for detail
+ */
+
+/**
+ * @event Player#ratechange
+ * @description Either the defaultPlaybackRate or the playbackRate attribute has just been updated
+ * @see https://html.spec.whatwg.org/multipage/media.html#event-media-ratechange
+ */
+
+/**
+ * @event Player#resize
+ * @description One or both of the videoWidth and videoHeight attributes have just been updated
+ * @see html spec [event-media-resize]{@link https://html.spec.whatwg.org/multipage/media.html#event-media-resize} for detail
+ */
+
+/**
+ * @event Player#volumechange
+ * @description Either the volume attribute or the muted attribute has changed. Fired after the relevant attribute's setter has returned
+ * @see html spec [event-media-volumechange]{@link https://html.spec.whatwg.org/multipage/media.html#event-media-volumechange} for detail
+ */
+
+/**
+ * @external TimeRanges
+ * @see https://developer.mozilla.org/en-US/docs/Web/API/TimeRanges
+ */
+
+/**
+ * @external DOMTokenList
+ * @see https://developer.mozilla.org/en-US/docs/Web/API/DOMTokenList
+ */
+
+/**
+ * @external MediaError
+ * @see https://developer.mozilla.org/en-US/docs/Web/API/MediaError
+ */
 
 },{"./events/evented":8,"./events/events":9,"./html5/fullscreen":10,"./html5/html5":13,"./html5/html5-attrs":11,"./html5/html5-events":12,"./plugin/component":16,"./plugin/media-source-handler":17,"./plugin/plugin":20,"./plugin/plugin-types":19,"./utils/computed-style":21,"./utils/dom":22,"./utils/feature-detector":23,"./utils/log":25,"./utils/obj":28,"./utils/to-title-case":30,"global/document":2,"lodash.includes":5}],16:[function(require,module,exports){
 'use strict';
@@ -4426,7 +4726,8 @@ exports['default'] = toTitleCase;
  */
 
 /**
- * 将字符串的首字母大写
+ * @function toTitleCase
+ * @description 将字符串的首字母大写
  *
  * @param {string} str 要将首字母大写的字符串
  * @return {string} 首字母大写的字符串

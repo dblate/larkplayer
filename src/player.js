@@ -148,15 +148,15 @@ class Player {
     }
 
     ready(fn) {
-        if (fn) {
-            if (this.isReady) {
-                setTimeout(() => {
-                    fn.call(this);
-                }, 1);
-            } else {
-                this.readyQueue = this.readyQueue || [];
-                this.readyQueue.push(fn);
-            }
+        if (typeof fn !== 'function') {
+            return;
+        }
+
+        if (this.isReady) {
+            setTimeout(() => fn.call(this), 1);
+        } else {
+            this.readyQueue = this.readyQueue || [];
+            this.readyQueue.push(fn);
         }
     }
 
