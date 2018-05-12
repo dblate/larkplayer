@@ -852,7 +852,7 @@ export default Player;
  *
  * @param {string=} controlsList 对控制条的一些设置，可选值为 nodownload, nofullscreen, noremoteplayback
  *     比如 'nodownload nofullscreen'
- * @return {DOMTokenList} 不传参时返回当前 controlsList 的值
+ * @return {external:DOMTokenList} 不传参时返回当前 controlsList 的值
  */
 
 /**
@@ -903,8 +903,8 @@ export default Player;
  * @memberof Player
  * @instance
  *
- * @return {MediaError|null} 出错时返回 MediaError 对象，否则返回 null
- * @see https://html.spec.whatwg.org/multipage/media.html#mediaerror
+ * @return {external:MediaError|null} 出错时返回 [MediaError]{@link https://developer.mozilla.org/en-US/docs/Web/API/MediaError} 对象，否则返回 null
+ * @see html spec [mediaerror]{@link https://html.spec.whatwg.org/multipage/media.html#mediaerror} for detail
  */
 
 /**
@@ -933,7 +933,6 @@ export default Player;
  * @instance
  *
  * @return {external:TimeRanges} 当前已缓冲的区间
- * @see https://html.spec.whatwg.org/multipage/media.html#dom-media-buffered
  */
 
 /**
@@ -943,7 +942,7 @@ export default Player;
  * @instance
  *
  * @return {number} 当前 readyState 的值
- * @see https://html.spec.whatwg.org/multipage/media.html#dom-media-readystate
+ * @see html spec [dom-media-readystate]{@link https://html.spec.whatwg.org/multipage/media.html#dom-media-readystate} for detail
  */
 
 /**
@@ -952,8 +951,7 @@ export default Player;
  * @memberof Player
  * @instance
  *
- * @return {boolean} seeking
- * @see https://html.spec.whatwg.org/multipage/media.html#dom-media-seek
+ * @return {boolean} 播放器是否正在跳转到某一时刻
  */
 
 /**
@@ -1163,5 +1161,16 @@ export default Player;
  * @external TimeRanges
  * @see https://developer.mozilla.org/en-US/docs/Web/API/TimeRanges
  */
+
+/**
+ * @external DOMTokenList
+ * @see https://developer.mozilla.org/en-US/docs/Web/API/DOMTokenList
+ */
+
+/**
+ * @external MediaError
+ * @see https://developer.mozilla.org/en-US/docs/Web/API/MediaError
+ */
+
 
 

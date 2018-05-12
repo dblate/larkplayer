@@ -11,12 +11,12 @@
     * [.muted([muted])](#Player+muted) ⇒ <code>boolean</code>
     * [.defaultMuted([defaultMuted])](#Player+defaultMuted) ⇒ <code>boolean</code>
     * [.controls([controls])](#Player+controls) ⇒ <code>boolean</code>
-    * [.controlsList([controlsList])](#Player+controlsList) ⇒ <code>DOMTokenList</code>
+    * [.controlsList([controlsList])](#Player+controlsList) ⇒ [<code>DOMTokenList</code>](https://developer.mozilla.org/en-US/docs/Web/API/DOMTokenList)
     * [.playsinline([playsinline])](#Player+playsinline) ⇒ <code>boolean</code>
     * [.playbackRate([playbackRate])](#Player+playbackRate) ⇒ <code>boolean</code>
     * [.defaultPlaybackRate([defaultPlaybackRate])](#Player+defaultPlaybackRate) ⇒ <code>boolean</code>
     * [.volume([volume])](#Player+volume) ⇒ <code>boolean</code>
-    * [.error()](#Player+error) ⇒ <code>MediaError</code> \| <code>null</code>
+    * [.error()](#Player+error) ⇒ [<code>MediaError</code>](https://developer.mozilla.org/en-US/docs/Web/API/MediaError) \| <code>null</code>
     * [.currentSrc()](#Player+currentSrc) ⇒ <code>string</code>
     * [.networkState()](#Player+networkState) ⇒ <code>number</code>
     * [.buffered()](#Player+buffered) ⇒ [<code>TimeRanges</code>](https://developer.mozilla.org/en-US/docs/Web/API/TimeRanges)
@@ -158,11 +158,11 @@
 
 <a name="Player+controlsList"></a>
 
-### player.controlsList([controlsList]) ⇒ <code>DOMTokenList</code>
+### player.controlsList([controlsList]) ⇒ [<code>DOMTokenList</code>](https://developer.mozilla.org/en-US/docs/Web/API/DOMTokenList)
 获取或设置 controlsList 的值
 
 **Kind**: instance method of [<code>Player</code>](#Player)  
-**Returns**: <code>DOMTokenList</code> - 不传参时返回当前 controlsList 的值  
+**Returns**: [<code>DOMTokenList</code>](https://developer.mozilla.org/en-US/docs/Web/API/DOMTokenList) - 不传参时返回当前 controlsList 的值  
 
 | Param | Type | Description |
 | --- | --- | --- |
@@ -218,12 +218,12 @@
 
 <a name="Player+error"></a>
 
-### player.error() ⇒ <code>MediaError</code> \| <code>null</code>
+### player.error() ⇒ [<code>MediaError</code>](https://developer.mozilla.org/en-US/docs/Web/API/MediaError) \| <code>null</code>
 获取 error 的值
 
 **Kind**: instance method of [<code>Player</code>](#Player)  
-**Returns**: <code>MediaError</code> \| <code>null</code> - 出错时返回 MediaError 对象，否则返回 null  
-**See**: https://html.spec.whatwg.org/multipage/media.html#mediaerror  
+**Returns**: [<code>MediaError</code>](https://developer.mozilla.org/en-US/docs/Web/API/MediaError) \| <code>null</code> - 出错时返回 [MediaError](https://developer.mozilla.org/en-US/docs/Web/API/MediaError) 对象，否则返回 null  
+**See**: html spec [mediaerror](https://html.spec.whatwg.org/multipage/media.html#mediaerror) for detail  
 <a name="Player+currentSrc"></a>
 
 ### player.currentSrc() ⇒ <code>string</code>
@@ -246,7 +246,6 @@
 
 **Kind**: instance method of [<code>Player</code>](#Player)  
 **Returns**: [<code>TimeRanges</code>](https://developer.mozilla.org/en-US/docs/Web/API/TimeRanges) - 当前已缓冲的区间  
-**See**: https://html.spec.whatwg.org/multipage/media.html#dom-media-buffered  
 <a name="Player+readyState"></a>
 
 ### player.readyState() ⇒ <code>number</code>
@@ -254,15 +253,14 @@
 
 **Kind**: instance method of [<code>Player</code>](#Player)  
 **Returns**: <code>number</code> - 当前 readyState 的值  
-**See**: https://html.spec.whatwg.org/multipage/media.html#dom-media-readystate  
+**See**: html spec [dom-media-readystate](https://html.spec.whatwg.org/multipage/media.html#dom-media-readystate) for detail  
 <a name="Player+seeking"></a>
 
 ### player.seeking() ⇒ <code>boolean</code>
 获取 seeking 的值
 
 **Kind**: instance method of [<code>Player</code>](#Player)  
-**Returns**: <code>boolean</code> - seeking  
-**See**: https://html.spec.whatwg.org/multipage/media.html#dom-media-seek  
+**Returns**: <code>boolean</code> - 播放器是否正在跳转到某一时刻  
 <a name="Player+duration"></a>
 
 ### player.duration() ⇒ <code>number</code> \| <code>NaN</code>
