@@ -8,7 +8,7 @@
 
 * 与某些大型库强绑定
     * 比如 jQuery React 等
-* 功能揉在一起
+* 功能无法拆解
     * 随着业务的发展，不断地功能叠加只会使播放器越来越难以维护和扩展
     * 不同场景需求不同
 
@@ -24,8 +24,7 @@
 
 ## 名词解释
 
-* MSE: [Media Source Extension](https://www.w3.org/TR/media-source/)
-* larkplayer: 播放器名称 :)
+* MSE: [Media Source Extension](https://www.w3.org/TR/media-source/), API allowing media data to be accessed from HTML video and audio elements
 
 ## 设计目标
 
