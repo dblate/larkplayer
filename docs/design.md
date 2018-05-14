@@ -2,25 +2,20 @@
 
 ## 背景
 
-业务发展需要
+调研社区播放器的时候，由于以下几点原因没有找到合适的：
 
-调研社区播放器，有挺多不错的播放器，但是有一些点不太适合我们：
+* 与一些大型库强绑定，比如 jQuery, React
+* 功能无法拆解，后续的扩展和维护必然受限
+* 有许多我们用不上的代码，50% 以上
 
-* 与某些大型库强绑定
-    * 比如 jQuery React 等
-* 功能无法拆解
-    * 随着业务的发展，不断地功能叠加只会使播放器越来越难以维护和扩展
-    * 不同场景需求不同
+也许是我们的业务太过简单，或是我有点死脑筋，我是觉得上面几点挺不爽的。比如我们想要做一套自己的样式，那播放器里自带的样式除了增加文件体积对我们毫无用处
 
-其实 [videojs](https://github.com/videojs) (还有几个类似的)做的挺不错，但是有几点让我觉得不太舒服：
+为什么不能像 lodash 那样，按需引用自己的功能就行了呢？
 
-* 核心模块中有一半以上的代码是我们用不上的（是有点死脑经哈 :) ）
-* UI 模块编写不方便
-    * UI 是用户最直观的感受之一，这不得不让我们重视
+larkplayer 便是为了解决以上几点问题
 
-那就自己动手，丰衣足食咯
-
-这并不意味着完全重新造轮子，我们可以直接复用社区已有的各种功能的优秀实现，然后在我们关心的方面多加雕琢即可
+造轮子是不可能的，这辈子是不可能造轮子的！larkplayer 虽是一款新的播放器，但是各项功能完全可以依赖社区已有实现
+一些集成在播放器里的功能我们根本用不上，而我们的又需要一套自定义的样式，因此原播放器里的样式除了增加文件体积外对我们毫无用处
 
 ## 名词解释
 
@@ -28,32 +23,15 @@
 
 ## 设计目标
 
-* 功能稳定且强大
-    * 尽量少出 bug
-    * 该有的功能得有
-* 灵活扩展
-    * 方便地添加／删除功能
-    * 方便地自定义 UI
+ 功能灵活拆解与扩展，使用者可以按需取用，渐进增强 可以按需
 
 ## 设计思路及折衷
 
 ### 设计思路
 
-对业务而言，播放器无非两部分：功能和样式
+将非必需的功能全部剥离出去，作为插件提供，larkplayer 本身只是一个核心，用户提供基本的使用以及提供插件扩展的机制
 
-两者本身的质量自然是不可忽视的，而另一方面就是如何让它们更灵活了。不管是自己用还是给别人用，场景总是在变的，在改变中存活下来甚至变得更好，这是最重要的
-
-功能和样式的质量只能看基本功了。而灵活方面，也已经早有先驱了，那就是 __插件的机制__
-
-从大的角度看，播放器以后将如下图一样，由主要模块和插件组成
-
-<img alt="larkplayer composition" src="http://baikebcs.bdimg.com/front-end/larkplayer/larkplayer-composition.png" >
-
-### 折衷
-
-这个折衷其实是名字的折衷
-
-按照上述设计思路，larkplayer 应该只包含核心功能，它的样式应该以 larkplayer-ui-default 之类的形势提供。但是播放器样式在我们业务中实在太常用了，因此打算将默认样式也包含在 larkplayer 中。同时我们提供一个 larkplayer-kernel(或者其他名字)，给那些完全不需要默认样式的情景
+将各个功能拆开解耦后，更利于维护和扩展。不过对于使用者而言，可能需要多引一些文件。不过这个也简单，可以将一些模块打包作为一个整体提供即可
 
 
 ## 设计
@@ -66,83 +44,31 @@
 
 如下图所示，播放器主要由以下几个模块组成：
 
-* Html5 处理 html5 video 兼容性问题，自定义 api
+* Html5 处理 html5 video 兼容性问题，基于 video 已有的方法，提供自定义 api
 * Event 事件机制，代理原生事件并提供自定义事件的能力
 * Plugin 插件机制，为不同类型的插件提供接口及运行机制
 * Helper 辅助模块
 
 <img alt="larkplayer player structure" src="http://baikebcs.bdimg.com/front-end/larkplayer/larkplayer-player-structure.png" >
 
+下面详细再介绍下 Event 和 Plugin 模块
 
-### 各模块介绍
+### Event 模块
 
-#### Html5
+由于大量的事件都是基于与用户交互，因此直接使用 DOM 的 Event 机制，而不是使用 EventEmitter 这一类自定义的触发和绑定方式
 
-* html5 video 兼容性处理，如全屏等
-* 自定义 api
-
-跟 Html5 类似，还可以建立一个 Flash 模块，然后再在上面搭一层，处理 Html5 和 Flash 的切换，即可同时支持这两种技术。但按照目前的趋势来看，不考虑支持 Flash
-
-#### Event
-
-Event 算是比较核心的一个模块。由于涉及到对原生事件的代理，因此跟 [EventEmitter](https://github.com/Olical/EventEmitter) 还是有所差别，还需要结合浏览器提供的事件（addEventLister 等）
-
-特点：
-
-* 代理系统事件
-    * 提供 on off one trigger 方法
-    * 能通过用户交互触发，也能手动触发
-* 允许自定义事件
-    * 自定义事件名及参数
-    * 有类似原生事件的冒泡机制（仅在 Event 绑定的元素和事件间有效）
-
-支持的参数，见 [player api 中 event 相关](https://github.com/dblate/larkplayer/blob/master/docs/player.md#Player+event_suspend)
-
-这里直接使用的 videojs 中的 event 实现，下面还是让我厚着脸皮来讲一下思路吧
-
-##### 总体介绍
-
-数据：
-
-有类似下面的结构即可，能通过元素找到对应的事件及回调函数
-
-```javascript
-{
-    el: {
-        click: [func1, func2],
-        mouseover: [func3]
-    }
-}
-```
-
-方法：
-
-* 通过对数据的查询与更新实现事件的手动绑定与触发
-* 通过浏览器提供的方法绑定事件，使得用户交互也可以触发
-* 设计与原生 event 对象类似的参数以实现冒泡的效果
-
-##### 流程图
+* 使用 addEventListener、removeEventListener 完成事件绑定与注销
+* 使用 CustomEvent 实现自定义事件功能
+* 使用 dispatchEvent 实现手动触发事件功能
 
 
-下面是 Events.on 的流程图
+### Plugin 模块
 
-<img alt="event on" src="http://baikebcs.bdimg.com/front-end/larkplayer/event-on.png" >
-
-
-下面是 Events.trigger 的流程图
-
-<img alt="event trigger" src="http://baikebcs.bdimg.com/front-end/larkplayer/event-trigger.png" >
-
-
-由于 off 与 on 类似，one 可以经由 on 与 off 简单组合实现，故不予详述
-
-### Plugin
-
-插件模块是命根子，目前插件分为 3 类：
+插件分为 3 类：
 
 * UI 插件，样式相关
 * MediaSource 插件，基于 MSE 提供更多视频格式支持
-* Plugin 其他插件
+* 其他插件
 
 
 #### UI 插件
@@ -264,17 +190,4 @@ __初始化时机__
 #### plugin store
 
 有负责插件存取的方法即可，不予详述
-
-### Helper
-
-Helper 这个名字不知道是否准确，拍脑袋想的
-
-主要包含含非核心的模块或工具函数
-
-* DOM: 操作 DOM 的一些便捷方法
-* Log: 记录软件运行过程中的一系列事件和状态
-    * 记录
-    * 读取
-* utils：工具函数集合
-
 
