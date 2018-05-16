@@ -26,41 +26,34 @@ Plugin:
     const Plugin = larkplayer.Plugin;
 
     // 编写插件
-    class SayItAtTheRightTime extends Plugin {
+    class Hello extends Plugin {
         constructor(player, options) {
             super(player, options);
 
-            this.say = this.say.bind(this);
-
-            if (this.options.eventName) {
-                this.player.on(eventName, this.say);
-            }
+            this.player.on('play', this.say);
         }
 
         say() {
-            alert(this.options.text || 'No thing to say, bye');
+            alert('hello!');
         }
 
         dispose() {
-            this.player.off(this.options.eventName, this.say);
+            this.player.off('play', this.say);
             super.dispose();
         }
     }
 
-    // 绑定插件
-    Plugin.register(SayItAtTheRightTime, {name: 'sayIt'});
+    // 注册插件
+    Plugin.register(Hello, {name: 'hello'});
 
-    // 传参
+    // 传参（当然这个例子不需要参数..）
     const player = larkplayer('video-el', {
         plugin: {
-            sayIt: {
-                eventName: 'firstplay',
-                text: 'hello'
-            }
+            hello: {}
         }
 
     });
 
-    // 访问插件
-    player.plugin.sayIt.say();
+    // 访问插件（插件一般都不需要手动访问 & 控制）
+    player.plugin.hello.say();
 ```
