@@ -103,7 +103,7 @@ const player = larkplayer('video-el');
 * fork 或 clone 代码到本地
 * 修改代码
 * 使用 [fecs](http://fecs.baidu.com/api) 检查 js 代码规范，并修复对应问题
-    * 在项目根目录下执行 fecs src/ （更多选项可参考 [fecs_eslint_wiki](https://github.com/ecomfe/fecs/wiki/ESLint)）
+    * 在项目根目录下执行 fecs src （更多选项可参考 [fecs_eslint_wiki](https://github.com/ecomfe/fecs/wiki/ESLint)）
     * 修复所有级别为 ERROR 的提示
     * 建议修复所有级别为 WARN 的提示
 * 提交 pull request
