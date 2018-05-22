@@ -4,6 +4,7 @@
 **Kind**: global class  
 
 * [Player](#Player)
+    * [new Player(tag, [options], [ready])](#new_Player_new)
     * [.poster([poster])](#Player+poster) ⇒ <code>boolean</code>
     * [.preload([preload])](#Player+preload) ⇒ <code>boolean</code>
     * [.autoplay([autoplay])](#Player+autoplay) ⇒ <code>boolean</code>
@@ -71,6 +72,32 @@
     * ["fullscreenchange" (data)](#Player+event_fullscreenchange)
     * ["fullscreenerror"](#Player+event_fullscreenerror)
     * ["srcchange" (src)](#Player+event_srcchange)
+
+<a name="new_Player_new"></a>
+
+### new Player(tag, [options], [ready])
+初始化一个播放器实例
+
+
+| Param | Type | Description |
+| --- | --- | --- |
+| tag | <code>Element</code> \| <code>string</code> | DOM 元素或其 id（如果是 video 标签，会将其已有属性作为参数） |
+| [options] | <code>Object</code> | 配置项，可选 |
+| [options.height] | <code>number</code> | 播放器高度 |
+| [options.width] | <code>number</code> | 播放器宽度 |
+| [options.loop] | <code>boolean</code> | 是否循环播放，默认 false |
+| [options.controls] | <code>boolean</code> | 是否有控制条，默认 false |
+| [options.controlsList] | <code>string</code> | 对原生控制条的一些设置，可选值为 nodownload nofullscreen noremoteplayback |
+| [options.playbackRate] | <code>number</code> | 视频播放速率，默认 1.0 |
+| [options.defaultPlaybackRate] | <code>number</code> | 视频默认播放速率，默认 1.0 |
+| [options.volume] | <code>number</code> | 声音大小，默认 1，取值应在 0~1 |
+| [options.muted] | <code>boolean</code> | 是否静音，默认 false |
+| [options.playsinline] | <code>boolean</code> | 是否使用内联的形式播放（即非全屏的形式），默认 true。仅 ios10 以上有效，在 ios10 以下，视频播放时会自动进入全屏 |
+| [options.poster] | <code>string</code> | 视频封面 |
+| [options.preload] | <code>string</code> | 视频预先下载资源的设置，可选值有以下 3 种（当然就算你设置了以下 3 种，最终结果也不一定符合预期，毕竟浏览器嘛，你懂的）                                  - auto 浏览器自己决定                                  - metadata 仅下载 metadata（视频总时长、高宽等信息）                                  - none 不要预下载 |
+| [options.src] | <code>string</code> | 视频链接 |
+| [options.source] | <code>Array</code> | 视频 source 标签。为 [{src: 'xxx', type: 'xxx'}] 的形式，type 可选 |
+| [ready] | <code>function</code> | 播放器初始化完成后执行的函数，可选 |
 
 <a name="Player+poster"></a>
 
