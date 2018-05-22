@@ -29,11 +29,11 @@ import featureDetector from './utils/feature-detector';
  * @class
  */
 class Player {
-
     /**
      * 初始化一个播放器实例
      *
      * @constructor
+     *
      * @param {Element|string} tag DOM 元素或其 id（如果是 video 标签，会将其已有属性作为参数）
      * @param {Object=} options 配置项，可选
      * @param {number=} options.height 播放器高度
@@ -55,7 +55,6 @@ class Player {
      * @param {Array=} options.source 视频 source 标签。为 [{src: 'xxx', type: 'xxx'}] 的形式，type 可选
      * @param {Function=} ready 播放器初始化完成后执行的函数，可选
      */
-    /* eslint-disable fecs-max-statements */
     constructor(tag, options, readyFn) {
         this.isReady = false;
         this.player = this;
@@ -95,7 +94,6 @@ class Player {
         this.initialNormalPlugins();
         this.triggerReady();
     }
-    /* eslint-enable fecs-max-statements */
 
     initialNormalPlugins() {
         this[PluginTypes.OTHERS] = {};
