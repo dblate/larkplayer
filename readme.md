@@ -96,6 +96,7 @@ const player = larkplayer('video-el');
 * [Player](./docs/api/player.md)
 * [Events](./docs/api/events.md)
 * [DOM](./docs/api/dom.md)
+* [使用示例](./docs/example.md)
 
 
 ## 如何贡献代码
