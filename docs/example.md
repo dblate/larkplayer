@@ -3,6 +3,7 @@
 ## 最简单的情况
 
 如果只是想要播放 mp4 这类 html5 video 原生就支持的视频格式，并且并不需要任何的额外样式，那么直接使用 larkplayer.js 即可。
+
 通过 larkplayer 可以方便地创建、销毁播放器，监听各类事件并调用各种 api。
 
 ```javascript
@@ -66,4 +67,30 @@ player.on('ended', function () {
 });
 
 player.play();
+
+// 播放器有一套自定义事件的机制，如果你有需求场景，可以使用此功能
+// 实际上播放器内部的所有事件都是通过此机制处理的
+// 在插件开发时，会经常用到
+
+function callback(event) {
+  console.log('这是一个事件回调函数');
+  console.log('在处理 player 的自定义事件时，通过 event.detail 传递自定义的数据', event.detail);
+}
+
+// 监听自定义事件
+player.on('custom_event', callback);
+
+// 触发自定义事件
+player.trigger('custom_event', {
+  detail: 'hello, we can pass any data through this prop',
+  // 虽然你可能并不关心，但确实可以通过 bubbles 设置该事件是否冒泡
+  bubbles: false,
+  // 设置该事件是否可以被 event.preventDefault() 取消
+  cancelable: false
+}));
+
+// 注销自定义事件
+// 事件注销跟 removeEventListener 一样，必须指定之前注册时的事件名和函数名
+player.off('custom_event', callback);
 ```
+更多事件和 api 可以参考 [Player](https://github.com/dblate/larkplayer/blob/master/docs/api/player.md) 文档
