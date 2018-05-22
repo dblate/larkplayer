@@ -94,3 +94,37 @@ player.trigger('custom_event', {
 player.off('custom_event', callback);
 ```
 更多事件和 api 可以参考 [Player](https://github.com/dblate/larkplayer/blob/master/docs/api/player.md) 文档
+
+## 皮肤
+
+很多时候我们还是想要一套自定义的样式。播放器已经通过 larkplayer-ui 插件提供了一款自适应 pc 与移动端的样式，你可以在此基础上做一些修改，也可以重新开发一套样式（参考 [UI 插件示例](./plugin/ui-plugin-example.md)）
+
+要使用 larkplayer-ui 插件，直接将其引入即可
+```javascript
+  <script src="https://unpkg.com/larkplayer@latest/dist/larkplayer.js"></script>
+  <script src="https://unpkg.com/larkplayer-ui@latest/dist/larkplayer-ui.js"></script>
+  <link rel="stylesheet" href="https://unpkg.com/larkplayer-ui@latest/dist/larkplayer-ui.css" />
+
+  // 后续按正常流程使用 larkplayer 即可，larkplayer-ui 插件在引入时即会运行
+  
+  // larkplayer-ui 本身也可以接受一些参数以及更灵活的配置，但由于目前使用的人比较少，场景有限，所以在灵活性上也没花太多功夫，这里就懒得写了
+  // 如果有其他的使用场景，可以提交 issue 或者 pull request，一起来完善
+```
+
+## hls
+
+如果要播放器 m3u8 文件，在移动端基本已经原生支持，不用过多处理；在 pc 端，可以使用 larkplayer-hls 插件
+
+```javascript
+  <script src="https://unpkg.com/larkplayer@latest/dist/larkplayer.js"></script>
+  <script type="text/javascript" src="https://unpkg.com/larkplayer-hls@latest/dist/larkplayer-hls.js"></script>
+  // em.. 假设你皮肤插件也想一起使用
+  <script src="https://unpkg.com/larkplayer-ui@latest/dist/larkplayer-ui.js"></script>
+  <link rel="stylesheet" href="https://unpkg.com/larkplayer-ui@latest/dist/larkplayer-ui.css" />
+  
+  // 后续跟以前一样使用即可
+  var player = larkplayer('video-container', options, ready);
+  
+  // larkplayer-hls 还接受一些参数，不过使用者一般都不用关心，这里就不列举了~
+  // 实在有需要可以查看 larkplayer-hls 插件的 github 
+```
