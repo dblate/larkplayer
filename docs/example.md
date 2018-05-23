@@ -31,7 +31,7 @@ var player = larkplayer('video-container', {
   muted: true,
   // “内联”播放
   playsinline: true,
-  poster: 'https://',
+  poster: 'https://github.com/dblate/larkplayer/blob/master/screenshots/poster.jpg',
   // 预下载视频高宽、时长等基础信息
   preload: 'metadata',
   // src 和 source 均是提供视频资源，source 可以提供多个使得浏览器自动选择
@@ -113,7 +113,7 @@ player.off('custom_event', callback);
 
 ## hls
 
-如果要播放器 m3u8 文件，在移动端基本已经原生支持，不用过多处理；在 pc 端，可以使用 larkplayer-hls 插件
+如果要播放 m3u8 文件，在移动端基本已经原生支持，不用过多处理；在 pc 端，可以使用 larkplayer-hls 插件
 
 ```javascript
   <script src="https://unpkg.com/larkplayer@latest/dist/larkplayer.js"></script>
