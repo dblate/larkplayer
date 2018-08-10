@@ -112,6 +112,9 @@ const player = larkplayer('video-el');
     * 修复未通过的 case
 * 提交 pull request
 
+## 使用交流
+QQ 群：860073225
+
 ## Change Log
 [CHANGELOG](./CHANGELOG.md)
 
