@@ -10,21 +10,17 @@
 
 ## 简介
 
-larkplayer 是一款轻量级、可扩展的 html5 播放器
+larkplayer 是一款轻量、可扩展的 html5 播放器。核心在于插件化的机制，使得播放器可以像[高达](https://baike.baidu.com/item/%E6%9C%BA%E5%8A%A8%E6%88%98%E5%A3%AB%E9%AB%98%E8%BE%BE/9365)一样可拆卸和组装，从而舒适地支持业务从简单到复杂的演变。
 
-* 体积小巧，uglify + gzip < 12kb
+#### 特性
+
+* 体积小巧，~12KB(gzip)
 * 解决大部分兼容性问题，如全屏、移动端内联播放等
 * 提供事件机制，支持自定义事件
 * 提供插件机制，支持多种插件类型
 * 原生 javascript 编写，无特定框架依赖
 
-通过将非必需的功能转化为插件，达到功能间的解耦，并使得在不同的场景间的切换能更加灵活
-
-可以通过[已有插件](./docs/plugin/plugin-list.md)（hls、vr、ui..）或[编写自定义插件](./docs/plugin)来丰富播放器的功能
-
-更多细节请查看[设计文档](./docs/design.md)
-
-说了那么多可能不如一个[在线示例](https://dblate.github.io/larkplayer/examples/)来的实在~
+查看[在线示例](https://dblate.github.io/larkplayer/examples/)
 
 ## 下载
 
@@ -93,10 +89,19 @@ const player = larkplayer('video-el');
 
 ## 文档
 
-* [Player](./docs/api/player.md)
-* [Events](./docs/api/events.md)
-* [DOM](./docs/api/dom.md)
+* [设计思路](./docs/design.md)
 * [使用示例](./docs/example.md)
+* [插件编写](./docs/plugin)
+* [Player API](./docs/api/player.md)
+* [Events API](./docs/api/events.md)
+* [DOM API](./docs/api/dom.md)
+
+## 插件
+
+* [larkplayer-ui](https://github.com/dblate/larkplayer-ui) 提供适应 PC 与 Mobile 的样式
+* [larkplayer-hls](https://github.com/dblate/larkplayer-hls) 支持 M3U8 视频类型
+* [larkplayer-vr](https://github.com/dblate/larkplayer-vr) 支持 VR 全景视频
+* [larkplayer-play-muted](https://github.com/dblate/larkplayer-play-muted) 静音播放时，为用户提供提示与交互
 
 
 ## 如何贡献代码
