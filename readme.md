@@ -10,7 +10,9 @@
 
 ## 简介
 
-larkplayer 是一款轻量、可扩展的 html5 播放器。核心在于插件化的机制，使得播放器可以像[高达](https://baike.baidu.com/item/%E6%9C%BA%E5%8A%A8%E6%88%98%E5%A3%AB%E9%AB%98%E8%BE%BE/9365)一样可拆卸和组装，从而舒适地支持业务从简单到复杂的演变。
+larkplayer 是一款轻量、可扩展的 html5 播放器。
+
+核心在于插件化的机制，使得播放器可以像[高达](https://baike.baidu.com/item/%E6%9C%BA%E5%8A%A8%E6%88%98%E5%A3%AB%E9%AB%98%E8%BE%BE/9365)一样可拆卸和组装，从而舒适地支持业务从简单到复杂的演变。
 
 #### 特性
 
