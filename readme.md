@@ -103,6 +103,7 @@ const player = larkplayer('video-el');
 * [larkplayer-ui](https://github.com/dblate/larkplayer-ui) 提供适应 PC 与 Mobile 的样式
 * [larkplayer-hls](https://github.com/dblate/larkplayer-hls) 支持 M3U8 视频类型
 * [larkplayer-vr](https://github.com/dblate/larkplayer-vr) 支持 VR 全景视频
+* [larkplayer-auto-resume](https://github.com/dblate/larkplayer-auto-resume) 提供断点续播功能
 * [larkplayer-play-muted](https://github.com/dblate/larkplayer-play-muted) 静音播放时，为用户提供提示与交互
 
 
